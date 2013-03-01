@@ -1,0 +1,79 @@
+/****************************************************************
+ *
+ * pointers.h: prototype for all classes with pointers
+ *
+ ****************************************************************
+ *
+ * Copyright 2002-2013
+ *	Institute for Theoretical and Applied Physics
+ *	University of Stuttgart, D-70550 Stuttgart, Germany
+ *	http://potfit.itap.physik.uni-stuttgart.de/
+ *
+ ****************************************************************
+ *
+ *   This file is part of potfit.
+ *
+ *   potfit is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   potfit is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with potfit; if not, see <http://www.gnu.org/licenses/>.
+ *
+ ****************************************************************/
+
+#ifndef PTF_POINTERS_H
+#define PTF_POINTERS_H
+
+#include "potfit.h"
+
+namespace POTFIT_NS {
+
+#define FLERR __FILE__,__LINE__
+
+#define MIN(A,B) ((A) < (B) ? (A) : (B))
+#define MAX(A,B) ((A) > (B) ? (A) : (B))
+
+  class Pointers {
+  public:
+    Pointers(POTFIT *ptr) :
+      ptf(ptr),
+      io(ptr->io),
+      input(ptr->input),
+      output(ptr->output),
+      force(ptr->force),
+      optimization(ptr->optimization),
+      random(ptr->random),
+      config(ptr->config),
+      settings(ptr->settings),
+      potential(ptr->potential),
+      memory(ptr->memory),
+      communication(ptr->communication),
+      utils(ptr->utils) {}
+    virtual ~Pointers() {}
+
+  protected:
+    POTFIT *ptf;
+    IO *&io;
+    Input *&input;
+    Output *&output;
+    Force *&force;
+    Optimization *&optimization;
+    Random *&random;
+    Config *&config;
+    Settings *&settings;
+    Potential *&potential;
+    Memory *&memory;
+    Communication *&communication;
+    Utils *&utils;
+  };
+
+}
+
+#endif /* PTF_POINTERS_H */
