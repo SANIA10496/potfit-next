@@ -1,6 +1,6 @@
 /****************************************************************
  *
- * memory.cpp:
+ * force.h:
  *
  ****************************************************************
  *
@@ -28,50 +28,29 @@
  *
  ****************************************************************/
 
-#include <mpi.h>
-#include <cstdlib>
+#ifndef PTF_INTERACTION_H
+#define PTF_INTERACTION_H
 
-#include "memory.h"
-#include "io.h"
+#include <cstdio>
 
-using namespace POTFIT_NS;
+#include "pointers.h"
 
-Memory::Memory(POTFIT *ptf) : Pointers(ptf) {}
+namespace POTFIT_NS {
 
-// safe memory (de-)allocation
+  class Interaction : protected Pointers {
+  public:
+    Interaction(class POTFIT *);
+    ~Interaction();
 
-void *Memory::smalloc(int nbytes, const char *name)
-{
-  if (nbytes == 0) return NULL;
+    void init();
+    class Force *init_force(const char *);
 
-  void *ptr = malloc(nbytes);
-  if (ptr == NULL) {
-    char str[128];
-    sprintf(str,"Failed to allocate %d bytes for array %s", nbytes,name);
-    io->error(str);
-  }
-  return ptr;
+    char type[255];
+
+    class Force *force;
+  private:
+  };
+
 }
 
-void *Memory::srealloc(void *ptr, int nbytes, const char *name)
-{
-  if (nbytes == 0) {
-    destroy(ptr);
-    return NULL;
-  }
-
-  ptr = realloc(ptr,nbytes);
-  if (ptr == NULL) {
-    char str[128];
-    sprintf(str,"Failed to reallocate %d bytes for array %s",nbytes,name);
-    io->error(str);
-  }
-  return ptr;
-}
-
-void Memory::sfree(void *ptr)
-{
-  if (ptr == NULL) return;
-  free(ptr);
-}
-
+#endif // PTF_INTERACTION_H

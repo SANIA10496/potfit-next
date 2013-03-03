@@ -33,6 +33,7 @@
 #include "input.h"
 #include "output.h"
 #include "force.h"
+#include "interaction.h"
 #include "optimization.h"
 #include "random.h"
 #include "config.h"
@@ -47,7 +48,7 @@ POTFIT::POTFIT(int argc, char **argv) {
   io = new IO(this);
   input = new Input(this, argc, argv);
   output = new Output(this);
-  force = new Force(this);
+  interaction = new Interaction(this);
   optimization = new Optimization(this);
   random = new Random(this);
   config = new Config(this);
@@ -61,7 +62,7 @@ POTFIT::~POTFIT() {
   delete io;
   delete input;
   delete output;
-  delete force;
+  delete interaction;
   delete optimization;
   delete random;
   delete config;

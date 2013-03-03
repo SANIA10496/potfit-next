@@ -31,7 +31,7 @@
 #ifndef PTF_FORCE_H
 #define PTF_FORCE_H
 
-#include <cstdio>
+#include <iostream>
 
 #include "pointers.h"
 
@@ -42,10 +42,11 @@ namespace POTFIT_NS {
     Force(class POTFIT *);
     ~Force();
 
-  private:
+   int cols;
 
+  private:
   };
 
 }
 
-#endif /* PTF_FORCE_H */
+#endif // PTF_FORCE_H

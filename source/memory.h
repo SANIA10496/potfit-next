@@ -40,10 +40,41 @@ namespace POTFIT_NS {
   class Memory : protected Pointers {
   public:
     Memory(class POTFIT *);
-    ~Memory();
+
+    void *smalloc(int , const char *);
+    void *srealloc(void *, int n, const char *);
+    void sfree(void *);
+
+    // create 1D array
+    template <typename TYPE>
+    TYPE *create(TYPE *&array, int n, const char *name)
+    {
+      int nbytes = sizeof(TYPE) * n;
+      array = (TYPE *) smalloc(nbytes,name);
+      return array;
+    }
+
+    // grow/shrink 1D array
+    template <typename TYPE>
+    TYPE *grow(TYPE *&array, int n, const char *name)
+    {
+      if (array == NULL) return create(array,n,name);
+
+      int nbytes = sizeof(TYPE) * n;
+      array = (TYPE *) srealloc(array,nbytes,name);
+      return array;
+    }
+
+    // destroy 1D array
+    template <typename TYPE>
+    void destroy(TYPE *array)
+    {
+      sfree(array);
+    }
+
+    // 2+3D arrays are still missing
 
   private:
-
   };
 
 }

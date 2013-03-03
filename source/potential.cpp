@@ -30,12 +30,29 @@
 
 #include <mpi.h>
 
+#include "force.h"
+#include "interaction.h"
+#include "memory.h"
 #include "potential.h"
 
 using namespace POTFIT_NS;
 
 Potential::Potential(POTFIT *ptf) : Pointers(ptf) {
   enable_cp = 0;
+  format = 0;
+  have_grad = 0;
+  n_invar_pots = 0;
+
+  gradient = NULL;
+  invar_pot = NULL;
 }
 
-Potential::~Potential() {}
+Potential::~Potential() {
+  delete [] gradient;
+  delete [] invar_pot;
+}
+
+void Potential::init() {
+  memory->create(gradient,interaction->force->cols,"gradient");
+  memory->create(invar_pot,interaction->force->cols,"invar_pot");
+}

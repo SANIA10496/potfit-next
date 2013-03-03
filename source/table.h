@@ -1,6 +1,6 @@
 /****************************************************************
  *
- * memory.cpp:
+ * table.h:
  *
  ****************************************************************
  *
@@ -28,50 +28,20 @@
  *
  ****************************************************************/
 
-#include <mpi.h>
-#include <cstdlib>
+#ifndef PTF_TABLES_H
+#define PTF_TABLES_H
 
-#include "memory.h"
-#include "io.h"
+#include "pointers.h"
 
-using namespace POTFIT_NS;
+namespace POTFIT_NS {
 
-Memory::Memory(POTFIT *ptf) : Pointers(ptf) {}
+  class Table : protected Pointers {
+  public:
+    Table(class POTFIT *);
+    ~Table();
 
-// safe memory (de-)allocation
-
-void *Memory::smalloc(int nbytes, const char *name)
-{
-  if (nbytes == 0) return NULL;
-
-  void *ptr = malloc(nbytes);
-  if (ptr == NULL) {
-    char str[128];
-    sprintf(str,"Failed to allocate %d bytes for array %s", nbytes,name);
-    io->error(str);
-  }
-  return ptr;
+  private:
+  };
 }
 
-void *Memory::srealloc(void *ptr, int nbytes, const char *name)
-{
-  if (nbytes == 0) {
-    destroy(ptr);
-    return NULL;
-  }
-
-  ptr = realloc(ptr,nbytes);
-  if (ptr == NULL) {
-    char str[128];
-    sprintf(str,"Failed to reallocate %d bytes for array %s",nbytes,name);
-    io->error(str);
-  }
-  return ptr;
-}
-
-void Memory::sfree(void *ptr)
-{
-  if (ptr == NULL) return;
-  free(ptr);
-}
-
+#endif // PTF_TABLES_H

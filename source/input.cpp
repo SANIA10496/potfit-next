@@ -32,7 +32,9 @@
 #include <cstdlib>
 
 #include "config.h"
+#include "force.h"
 #include "input.h"
+#include "interaction.h"
 #include "io.h"
 #include "potential.h"
 #include "output.h"
@@ -231,6 +233,10 @@ void Input::read_parameter_file() {
     else if (strcasecmp(token, "write_log") == 0) {
       get_param("write_log", &io->write_logfile, PARAM_INT, 1, 1);
     }
+    // interaction type
+    else if (strcasecmp(token, "interaction") == 0) {
+      get_param("interaction", interaction->type, PARAM_STR, 1, 255);
+    }
     /* unknown tag */
     else {
       fprintf(stderr, "Unknown tag <%s> ignored!\n", token);
@@ -242,6 +248,7 @@ void Input::read_parameter_file() {
   fclose(params);
   check_params();
   io->set_logfile("potfit.log");
+  interaction->init();
 }
 
 int Input::get_param(const char *param_name, void *param, param_t ptype, int pnum_min, int pnum_max)
@@ -321,6 +328,10 @@ void Input::check_params()
     sprintf(output->endpot, "%s_end", startpot);
   }
 
+  if (strcmp(interaction->type, "\0") == 0)
+    io->error("Missing parameter or invalid value in %s : interaction is \"%s\"",
+      interaction->type, startpot);
+
   if (strcmp(config_file, "\0") == 0)
     io->error("Missing parameter or invalid value in %s : config is \"%s\"",
       param_file, config_file);
@@ -356,130 +367,94 @@ void Input::check_params()
 void Input::read_potential_file() {
   FILE *infile;
   char  buffer[1024], *res, *str;
-  int   have_format = 0, end_header = 0;
-  int   size, i, j, k = 0, *nvals, ncols, npots = 0;
-//  apot_table_t *apt = &apot_table;
-//  double *val;
+  int   have_format = 0, have_type = 0, end_header = 0;
+  int   i, size;
 
-  /* open file */
+  // open file
   infile = fopen(startpot, "r");
   if (NULL == infile)
     io->error("Could not open file %s\n", startpot);
 
-  /* read the header */
+  // read the header
   do {
-    /* read one line */
+    // read one line
     res = fgets(buffer, 1024, infile);
     if (NULL == res)
       io->error("Unexpected end of file in %s", startpot);
-    /* check if it is a header line */
+    // check if it is a header line
     if (buffer[0] != '#')
       io->error("Header corrupt in file %s", startpot);
-    /* stop after last header line */
-    if (buffer[1] == 'E') {
-      end_header = 1;
+
+    // see if it is the format line
+    if (buffer[1] == 'F') {
+      // format complete?
+      if (2 != sscanf((const char *)(buffer + 2), "%d %d", &potential->format, &size))
+	io->error("Corrupt format header line in file %s", startpot);
+
+      if (size == interaction->force->cols) {
+	io->write("Using %s potentials from file \"%s\".\n", interaction->type, startpot);
+      } else {
+	sprintf(buffer, "Wrong number of data columns in file \"%s\",\n", startpot);
+	io->error("%sshould be %d for %s, but are %d.", buffer,
+	  interaction->force->cols, interaction->type, size);
+      }
+      have_format = 1;
+      potential->init();
     }
-    if (buffer[1] == 'T') {
+
+    // read the TYPE line
+    else if (buffer[1] == 'T') {
       if ((str = strchr(buffer + 3, '\n')) != NULL)
 	*str = '\0';
       if (strcmp(buffer + 3, settings->interaction) != 0) {
 	io->error("The potentials in your parameter and potential file do not match!\n");
       }
+      have_type = 1;
     }
-    /* invariant potentials */
+
+    // invariant potentials
     else if (buffer[1] == 'I') {
-      if (have_format) {
-	apot_table.invar_pots = 0;
-	/* gradient complete */
+      if (have_format && have_type) {
+	// check for enough items
 	for (i = 0; i < size; i++) {
 	  str = strtok(((i == 0) ? buffer + 2 : NULL), " \t\r\n");
 	  if (str == NULL) {
-	    error(1, "Not enough items in #I header line.");
+	    io->error("Not enough items in #I header line.");
 	  } else {
-	    ((int *)invar_pot)[i] = atoi(str);
-	    apot_table.invar_pots++;
+	    potential->invar_pot[i] = atoi(str);
+	    potential->n_invar_pots++;
 	  }
 	}
-	have_invar = 1;
       } else
-	error(1, "#I needs to be specified after #F in file %s", filename);
+	io->error("#I needs to be specified after the #F and #T lines in the potential file \"%s\"", startpot);
     }
-#ifndef APOT
+
     else if (buffer[1] == 'G') {
       if (have_format) {
-	/* gradient complete */
+	// check for enough items
 	for (i = 0; i < size; i++) {
 	  str = strtok(((i == 0) ? buffer + 2 : NULL), " \t\r\n");
 	  if (str == NULL)
-	    error(1, "Not enough items in #G header line.");
+	    io->error("Not enough items in #G header line.");
 	  else
-	    ((int *)gradient)[i] = atoi(str);
+	    potential->gradient[i] = atoi(str);
 	}
-	have_grad = 1;
+	potential->have_grad = 1;
       } else
-	error(1, "#G needs to be specified after #F in file %s", filename);
+	io->error("#G needs to be specified after #F in file %s", startpot);
     }
-#endif /* !APOT */
 
-    /* see if it is the format line */
-    else if (buffer[1] == 'F') {
-      /* format complete? */
-      if (2 != sscanf((const char *)(buffer + 2), "%d %d", &format, &size))
-	error(1, "Corrupt format header line in file %s", filename);
-#ifndef APOT
-      if (format == 0)
-	error(1, "potfit binary compiled without analytic potential support.\n");
-#else
-      if (format > 0)
-	error(1, "potfit binary compiled without tabulated potential support.\n");
-#endif /* !APOT */
-
-      ncols = ntypes * (ntypes + 1) / 2;
-      /* right number of columns? */
-      switch (interaction) {
-	  case I_EAM:
-	    npots = ncols + 2 * ntypes;
-	    break;
-	  case I_ADP:
-	    npots = 3 * ncols + 2 * ntypes;
-	    break;
-	  default:
-	    npots = ncols;
-      }
-
-      if (size == npots) {
-	printf("Using %s potentials from file \"%s\".\n", interaction_name, filename);
-	fflush(stdout);
-      } else {
-	error(0, "Wrong number of data columns in file \"%s\",\n", filename);
-	error(1, "should be %d for %s, but are %d.", npots, interaction_name, size);
-      }
-      /* recognized format? */
-      if ((format != 0) && (format != 3) && (format != 4))
-	error(1, "Unrecognized format specified for file %s", filename);
-      gradient = (int *)malloc(size * sizeof(int));
-      invar_pot = (int *)malloc(size * sizeof(int));
-#ifdef APOT
-      smooth_pot = (int *)malloc(size * sizeof(int));
-#endif /* APOT */
-      for (i = 0; i < size; i++) {
-	gradient[i] = 0;
-	invar_pot[i] = 0;
-#ifdef APOT
-	smooth_pot[i] = 0;
-#endif /* APOT */
-      }
-      have_format = 1;
+    // stop after last header line
+    if (buffer[1] == 'E') {
+      end_header = 1;
     }
+
   } while (!end_header);
 
   /* do we have a format in the header? */
   if (!have_format)
-    error(1, "Format not specified in header of file %s", filename);
-  else if (format != 0)
-    printf("Potential file format %d detected.\n", format);
-  else
-    printf("Potential file format %d (analytic potentials) detected.\n", format);
+    io->error("Format not specified in header of file %s", startpot);
+
 }
 
 void Input::read_config_file() {

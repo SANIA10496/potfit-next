@@ -28,12 +28,13 @@
  *
  ****************************************************************/
 
-#include <mpi.h>
-
 #include "force.h"
 
 using namespace POTFIT_NS;
 
-Force::Force(POTFIT *ptf) : Pointers(ptf) {}
+Force::Force(POTFIT *ptf) : Pointers(ptf) {
+}
 
-Force::~Force() {}
+Force::~Force() {
+
+}

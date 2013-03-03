@@ -1,6 +1,6 @@
 /****************************************************************
  *
- * memory.cpp:
+ * force_adp.cpp:
  *
  ****************************************************************
  *
@@ -28,50 +28,12 @@
  *
  ****************************************************************/
 
-#include <mpi.h>
-#include <cstdlib>
-
-#include "memory.h"
-#include "io.h"
+#include "force_adp.h"
 
 using namespace POTFIT_NS;
 
-Memory::Memory(POTFIT *ptf) : Pointers(ptf) {}
-
-// safe memory (de-)allocation
-
-void *Memory::smalloc(int nbytes, const char *name)
-{
-  if (nbytes == 0) return NULL;
-
-  void *ptr = malloc(nbytes);
-  if (ptr == NULL) {
-    char str[128];
-    sprintf(str,"Failed to allocate %d bytes for array %s", nbytes,name);
-    io->error(str);
-  }
-  return ptr;
+ForceADP::ForceADP(POTFIT *ptf): Force(ptf) {
 }
 
-void *Memory::srealloc(void *ptr, int nbytes, const char *name)
-{
-  if (nbytes == 0) {
-    destroy(ptr);
-    return NULL;
-  }
-
-  ptr = realloc(ptr,nbytes);
-  if (ptr == NULL) {
-    char str[128];
-    sprintf(str,"Failed to reallocate %d bytes for array %s",nbytes,name);
-    io->error(str);
-  }
-  return ptr;
+ForceADP::~ForceADP() {
 }
-
-void Memory::sfree(void *ptr)
-{
-  if (ptr == NULL) return;
-  free(ptr);
-}
-

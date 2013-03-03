@@ -42,7 +42,17 @@ namespace POTFIT_NS {
     Potential(class POTFIT *);
     ~Potential();
 
+    void init();
+
     int enable_cp;
+    int format;
+    int have_grad;
+    int n_invar_pots;
+
+    int *gradient;
+    int *invar_pot;
+
+    class Table *pots;
   private:
 
   };

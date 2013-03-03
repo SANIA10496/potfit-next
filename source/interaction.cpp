@@ -1,6 +1,6 @@
 /****************************************************************
  *
- * memory.cpp:
+ * force.cpp:
  *
  ****************************************************************
  *
@@ -29,49 +29,37 @@
  ****************************************************************/
 
 #include <mpi.h>
-#include <cstdlib>
 
-#include "memory.h"
-#include "io.h"
+#include "interaction.h"
+#include "force.h"
+#include "forces/list_forces.h"
 
 using namespace POTFIT_NS;
 
-Memory::Memory(POTFIT *ptf) : Pointers(ptf) {}
-
-// safe memory (de-)allocation
-
-void *Memory::smalloc(int nbytes, const char *name)
+Interaction::Interaction(POTFIT *ptf) : Pointers(ptf)
 {
-  if (nbytes == 0) return NULL;
-
-  void *ptr = malloc(nbytes);
-  if (ptr == NULL) {
-    char str[128];
-    sprintf(str,"Failed to allocate %d bytes for array %s", nbytes,name);
-    io->error(str);
-  }
-  return ptr;
+  strcpy(type,"\0");
+  force = NULL;
 }
 
-void *Memory::srealloc(void *ptr, int nbytes, const char *name)
+Interaction::~Interaction()
 {
-  if (nbytes == 0) {
-    destroy(ptr);
+  if (force) delete force;
+}
+
+void Interaction::init()
+{
+  force = init_force(type);
+}
+
+Force *Interaction::init_force(const char *force_type)
+{
+  if (strcmp(force_type,"none") == 0)
     return NULL;
-  }
-
-  ptr = realloc(ptr,nbytes);
-  if (ptr == NULL) {
-    char str[128];
-    sprintf(str,"Failed to reallocate %d bytes for array %s",nbytes,name);
-    io->error(str);
-  }
-  return ptr;
+#define FORCE_TYPE
+#define ForceType(key,Class) \
+  else if (strcmp(force_type,#key) == 0) \
+    return new Class(ptf);
+#include "forces/list_forces.h"
+#undef FORCE_TYPE
 }
-
-void Memory::sfree(void *ptr)
-{
-  if (ptr == NULL) return;
-  free(ptr);
-}
-

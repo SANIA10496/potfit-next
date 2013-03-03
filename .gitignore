@@ -11,3 +11,11 @@
 *.lai
 *.la
 *.a
+
+# temp files
+*~
+*.swp
+*.swo
+
+#
+list_forces.h

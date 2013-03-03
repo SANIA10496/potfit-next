@@ -251,20 +251,25 @@ CFLAGS += ${PROF_FLAGS}
 LIBS   += ${PROF_LIBS}
 endif
 
-HEADERS = communication.h config.h force.h input.h io.h memory.h \
+HEADERS = communication.h config.h force.h input.h interaction.h io.h memory.h \
 	  optimization.h output.h pointers.h potential.h potfit.h \
-	  random.h settings.h
-SOURCES = communication.cpp config.cpp force.cpp input.cpp io.cpp \
+	  random.h settings.h table.h
+SOURCES = communication.cpp config.cpp force.cpp input.cpp interaction.cpp io.cpp \
 	  main.cpp memory.cpp optimization.cpp output.cpp potential.cpp \
-	  potfit.cpp random.cpp settings.cpp
+	  potfit.cpp random.cpp settings.cpp table.cpp
+FORCE_SOURCES = $(shell ls forces/*.cpp)
+FORCE_OBJECTS = $(subst .cpp,.o,${FORCE_SOURCES})
 
 # Substitute .o for .c to get the names of the object files
 OBJECTS := $(subst .cpp,.o,${SOURCES})
 
 # potfit is the default target
-potfit: ${OBJECTS}
-	${CXX} ${LIBS} ${LFLAGS_${PARALLEL}} -o $@ ${OBJECTS}
+potfit: FORCE_HEADERS ${OBJECTS}
+	${CXX} ${LIBS} ${LFLAGS_${PARALLEL}} -o $@ ${OBJECTS} ${FORCE_OBJECTS}
 	${STRIP} --strip-unneeded -R .comment $@
+
+FORCE_HEADERS:
+	make -C forces
 
 # all objects depend on headers
 ${OBJECTS}: ${HEADERS}
@@ -274,6 +279,7 @@ ${OBJECTS}: ${HEADERS}
 	${CXX} ${CFLAGS} -c $<
 
 clean:
+	make -C forces clean
 	rm -f *.o *.u *~ \#* *.V *.T *.O *.il potfit
 
 help:

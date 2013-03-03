@@ -35,8 +35,6 @@
 
 namespace POTFIT_NS {
 
-#define FLERR __FILE__,__LINE__
-
 #define MIN(A,B) ((A) < (B) ? (A) : (B))
 #define MAX(A,B) ((A) > (B) ? (A) : (B))
 
@@ -47,7 +45,7 @@ namespace POTFIT_NS {
       io(ptr->io),
       input(ptr->input),
       output(ptr->output),
-      force(ptr->force),
+      interaction(ptr->interaction),
       optimization(ptr->optimization),
       random(ptr->random),
       config(ptr->config),
@@ -63,7 +61,7 @@ namespace POTFIT_NS {
     IO *&io;
     Input *&input;
     Output *&output;
-    Force *&force;
+    Interaction *&interaction;
     Optimization *&optimization;
     Random *&random;
     Config *&config;

@@ -39,7 +39,7 @@ namespace POTFIT_NS {
     class IO *io;  			// I/O for the console
     class Input *input; 		// Input from files
     class Output *output; 		// Output to files
-    class Force *force; 		// Force routines
+    class Interaction *interaction;	// Force routines
     class Optimization *optimization; 	// Optimization algorithms
     class Random *random; 		// RNG
     class Config *config; 		// Configurations

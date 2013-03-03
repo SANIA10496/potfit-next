@@ -1,6 +1,6 @@
 /****************************************************************
  *
- * memory.cpp:
+ * force_eam.h
  *
  ****************************************************************
  *
@@ -28,50 +28,27 @@
  *
  ****************************************************************/
 
-#include <mpi.h>
-#include <cstdlib>
+#ifdef FORCE_TYPE
 
-#include "memory.h"
-#include "io.h"
+ForceType(eam,ForceEAM)
 
-using namespace POTFIT_NS;
+#else
 
-Memory::Memory(POTFIT *ptf) : Pointers(ptf) {}
+#ifndef PTF_FORCE_EAM_H
+#define PTF_FORCE_EAM_H
 
-// safe memory (de-)allocation
+#include "../force.h"
 
-void *Memory::smalloc(int nbytes, const char *name)
-{
-  if (nbytes == 0) return NULL;
+namespace POTFIT_NS {
 
-  void *ptr = malloc(nbytes);
-  if (ptr == NULL) {
-    char str[128];
-    sprintf(str,"Failed to allocate %d bytes for array %s", nbytes,name);
-    io->error(str);
-  }
-  return ptr;
+  class ForceEAM : public Force {
+  public:
+    ForceEAM(class POTFIT *);
+    virtual ~ForceEAM();
+  };
+
 }
 
-void *Memory::srealloc(void *ptr, int nbytes, const char *name)
-{
-  if (nbytes == 0) {
-    destroy(ptr);
-    return NULL;
-  }
+#endif // PTF_FORCE_EAM_H
 
-  ptr = realloc(ptr,nbytes);
-  if (ptr == NULL) {
-    char str[128];
-    sprintf(str,"Failed to reallocate %d bytes for array %s",nbytes,name);
-    io->error(str);
-  }
-  return ptr;
-}
-
-void Memory::sfree(void *ptr)
-{
-  if (ptr == NULL) return;
-  free(ptr);
-}
-
+#endif // FORCE_TYPE
