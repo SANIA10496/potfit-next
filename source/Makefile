@@ -239,34 +239,35 @@ DEBUG_FLAGS += ${${PARALLEL}_FLAGS} ${DEBUG_${PARALLEL}_FLAGS}
 
 # optimization or debug
 CFLAGS := ${FLAGS}
-ifneq (,$(findstring debug,${MAKETARGET}))
-CFLAGS += ${DEBUG_FLAGS}
-else
-CFLAGS += ${OPT_FLAGS}
-endif
 
-# profiling support
-ifneq (,$(findstring prof,${MAKETARGET}))
-CFLAGS += ${PROF_FLAGS}
-LIBS   += ${PROF_LIBS}
-endif
+default: potfit
+
+debug: CFLAGS += ${DEBUG_FLAGS}
+debug: potfit
+potfit: CFLAGS += ${OPT_FLAGS}
 
 HEADERS = communication.h config.h force.h input.h interaction.h io.h memory.h \
 	  optimization.h output.h pointers.h potential.h potfit.h \
-	  random.h settings.h table.h
+	  random.h settings.h table.h utils.h
 SOURCES = communication.cpp config.cpp force.cpp input.cpp interaction.cpp io.cpp \
 	  main.cpp memory.cpp optimization.cpp output.cpp potential.cpp \
-	  potfit.cpp random.cpp settings.cpp table.cpp
+	  potfit.cpp random.cpp settings.cpp table.cpp utils.cpp
 FORCE_SOURCES = $(shell ls forces/*.cpp)
 FORCE_OBJECTS = $(subst .cpp,.o,${FORCE_SOURCES})
+RANDOM_SOURCES = $(shell ls random/*.c)
+RANDOM_OBJECTS = $(subst .c,.o,${RANDOM_SOURCES})
 
 # Substitute .o for .c to get the names of the object files
 OBJECTS := $(subst .cpp,.o,${SOURCES})
 
 # potfit is the default target
-potfit: FORCE_HEADERS ${OBJECTS}
-	${CXX} ${LIBS} ${LFLAGS_${PARALLEL}} -o $@ ${OBJECTS} ${FORCE_OBJECTS}
-	${STRIP} --strip-unneeded -R .comment $@
+potfit: FORCE_HEADERS RANDOM_HEADERS ${OBJECTS}
+	${CXX} ${LIBS} ${LFLAGS_${PARALLEL}} -o $@ ${OBJECTS} ${FORCE_OBJECTS} \
+		${RANDOM_OBJECTS}
+#	${STRIP} --strip-unneeded -R .comment $@
+
+RANDOM_HEADERS:
+	make -C random $1
 
 FORCE_HEADERS:
 	make -C forces
@@ -279,6 +280,7 @@ ${OBJECTS}: ${HEADERS}
 	${CXX} ${CFLAGS} -c $<
 
 clean:
+	make -C random clean
 	make -C forces clean
 	rm -f *.o *.u *~ \#* *.V *.T *.O *.il potfit
 

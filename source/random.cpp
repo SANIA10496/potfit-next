@@ -29,6 +29,7 @@
  ****************************************************************/
 
 #include <mpi.h>
+#include <cstdlib>
 
 #include "random.h"
 
@@ -39,3 +40,27 @@ Random::Random(POTFIT *ptf) : Pointers(ptf) {
 }
 
 Random::~Random() {}
+
+void Random::set_seed(int new_seed) {
+  seed = new_seed;
+
+  /* properly initialize random number generator */
+#define R_SIZE 624
+#define RAND_MAX 2147483647
+    uint32_t *array;
+    array = (uint32_t *) malloc(R_SIZE * sizeof(uint32_t));
+    srand(seed);
+    for (int i = 0; i < R_SIZE; i++)
+      array[i] = rand();
+
+    dsfmt_init_by_array(&dsfmt, array, R_SIZE);
+    for (int i = 0; i < 10e5; i++)
+      eqdist();
+    free(array);
+#undef R_SIZE
+#undef RAND_MAX
+}
+
+//double Random::eqdist() {
+//  return dsfmt_genrand_close_open(&dsfmt);
+//}

@@ -35,6 +35,9 @@
 
 #include "pointers.h"
 
+#define DSFMT_MEXP 19937
+#include "random/dSFMT.h"
+
 namespace POTFIT_NS {
 
   class Random : protected Pointers {
@@ -42,9 +45,11 @@ namespace POTFIT_NS {
     Random(class POTFIT *);
     ~Random();
 
-    int seed;
+    void set_seed(int);
+    double eqdist() {return dsfmt_genrand_close_open(&dsfmt);}
   private:
-
+    int seed;
+    dsfmt_t dsfmt;
   };
 
 }

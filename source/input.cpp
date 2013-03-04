@@ -89,6 +89,7 @@ void Input::read_parameter_file() {
   char *token, *res;
   FILE *params;
 
+  int seed = 0;
   curline = 0;
 
   params = fopen(param_file, "r");
@@ -187,7 +188,8 @@ void Input::read_parameter_file() {
     }
     /* seed for RNG */
     else if (strcasecmp(token, "seed") == 0) {
-      get_param("seed", &random->seed, PARAM_INT, 1, 1);
+      get_param("seed", &seed, PARAM_INT, 1, 1);
+      random->set_seed(seed);
     }
     /* stopping criterion for differential evolution */
     else if (strcasecmp(token, "evo_threshold") == 0) {
@@ -329,38 +331,39 @@ void Input::check_params()
   }
 
   if (strcmp(interaction->type, "\0") == 0)
-    io->error("Missing parameter or invalid value in %s : interaction is \"%s\"",
-      interaction->type, startpot);
+    io->error("Missing parameter or invalid value in >%s<: interaction is \"%s\"",
+      param_file, interaction->type);
 
   if (strcmp(config_file, "\0") == 0)
-    io->error("Missing parameter or invalid value in %s : config is \"%s\"",
+    io->error("Missing parameter or invalid value in >%s<: config is \"%s\"",
       param_file, config_file);
 
   if (strcmp(output->tempfile, "\0") == 0)
-    io->error("Missing parameter or invalid value in %s : tempfile is \"%s\"",
+    io->error("Missing parameter or invalid value in >%s<: tempfile is \"%s\"",
       param_file, output->tempfile);
 
   if (settings->eweight < 0)
-    io->error("Missing parameter or invalid value in %s : eng_weight is \"%f\"",
+    io->error("Missing parameter or invalid value in >%s<: eng_weight is \"%f\"",
       param_file, settings->eweight);
 
   if (settings->sweight < 0)
-    io->error("Missing parameter or invalid value in %s : stress_weight is \"%f\"",
+    io->error("Missing parameter or invalid value in >%s<: stress_weight is \"%f\"",
       param_file, settings->sweight);
 
   if (output->enable_imd_pot && output->imdpotsteps <= 0)
-    io->error("Missing parameter or invalid value in %s : imdpotsteps is \"%d\"",
+    io->error("Missing parameter or invalid value in >%s<: imdpotsteps is \"%d\"",
       param_file, output->imdpotsteps);
 
   if (output->plotmin < 0)
-    io->error("Missing parameter or invalid value in %s : plotmin is \"%f\"",
+    io->error("Missing parameter or invalid value in >%s<: plotmin is \"%f\"",
       param_file, output->plotmin);
+
   if (potential->enable_cp != 0 && potential->enable_cp != 1)
-    io->error("Missing parameter or invalid value in %s : enable_cp is \"%d\"",
+    io->error("Missing parameter or invalid value in >%s<: enable_cp is \"%d\"",
       param_file, potential->enable_cp);
 
   if (strcmp(output->distfile, "\0") == 0)
-    io->error("Missing parameter or invalid value in %s : distfile is \"%s\"",
+    io->error("Missing parameter or invalid value in >%s<: distfile is \"%s\"",
       param_file, output->distfile);
 }
 

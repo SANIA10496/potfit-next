@@ -41,6 +41,7 @@
 #include "potential.h"
 #include "memory.h"
 #include "communication.h"
+#include "utils.h"
 
 using namespace POTFIT_NS;
 
@@ -56,6 +57,7 @@ POTFIT::POTFIT(int argc, char **argv) {
   potential = new Potential(this);
   memory = new Memory(this);
   communication = new Communication(this);
+  utils = new Utils(this);
 }
 
 POTFIT::~POTFIT() {
@@ -70,6 +72,7 @@ POTFIT::~POTFIT() {
   delete potential;
   delete memory;
   delete communication;
+  delete utils;
 }
 
 void POTFIT::run() {

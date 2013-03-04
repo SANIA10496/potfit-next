@@ -31,8 +31,6 @@
 #ifndef PTF_UTILS_H
 #define PTF_UTILS_H
 
-#include <iostream>
-
 #include "pointers.h"
 
 namespace POTFIT_NS {
