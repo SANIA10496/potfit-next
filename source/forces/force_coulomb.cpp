@@ -29,6 +29,7 @@
  ****************************************************************/
 
 #include "force_coulomb.h"
+#include "../config.h"
 
 using namespace POTFIT_NS;
 
@@ -36,4 +37,9 @@ ForceCoulomb::ForceCoulomb(POTFIT *ptf): Force(ptf) {
 }
 
 ForceCoulomb::~ForceCoulomb() {
+}
+
+int ForceCoulomb::cols() {
+  int n = config->ntypes;
+  return (int)n*(n+1)/2.;
 }

@@ -42,8 +42,7 @@ namespace POTFIT_NS {
     Force(class POTFIT *);
     ~Force();
 
-   int cols;
-
+   virtual int cols() = 0;
   private:
   };
 

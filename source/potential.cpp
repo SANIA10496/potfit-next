@@ -53,6 +53,6 @@ Potential::~Potential() {
 }
 
 void Potential::init() {
-  memory->create(gradient,interaction->force->cols,"gradient");
-  memory->create(invar_pot,interaction->force->cols,"invar_pot");
+  memory->create(gradient,interaction->force->cols(),"gradient");
+  memory->create(invar_pot,interaction->force->cols(),"invar_pot");
 }

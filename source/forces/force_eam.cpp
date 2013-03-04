@@ -29,6 +29,7 @@
  ****************************************************************/
 
 #include "force_eam.h"
+#include "../config.h"
 
 using namespace POTFIT_NS;
 
@@ -37,3 +38,5 @@ ForceEAM::ForceEAM(POTFIT *ptf): Force(ptf) {
 
 ForceEAM::~ForceEAM() {
 }
+
+int ForceEAM::cols() {}

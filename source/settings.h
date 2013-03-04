@@ -42,8 +42,6 @@ namespace POTFIT_NS {
     Settings(class POTFIT *);
     ~Settings();
 
-    char interaction[255];
-
     int myid;
     int num_cpus;
     int opt;

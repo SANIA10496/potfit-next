@@ -32,7 +32,9 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include "input.h"
 #include "io.h"
+#include "settings.h"
 #include "version.h"
 
 using namespace POTFIT_NS;
@@ -61,7 +63,7 @@ void IO::print_version() {
     printf("License GPLv2+: GNU GPL version 2 or later <http://gnu.org/licenses/gpl.html>.\n");
     printf("This is free software: you are free to change and redistribute it.\n");
     printf("There is absolutely NO WARRANTY.\n");
-    printf("\nContributing authors are listed on <http://potfit.itap.physik.uni-stuttgart.de>.\n");
+    printf("\nContributing authors are listed on <http://potfit.sourceforge.net>.\n");
   }
   MPI::Finalize();
   exit(EXIT_SUCCESS);
@@ -85,10 +87,13 @@ void IO::write(const char *msg, ...) {
   if (screen) {
     va_start(ap, msg);
     vfprintf(stdout, msg, ap);
-    // write to log file if enabled
-    if (write_logfile)
-      vfprintf(logfile, msg, ap);
     va_end(ap);
+    // write to log file if enabled
+    if (write_logfile) {
+      va_start(ap, msg);
+      vfprintf(logfile, msg, ap);
+      va_end(ap);
+    }
   }
 }
 
@@ -121,6 +126,7 @@ void IO::warning(const char *msg, ...) {
 void IO::error(const char *msg, ...) {
   va_list ap;
 
+  fflush(stdout);
   // broadcast error
   if (init_done == 1) {
     // MPI::BCast.force finish
@@ -135,7 +141,7 @@ void IO::error(const char *msg, ...) {
     vfprintf(stderr, msg, ap);
     va_end(ap);
     fflush(stderr);
-    std::cerr << "\n";
+    std::cerr << std::endl << std::endl;
   }
   MPI::Finalize();
   exit(EXIT_FAILURE);
@@ -147,6 +153,7 @@ void IO::set_logfile(const char *filename) {
     if (logfile == NULL)
       error("Could not open logfile '%s'\n",filename);
     write_log("This is potfit %s compiled on %s.\n\n",POTFIT_VERSION,POTFIT_DATE);
+    write_log("Reading parameter file >%s< ... ",input->param_file);
   }
 }
 

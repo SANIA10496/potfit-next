@@ -35,8 +35,6 @@
 using namespace POTFIT_NS;
 
 Settings::Settings(POTFIT *ptf) : Pointers(ptf) {
-  strcpy(interaction,"\0");
-
   myid = -1;
   num_cpus = 0;
   opt = 1;

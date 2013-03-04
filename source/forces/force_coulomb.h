@@ -45,6 +45,8 @@ namespace POTFIT_NS {
   public:
     ForceCoulomb(class POTFIT *);
     virtual ~ForceCoulomb();
+
+    int cols();
   };
 
 }

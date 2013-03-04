@@ -92,10 +92,10 @@ void Input::read_parameter_file() {
   int seed = 0;
   curline = 0;
 
+  io->write("Reading parameter file >%s< ... ",param_file);
   params = fopen(param_file, "r");
   if (NULL == params)
-    io->error("Could not open parameter file '%s'.\n",param_file);
-  io->write("Reading parameter file '%s' ... ",param_file);
+    io->error("Could not open parameter file >%s<.\n",param_file);
 
   do {
     res = fgets(buffer, 1024, params);
@@ -246,10 +246,10 @@ void Input::read_parameter_file() {
     }
   } while (!feof(params));
 
+  io->set_logfile("potfit.log");
   io->write("done.\n");
   fclose(params);
   check_params();
-  io->set_logfile("potfit.log");
   interaction->init();
 }
 
@@ -331,8 +331,7 @@ void Input::check_params()
   }
 
   if (strcmp(interaction->type, "\0") == 0)
-    io->error("Missing parameter or invalid value in >%s<: interaction is \"%s\"",
-      param_file, interaction->type);
+    io->error("Error in %s - 'interaction' keyword is missing!", param_file);
 
   if (strcmp(config_file, "\0") == 0)
     io->error("Missing parameter or invalid value in >%s<: config is \"%s\"",
@@ -362,9 +361,7 @@ void Input::check_params()
     io->error("Missing parameter or invalid value in >%s<: enable_cp is \"%d\"",
       param_file, potential->enable_cp);
 
-  if (strcmp(output->distfile, "\0") == 0)
-    io->error("Missing parameter or invalid value in >%s<: distfile is \"%s\"",
-      param_file, output->distfile);
+  return;
 }
 
 void Input::read_potential_file() {
@@ -374,19 +371,20 @@ void Input::read_potential_file() {
   int   i, size;
 
   // open file
+  io->write("Reading potential file >%s< ... ",startpot);
   infile = fopen(startpot, "r");
   if (NULL == infile)
-    io->error("Could not open file %s\n", startpot);
+    io->error("Could not open file >%s<\n", startpot);
 
   // read the header
   do {
     // read one line
     res = fgets(buffer, 1024, infile);
     if (NULL == res)
-      io->error("Unexpected end of file in %s", startpot);
+      io->error("Unexpected end of file in >%s<", startpot);
     // check if it is a header line
     if (buffer[0] != '#')
-      io->error("Header corrupt in file %s", startpot);
+      io->error("Header corrupt in file >%s<", startpot);
 
     // see if it is the format line
     if (buffer[1] == 'F') {
@@ -394,12 +392,10 @@ void Input::read_potential_file() {
       if (2 != sscanf((const char *)(buffer + 2), "%d %d", &potential->format, &size))
 	io->error("Corrupt format header line in file %s", startpot);
 
-      if (size == interaction->force->cols) {
-	io->write("Using %s potentials from file \"%s\".\n", interaction->type, startpot);
-      } else {
+      if (size != interaction->force->cols()) {
 	sprintf(buffer, "Wrong number of data columns in file \"%s\",\n", startpot);
 	io->error("%sshould be %d for %s, but are %d.", buffer,
-	  interaction->force->cols, interaction->type, size);
+	  interaction->force->cols(), interaction->type, size);
       }
       have_format = 1;
       potential->init();
@@ -409,8 +405,8 @@ void Input::read_potential_file() {
     else if (buffer[1] == 'T') {
       if ((str = strchr(buffer + 3, '\n')) != NULL)
 	*str = '\0';
-      if (strcmp(buffer + 3, settings->interaction) != 0) {
-	io->error("The potentials in your parameter and potential file do not match!\n");
+      if (strcmp(buffer + 3, interaction->type) != 0) {
+	io->error("The potential types in your parameter and potential file do not match!\n");
       }
       have_type = 1;
     }
@@ -453,11 +449,15 @@ void Input::read_potential_file() {
     }
 
   } while (!end_header);
+  io->write("done.\n");
 
   /* do we have a format in the header? */
   if (!have_format)
     io->error("Format not specified in header of file %s", startpot);
 
+  io->write("\nUsing %s potentials from file >%s<.\n\n", interaction->type, startpot);
+
+  fclose(infile);
 }
 
 void Input::read_config_file() {

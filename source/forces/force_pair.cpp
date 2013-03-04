@@ -29,6 +29,7 @@
  ****************************************************************/
 
 #include "force_pair.h"
+#include "../config.h"
 
 using namespace POTFIT_NS;
 
@@ -36,4 +37,9 @@ ForcePair::ForcePair(POTFIT *ptf): Force(ptf) {
 }
 
 ForcePair::~ForcePair() {
+}
+
+int ForcePair::cols() {
+  int n = config->ntypes;
+  return (int)n*(n+1)/2.;
 }

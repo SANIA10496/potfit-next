@@ -19,4 +19,5 @@
 
 # files
 list_forces.h
+version.h
 potfit

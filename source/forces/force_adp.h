@@ -45,6 +45,8 @@ namespace POTFIT_NS {
   public:
     ForceADP(class POTFIT *);
     virtual ~ForceADP();
+
+    int cols();
   };
 
 }

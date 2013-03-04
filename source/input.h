@@ -39,6 +39,7 @@
 namespace POTFIT_NS {
 
   class Input : protected Pointers {
+  friend class IO;
   public:
     Input(class POTFIT *, int, char **);
     ~Input();

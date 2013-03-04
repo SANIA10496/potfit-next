@@ -45,6 +45,9 @@ namespace POTFIT_NS {
   public:
     ForcePair(class POTFIT *);
     virtual ~ForcePair();
+
+    int cols();
+  private:
   };
 
 }

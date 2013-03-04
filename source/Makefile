@@ -240,7 +240,7 @@ DEBUG_FLAGS += ${${PARALLEL}_FLAGS} ${DEBUG_${PARALLEL}_FLAGS}
 # optimization or debug
 CFLAGS := ${FLAGS}
 
-default: potfit
+default: git potfit strip
 
 debug: CFLAGS += ${DEBUG_FLAGS}
 debug: potfit
@@ -260,11 +260,16 @@ RANDOM_OBJECTS = $(subst .c,.o,${RANDOM_SOURCES})
 # Substitute .o for .c to get the names of the object files
 OBJECTS := $(subst .cpp,.o,${SOURCES})
 
+git:
+	@echo -e "#define POTFIT_VERSION \"potfit-git (r`git rev-list HEAD | wc -l`)\"" > version.h
+	@echo -e "#define POTFIT_DATE \"`date +%Y-%m-%d\ %H:%M:%S\ %z`\"" >> version.h
+
 # potfit is the default target
 potfit: FORCE_HEADERS RANDOM_HEADERS ${OBJECTS}
-	${CXX} ${LIBS} ${LFLAGS_${PARALLEL}} -o $@ ${OBJECTS} ${FORCE_OBJECTS} \
-		${RANDOM_OBJECTS}
-#	${STRIP} --strip-unneeded -R .comment $@
+	${CXX} ${LIBS} ${LFLAGS_${PARALLEL}} -o $@ ${OBJECTS} ${FORCE_OBJECTS} ${RANDOM_OBJECTS}
+
+strip:
+	${STRIP} --strip-unneeded -R .comment potfit
 
 RANDOM_HEADERS:
 	make -C random $1

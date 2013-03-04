@@ -47,7 +47,6 @@ using namespace POTFIT_NS;
 
 POTFIT::POTFIT(int argc, char **argv) {
   io = new IO(this);
-  input = new Input(this, argc, argv);
   output = new Output(this);
   interaction = new Interaction(this);
   optimization = new Optimization(this);
@@ -58,6 +57,7 @@ POTFIT::POTFIT(int argc, char **argv) {
   memory = new Memory(this);
   communication = new Communication(this);
   utils = new Utils(this);
+  input = new Input(this, argc, argv);
 }
 
 POTFIT::~POTFIT() {
