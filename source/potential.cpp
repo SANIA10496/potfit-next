@@ -30,10 +30,15 @@
 
 #include <mpi.h>
 
+#include "config.h"
 #include "force.h"
 #include "interaction.h"
+#include "io.h"
 #include "memory.h"
 #include "potential.h"
+#include "table.h"
+
+#include "tables/list_tables.h"
 
 using namespace POTFIT_NS;
 
@@ -43,16 +48,117 @@ Potential::Potential(POTFIT *ptf) : Pointers(ptf) {
   have_grad = 0;
   n_invar_pots = 0;
 
+  number = 0;
+  total_par = 0;
+  total_ne_par = 0;
+
+  have_globals = 0;
+  number_globals = 0;
+  globals_usage = NULL;
+  globals_idx = NULL;
+
+  ratio = NULL;
+  charge = NULL;
+  last_charge = 0.0;
+  dp_kappa = NULL;
+  sw_kappa = 0;
+
+  dp_alpha = NULL;
+  dp_b = NULL;
+  dp_c = NULL;
+
   gradient = NULL;
   invar_pot = NULL;
+
+  pots = NULL;
+  global_params = NULL;
+  chem_pot = NULL;
+  calc_pot = NULL;
 }
 
 Potential::~Potential() {
-  delete [] gradient;
-  delete [] invar_pot;
+  memory->sfree(gradient);
+  memory->sfree(invar_pot);
 }
 
-void Potential::init() {
+void Potential::init(int size) {
+  number = size;
   memory->create(gradient,interaction->force->cols(),"gradient");
   memory->create(invar_pot,interaction->force->cols(),"invar_pot");
+}
+
+void Potential::read_globals(FILE *infile) {
+  char  buffer[255], name[255];
+  double val, min, max;
+  int ret_val;
+  fpos_t filepos;
+
+  do {
+    fgetpos(infile, &filepos);
+    fscanf(infile, "%s", buffer);
+  } while (strcmp(buffer, "globals") != 0 && !feof(infile));
+  fsetpos(infile, &filepos);
+
+  // check for global keyword
+  if (strcmp(buffer, "globals") == 0) {
+    if (2 > fscanf(infile, "%s %d", buffer, &number_globals))
+      io->error("Global parameters are missing in the potential file.");
+    have_globals = 1;
+    total_par += number_globals;
+
+    global_params = new TableAnalytic(ptf);
+    global_params->init_bare("global parameters", number_globals);
+
+    // read the global parameters
+    for (int j = 0; j < number_globals; j++) {
+      ret_val = fscanf(infile, "%s %lf %lf %lf", name, &val, &min, &max);
+      if (4 > ret_val)
+        if (strcmp(name, "type") == 0) {
+          sprintf(buffer, "Not enough global parameters!\n");
+          io->error("%sYou specified %d parameter(s), but needed are %d.\nAborting", buffer, j, number_globals);
+        }
+
+      // check for duplicate names
+      for (int k = j - 1; k >= 0; k--)
+        if (strcmp(name, global_params->get_param_name(k)) == 0) {
+          sprintf(buffer, "Found duplicate global parameter name!\n");
+          io->error("%sParameter #%d (%s) is the same as #%d (%s)\n",
+                    j + 1, name, k + 1, global_params->get_param_name(k+1));
+        }
+
+      global_params->set_value(j, name, val, min, max);
+    }
+  }
+  memory->create(globals_usage,number_globals,"globals usage");
+  io->write("- Read %d global parameters.\n",number_globals);
+  return;
+}
+
+void Potential::read_potentials(FILE *infile) {
+  char  buffer[255], name[255];
+  fpos_t filepos;
+
+  pots = new Table*[number];
+
+  for (int i=0; i<number; i++) {
+    do {
+      fgetpos(infile, &filepos);
+      fscanf(infile, "%s", buffer);
+    } while (strcmp(buffer, "type") != 0 && !feof(infile));
+    fsetpos(infile, &filepos);
+    // read type
+    if (2 > fscanf(infile, "%s %s", buffer, name))
+      io->error("Premature end of potential file!");
+    if (strcmp(buffer, "type") != 0)
+      io->error("Unknown keyword in potential file, expected \"type\" but found \"%s\".", buffer);
+    if (strcmp(buffer, "table3") == 0) {
+      pots[i] = new TableTab3(ptf);
+    } else if (strcmp(buffer, "table4") == 0) {
+      pots[i] = new TableTab4(ptf);
+    } else
+      pots[i] = new TableAnalytic(ptf);
+    pots[i]->init(buffer);
+  }
+
+  return;
 }

@@ -39,4 +39,8 @@ ForceEAM::ForceEAM(POTFIT *ptf): Force(ptf) {
 ForceEAM::~ForceEAM() {
 }
 
-int ForceEAM::cols() {}
+int ForceEAM::cols() {
+}
+
+void ForceEAM::read_additional_data(FILE *infile) {
+}

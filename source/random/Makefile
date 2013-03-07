@@ -1,9 +1,11 @@
 SHELL := /bin/bash
 
 default: dSFMT.o
+debug: CFLAGS += -g3
+debug: default
 
 .c.o:
-	${CXX} -DDSFMT_MEXP=19937 -march=native -c $<
+	${CXX} ${CFLAGS} -DDSFMT_MEXP=19937 -march=native -c $<
 
 clean:
 	rm -f *.o *.u *~ \#* *.V *.T *.O *.il

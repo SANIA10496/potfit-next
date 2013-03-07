@@ -1,6 +1,6 @@
 /****************************************************************
  *
- * table_analytic.h:
+ * func_eopp.cpp:
  *
  ****************************************************************
  *
@@ -28,50 +28,31 @@
  *
  ****************************************************************/
 
-#ifndef PTF_TABLE_ANALYTIC_H
-#define PTF_TABLE_ANALYTIC_H
+#include <cmath>
 
-#include <iostream>
+#include "func_eopp.h"
 
-#include "../table.h"
-#include "../types.h"
-#include "../functions/function.h"
+using namespace POTFIT_NS;
 
-namespace POTFIT_NS {
-
-class TableAnalytic : public Table {
-  public:
-    TableAnalytic(class POTFIT *);
-    ~TableAnalytic();
-
-    // initialize with name and invar
-    void init(const char *);
-    void init_bare(const char *, int);
-
-    void set_cutoff(double);
-    void set_value(int, double, double);
-    void set_value(int, const char *, double, double, double);
-
-    void update_value(int, double);
-    double calc_value(double);
-
-    const char *get_param_name(int);
-
-    void write_potential(FILE *);
-    void write_plot(FILE *);
-    void write_plotpoint(FILE *);
-
-  private:
-    int bare;
-
-    double *values; 	// parameter values
-    char **param_name; 	// parameter names
-    double *val_min; 	// parameter minimum
-    double *val_max; 	// parameter maximum
-    int *invar_par; 	// invariant parameters
-
-    Function *function; 	// function pointer for analytic potentials
-};
+FuncEOPP::FuncEOPP() {
 }
 
-#endif /* PTF_TABLE_ANALYTIC_H */
+FuncEOPP::~FuncEOPP() {
+}
+
+int FuncEOPP::num_params() {
+  return 6;
+}
+
+void FuncEOPP::calc(double r, double *p, double *f) {
+  static double x[2], y[2], power[2];
+
+  x[0] = r;
+  x[1] = r;
+  y[0] = p[1];
+  y[1] = p[3];
+
+//  power_m(2, power, x, y);
+
+  *f = p[0] / power[0] + (p[2] / power[1]) * cos(p[4] * r + p[5]);
+}

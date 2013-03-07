@@ -52,7 +52,7 @@ IO::~IO() {
 }
 
 void IO::print_header() {
-  write("This is potfit %s compiled on %s.\n\n",POTFIT_VERSION,POTFIT_DATE);
+  write("This is potfit-%s compiled on %s.\n\n",POTFIT_VERSION,POTFIT_DATE);
 }
 
 void IO::print_version() {
@@ -111,7 +111,6 @@ void IO::write_log(const char *msg, ...) {
 void IO::warning(const char *msg, ...) {
   va_list ap;
 
-  // TODO warnings are currently only on screen, not in the logfile
   if (screen) {
     fflush(stdout);
     std::cerr << "\n--> WARNING <--\n";
@@ -120,6 +119,12 @@ void IO::warning(const char *msg, ...) {
     va_end(ap);
     std::cerr << "\n";
     fflush(stderr);
+    if (write_logfile) {
+      write_log("\n--> WARNING <--\n");
+      va_start(ap, msg);
+      vfprintf(logfile, msg, ap);
+      va_end(ap);
+    }
   }
 }
 
@@ -133,7 +138,6 @@ void IO::error(const char *msg, ...) {
   }
   // wait for others to arrive
   MPI::COMM_WORLD.Barrier();
-  close_logfile();
   if (screen) {
     fflush(stderr);
     std::cerr << "\n--> ERROR <--\n";
@@ -142,7 +146,15 @@ void IO::error(const char *msg, ...) {
     va_end(ap);
     fflush(stderr);
     std::cerr << std::endl << std::endl;
+    if (write_logfile) {
+      write_log("\n--> ERROR <--\n");
+      va_start(ap, msg);
+      vfprintf(logfile, msg, ap);
+      va_end(ap);
+      write_log("\n\n");
+    }
   }
+  close_logfile();
   MPI::Finalize();
   exit(EXIT_FAILURE);
 }
@@ -152,7 +164,7 @@ void IO::set_logfile(const char *filename) {
     logfile = fopen(filename, "w");
     if (logfile == NULL)
       error("Could not open logfile '%s'\n",filename);
-    write_log("This is potfit %s compiled on %s.\n\n",POTFIT_VERSION,POTFIT_DATE);
+    write_log("This is potfit-%s compiled on %s.\n\n",POTFIT_VERSION,POTFIT_DATE);
     write_log("Reading parameter file >%s< ... ",input->param_file);
   }
 }

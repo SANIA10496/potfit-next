@@ -43,3 +43,6 @@ int ForceADP::cols() {
   int n = config->ntypes;
   return (int)n*(n+1)/2.;
 }
+
+void ForceADP::read_additional_data(FILE *infile) {
+};

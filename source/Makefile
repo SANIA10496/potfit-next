@@ -243,51 +243,66 @@ CFLAGS := ${FLAGS}
 default: git potfit strip
 
 debug: CFLAGS += ${DEBUG_FLAGS}
+debug: TARGET = debug
 debug: potfit
 potfit: CFLAGS += ${OPT_FLAGS}
 
-HEADERS = communication.h config.h force.h input.h interaction.h io.h memory.h \
-	  optimization.h output.h pointers.h potential.h potfit.h \
-	  random.h settings.h table.h utils.h
-SOURCES = communication.cpp config.cpp force.cpp input.cpp interaction.cpp io.cpp \
-	  main.cpp memory.cpp optimization.cpp output.cpp potential.cpp \
-	  potfit.cpp random.cpp settings.cpp table.cpp utils.cpp
+SUBDIRS = forces functions random tables
+CLEANDIRS = $(SUBDIRS:%=clean-%)
+
+.PHONY: subdirs ${SUBDIRS}
+
+subdirs: ${SUBDIRS}
+
+${SUBDIRS}:
+	${MAKE} -C $@ ${TARGET}
+
+SOURCES = $(shell ls *.cpp)
+
 FORCE_SOURCES = $(shell ls forces/*.cpp)
 FORCE_OBJECTS = $(subst .cpp,.o,${FORCE_SOURCES})
+FUNCTION_SOURCES = $(shell ls functions/*.cpp)
+FUNCTION_OBJECTS = $(subst .cpp,.o,${FUNCTION_SOURCES})
 RANDOM_SOURCES = $(shell ls random/*.c)
 RANDOM_OBJECTS = $(subst .c,.o,${RANDOM_SOURCES})
+TABLE_SOURCES = $(shell ls tables/*.cpp)
+TABLE_OBJECTS = $(subst .cpp,.o,${TABLE_SOURCES})
 
 # Substitute .o for .c to get the names of the object files
 OBJECTS := $(subst .cpp,.o,${SOURCES})
 
 git:
-	@echo -e "#define POTFIT_VERSION \"potfit-git (r`git rev-list HEAD | wc -l`)\"" > version.h
+	@echo -e "#define POTFIT_VERSION \"git (r`git rev-list HEAD | wc -l`)\"" > version.h
 	@echo -e "#define POTFIT_DATE \"`date +%Y-%m-%d\ %H:%M:%S\ %z`\"" >> version.h
 
 # potfit is the default target
-potfit: FORCE_HEADERS RANDOM_HEADERS ${OBJECTS}
-	${CXX} ${LIBS} ${LFLAGS_${PARALLEL}} -o $@ ${OBJECTS} ${FORCE_OBJECTS} ${RANDOM_OBJECTS}
+potfit: subdirs ${OBJECTS}
+	${CXX} ${LIBS} ${LFLAGS_${PARALLEL}} -o $@ ${OBJECTS} ${FORCE_OBJECTS} ${RANDOM_OBJECTS} ${TABLE_OBJECTS} ${FUNCTION_OBJECTS}
 
 strip:
 	${STRIP} --strip-unneeded -R .comment potfit
 
 RANDOM_HEADERS:
-	make -C random $1
+	${MAKE} -C random $1
 
 FORCE_HEADERS:
-	make -C forces
+	${MAKE} -C forces
+
+TABLE_HEADERS:
+	${MAKE} -C tables
 
 # all objects depend on headers
-${OBJECTS}: ${HEADERS}
+#${OBJECTS}: ${HEADERS}
 
 # generic compilation rule
 .cpp.o:
 	${CXX} ${CFLAGS} -c $<
 
-clean:
-	make -C random clean
-	make -C forces clean
+clean: ${CLEANDIRS}
 	rm -f *.o *.u *~ \#* *.V *.T *.O *.il potfit
+
+${CLEANDIRS}:
+	$(MAKE) -C $(@:clean-%=%) clean
 
 help:
 	@echo "Usage: make"

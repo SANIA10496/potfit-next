@@ -43,3 +43,6 @@ int ForceCoulomb::cols() {
   int n = config->ntypes;
   return (int)n*(n+1)/2.;
 }
+
+void ForceCoulomb::read_additional_data(FILE *infile) {
+}

@@ -40,7 +40,24 @@ namespace POTFIT_NS {
     Table(class POTFIT *);
     ~Table();
 
-  private:
+    // initialize with potential name
+    virtual void init(const char *) = 0;
+    // use raw potential for additional parameters
+    virtual void init_bare(const char *, int) = 0;
+
+    // for tabulated potentials
+    virtual void set_value(int, double, double) = 0;
+    // for analytic potentials
+    virtual void set_value(int, const char*, double, double, double) = 0;
+    virtual const char *get_param_name(int) = 0;
+  protected:
+    char *name; 	// name of analytic function / potential type
+
+    double begin; 	// starting position of potential = r_min
+    double end; 	// end position of potential = cutoff radius
+
+    int n_par; 		// number of parameters
+    int invar; 		// is the potential invariant?
   };
 }
 

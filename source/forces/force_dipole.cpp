@@ -39,4 +39,8 @@ ForceDipole::ForceDipole(POTFIT *ptf): Force(ptf) {
 ForceDipole::~ForceDipole() {
 }
 
-int ForceDipole::cols() {}
+int ForceDipole::cols() {
+}
+
+void ForceDipole::read_additional_data(FILE *infile) {
+}

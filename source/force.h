@@ -42,7 +42,9 @@ namespace POTFIT_NS {
     Force(class POTFIT *);
     ~Force();
 
-   virtual int cols() = 0;
+    virtual void read_additional_data(FILE *) = 0;
+
+    virtual int cols() = 0;
   private:
   };
 

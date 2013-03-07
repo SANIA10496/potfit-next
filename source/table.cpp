@@ -35,7 +35,7 @@
 using namespace POTFIT_NS;
 
 Table::Table(POTFIT *ptf) : Pointers(ptf) {
-
 }
 
-Table::~Table() {}
+Table::~Table() {
+}

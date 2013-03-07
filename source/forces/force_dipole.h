@@ -46,6 +46,8 @@ namespace POTFIT_NS {
     ForceDipole(class POTFIT *);
     virtual ~ForceDipole();
 
+    void read_additional_data(FILE *);
+
     int cols();
   };
 

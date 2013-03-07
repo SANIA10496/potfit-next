@@ -62,4 +62,5 @@ Force *Interaction::init_force(const char *force_type)
     return new Class(ptf);
 #include "forces/list_forces.h"
 #undef FORCE_TYPE
+  return NULL;
 }

@@ -46,6 +46,8 @@ namespace POTFIT_NS {
     ForceEAM(class POTFIT *);
     virtual ~ForceEAM();
 
+    void read_additional_data(FILE *);
+
     int cols();
   };
 

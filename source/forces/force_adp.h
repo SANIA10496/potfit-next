@@ -46,6 +46,8 @@ namespace POTFIT_NS {
     ForceADP(class POTFIT *);
     virtual ~ForceADP();
 
+    void read_additional_data(FILE *);
+
     int cols();
   };
 

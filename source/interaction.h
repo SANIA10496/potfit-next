@@ -34,6 +34,7 @@
 #include <cstdio>
 
 #include "pointers.h"
+#include "force.h"
 
 namespace POTFIT_NS {
 
@@ -47,7 +48,7 @@ namespace POTFIT_NS {
 
     char type[255];
 
-    class Force *force;
+    Force *force;
   private:
   };
 

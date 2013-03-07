@@ -34,6 +34,7 @@
 #include <cstdio>
 
 #include "pointers.h"
+#include "table.h"
 
 namespace POTFIT_NS {
 
@@ -42,17 +43,46 @@ namespace POTFIT_NS {
     Potential(class POTFIT *);
     ~Potential();
 
-    void init();
+    void init(int);
+    void read_globals(FILE *);
+    void read_potentials(FILE *);
 
     int enable_cp;
     int format;
     int have_grad;
     int n_invar_pots;
 
+    int number; 		// total number of potentials
+    int total_par; 		// total number of free parameters
+    int total_ne_par; 		// total number of non-electrostatic parameters
+
+    // global parameters for analytic potentials
+    int have_globals;
+    int number_globals;
+    int *globals_usage;
+    int ***globals_idx;
+
+    // coulomb parameters
+    double *ratio;
+    double *charge;
+    double last_charge;
+    double *dp_kappa;
+    int sw_kappa;
+
+    // dipole parameters
+    double *dp_alpha;
+    double *dp_b;
+    double *dp_c;
+
+    // gradient and invar_pot data from potential header
     int *gradient;
     int *invar_pot;
 
-    class Table *pots;
+    // actual potential data
+    Table **pots;
+    Table *global_params; 	// bare table for global parameters (apot)
+    Table *chem_pot; 		// bare table for chemical potentials (pair)
+    Table *calc_pot; 		// table for calculations
   private:
 
   };

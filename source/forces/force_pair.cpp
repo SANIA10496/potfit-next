@@ -28,8 +28,14 @@
  *
  ****************************************************************/
 
+#include <cstring>
+
 #include "force_pair.h"
 #include "../config.h"
+#include "../io.h"
+#include "../potential.h"
+#include "../table.h"
+#include "../tables/table_analytic.h"
 
 using namespace POTFIT_NS;
 
@@ -42,4 +48,52 @@ ForcePair::~ForcePair() {
 int ForcePair::cols() {
   int n = config->ntypes;
   return (int)n*(n+1)/2.;
+}
+
+/****************************************************************
+ *
+ * ForcePair::read_additional_data(FILE *infile)
+ * 	read the chemical potentials (if present)
+ *
+ ****************************************************************/
+
+void ForcePair::read_additional_data(FILE *infile) {
+  char  buffer[255], name[255];
+  char *token;
+  double val, min, max;
+  int ret_val;
+
+  if (potential->enable_cp) {
+
+    // search for chempot keyword
+    do {
+      fscanf(infile, "%s", buffer);
+    } while (strcmp(buffer, "chempot") != 0 && !feof(infile));
+
+    potential->chem_pot = new TableAnalytic(ptf);
+    potential->chem_pot->init_bare("chemical potentials",config->ntypes);
+
+    // loop over all atom types
+    for (int j = 0; j < config->ntypes; j++) {
+
+      // read one line
+      if (4 > fscanf(infile, "%s %lf %lf %lf", buffer, &val, &min, &max))
+        io->error("Could not read chemical potential for %d. atomtype.", j);
+
+      // split cp and _#
+      token = strchr(buffer, '_');
+      if (token != NULL) {
+        strncpy(name, buffer, strlen(buffer) - strlen(token));
+        name[strlen(buffer) - strlen(token)] = '\0';
+      }
+      if (strcmp("cp", name) != 0) {
+        io->write("Found \"%s\" instead of \"cp\"\n", name);
+        io->error("No chemical potentials found in potential file.\n");
+      }
+    potential->chem_pot->set_value(j, buffer, val, min, max);
+    }
+    io->write("- Enabled chemical potentials for %d elements.\n",config->ntypes);
+  }
+
+  return;
 }

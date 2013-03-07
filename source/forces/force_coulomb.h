@@ -46,6 +46,8 @@ namespace POTFIT_NS {
     ForceCoulomb(class POTFIT *);
     virtual ~ForceCoulomb();
 
+    void read_additional_data(FILE *);
+
     int cols();
   };
 

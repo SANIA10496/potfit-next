@@ -247,7 +247,7 @@ void Input::read_parameter_file() {
   } while (!feof(params));
 
   io->set_logfile("potfit.log");
-  io->write("done.\n");
+  io->write("done\n");
   fclose(params);
   check_params();
   interaction->init();
@@ -369,9 +369,10 @@ void Input::read_potential_file() {
   char  buffer[1024], *res, *str;
   int   have_format = 0, have_type = 0, end_header = 0;
   int   i, size;
+  fpos_t after_header;
 
   // open file
-  io->write("Reading potential file >%s< ... ",startpot);
+  io->write("Starting to read potential file >%s<:\n",startpot);
   infile = fopen(startpot, "r");
   if (NULL == infile)
     io->error("Could not open file >%s<\n", startpot);
@@ -398,7 +399,7 @@ void Input::read_potential_file() {
 	  interaction->force->cols(), interaction->type, size);
       }
       have_format = 1;
-      potential->init();
+      potential->init(size);
     }
 
     // read the TYPE line
@@ -408,6 +409,7 @@ void Input::read_potential_file() {
       if (strcmp(buffer + 3, interaction->type) != 0) {
 	io->error("The potential types in your parameter and potential file do not match!\n");
       }
+      io->write("- Using %d %s potentials to calculate forces.\n", size, interaction->type);
       have_type = 1;
     }
 
@@ -449,16 +451,28 @@ void Input::read_potential_file() {
     }
 
   } while (!end_header);
-  io->write("done.\n");
 
   /* do we have a format in the header? */
   if (!have_format)
     io->error("Format not specified in header of file %s", startpot);
 
-  io->write("\nUsing %s potentials from file >%s<.\n\n", interaction->type, startpot);
+  fgetpos(infile, &after_header);
+
+  fsetpos(infile, &after_header);
+  potential->read_globals(infile);
+
+  fsetpos(infile, &after_header);
+  interaction->force->read_additional_data(infile);
+
+  fsetpos(infile, &after_header);
+  potential->read_potentials(infile);
+
+  io->write("Reading potential file >%s< ... done\n", startpot);
 
   fclose(infile);
 }
 
 void Input::read_config_file() {
+  io->write("Reading config file >%s< ... ", config_file);
+  io->write("done\n");
 }

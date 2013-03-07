@@ -1,10 +1,10 @@
 /****************************************************************
  *
- * table_analytic.h:
+ * functions.h: potfit analytic functions header file
  *
  ****************************************************************
  *
- * Copyright 2002-2013
+ * Copyright 2011-2013
  *	Institute for Theoretical and Applied Physics
  *	University of Stuttgart, D-70550 Stuttgart, Germany
  *	http://potfit.itap.physik.uni-stuttgart.de/
@@ -28,50 +28,20 @@
  *
  ****************************************************************/
 
-#ifndef PTF_TABLE_ANALYTIC_H
-#define PTF_TABLE_ANALYTIC_H
-
-#include <iostream>
-
-#include "../table.h"
-#include "../types.h"
-#include "../functions/function.h"
+#ifndef PTF_FUNCTION_H
+#define PTF_FUNCTION_H
 
 namespace POTFIT_NS {
 
-class TableAnalytic : public Table {
+  class Function {
   public:
-    TableAnalytic(class POTFIT *);
-    ~TableAnalytic();
+    Function() {};
+    ~Function() {};
 
-    // initialize with name and invar
-    void init(const char *);
-    void init_bare(const char *, int);
+    virtual int num_params() = 0;
+    virtual void calc(double, double *, double *) = 0;
+  };
 
-    void set_cutoff(double);
-    void set_value(int, double, double);
-    void set_value(int, const char *, double, double, double);
-
-    void update_value(int, double);
-    double calc_value(double);
-
-    const char *get_param_name(int);
-
-    void write_potential(FILE *);
-    void write_plot(FILE *);
-    void write_plotpoint(FILE *);
-
-  private:
-    int bare;
-
-    double *values; 	// parameter values
-    char **param_name; 	// parameter names
-    double *val_min; 	// parameter minimum
-    double *val_max; 	// parameter maximum
-    int *invar_par; 	// invariant parameters
-
-    Function *function; 	// function pointer for analytic potentials
-};
 }
 
-#endif /* PTF_TABLE_ANALYTIC_H */
+#endif // PTF_FUNCTION_H
