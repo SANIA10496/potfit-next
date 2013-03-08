@@ -34,7 +34,10 @@
 #include <cstdio>
 
 #include "pointers.h"
-#include "table.h"
+
+#include "tables/table.h"
+#include "tables/globals_table.h"
+#include "tables/chempot_table.h"
 
 namespace POTFIT_NS {
 
@@ -47,42 +50,28 @@ namespace POTFIT_NS {
     void read_globals(FILE *);
     void read_potentials(FILE *);
 
-    int enable_cp;
+    // no longer used, will be removed
     int format;
-    int have_grad;
-    int n_invar_pots;
+
+    // flags for
+    int enable_cp; 		// chemical potential (only for pair)
+    int enable_globals; 	// global potentials
+    int have_grad; 		// ??
+    int n_invar_pots; 		// number of invariant potentials
 
     int number; 		// total number of potentials
     int total_par; 		// total number of free parameters
-    int total_ne_par; 		// total number of non-electrostatic parameters
-
-    // global parameters for analytic potentials
-    int have_globals;
-    int number_globals;
-    int *globals_usage;
-    int ***globals_idx;
-
-    // coulomb parameters
-    double *ratio;
-    double *charge;
-    double last_charge;
-    double *dp_kappa;
-    int sw_kappa;
-
-    // dipole parameters
-    double *dp_alpha;
-    double *dp_b;
-    double *dp_c;
+    int total_ne_par; 		// total number of non-electrostatic parameters (??)
 
     // gradient and invar_pot data from potential header
     int *gradient;
     int *invar_pot;
 
     // actual potential data
-    Table **pots;
-    Table *global_params; 	// bare table for global parameters (apot)
-    Table *chem_pot; 		// bare table for chemical potentials (pair)
-    Table *calc_pot; 		// table for calculations
+    Table 		**pots; 		// individual potentials
+    GlobalsTable 	*global_params; 	// table for global parameters (apot)
+    ChempotTable 	*chem_pot; 		// table for chemical potentials (pair)
+    Table 		*calc_pot; 		// table for calculations
   private:
 
   };

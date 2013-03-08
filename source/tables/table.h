@@ -1,6 +1,6 @@
 /****************************************************************
  *
- * table_tab3.cpp:
+ * table.h:
  *
  ****************************************************************
  *
@@ -28,38 +28,44 @@
  *
  ****************************************************************/
 
-#include <cstdlib>
-#include <cstring>
+#ifndef PTF_TABLES_H
+#define PTF_TABLES_H
 
-#include "table_tab3.h"
+#include <iostream>
 
-#include "../io.h"
-#include "../memory.h"
-#include "../settings.h"
+#include "../pointers.h"
 
-using namespace POTFIT_NS;
+namespace POTFIT_NS {
 
-TableTab3::TableTab3(POTFIT *ptf) : Table(ptf) {
+  class Table : protected Pointers {
+  public:
+    Table(class POTFIT *);
+    ~Table();
+
+    // initialize with potential name
+    virtual void init(const char *, int) = 0;
+    // use raw potential for additional parameters
+    virtual void init_bare(const char *, int) = 0;
+
+    // read one potential
+    virtual void read_potential(FILE *) = 0;
+
+    // for tabulated potentials
+    virtual void set_value(int, double, double) = 0;
+    // for analytic potentials
+    virtual void set_value(int, const char*, double, double, double) = 0;
+    virtual const char *get_param_name(int) = 0;
+  protected:
+    char *name; 	// name of analytic function / potential type
+
+    double begin; 	// starting position of potential = r_min
+    double end; 	// end position of potential = cutoff radius
+
+    int pot_number; 	// index of potential
+    int n_par; 		// number of parameters
+    int n_invar; 	// number of invariant parameters
+    int init_done; 	// is the table initialized?
+  };
 }
 
-TableTab3::~TableTab3() {
-}
-
-void TableTab3::init(const char *name, int index) {
-  return;
-}
-
-void TableTab3::init_bare(const char * a, int b) {
-}
-
-void TableTab3::read_potential(FILE *a) {
-}
-
-void TableTab3::set_value(int a, double b, double c) {
-}
-
-void TableTab3::set_value(int a, const char* b, double c, double d, double e) {
-}
-
-const char *TableTab3::get_param_name(int a) {
-}
+#endif // PTF_TABLES_H

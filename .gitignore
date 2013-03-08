@@ -19,5 +19,7 @@
 
 # files
 list_forces.h
+list_functions.h
+list_tables.h
 version.h
 potfit

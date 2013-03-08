@@ -36,36 +36,23 @@
 #include "io.h"
 #include "memory.h"
 #include "potential.h"
-#include "table.h"
 
+#include "tables/table.h"
 #include "tables/list_tables.h"
 
 using namespace POTFIT_NS;
 
 Potential::Potential(POTFIT *ptf) : Pointers(ptf) {
-  enable_cp = 0;
   format = 0;
+
+  enable_cp = 0;
+  enable_globals = 0;
   have_grad = 0;
   n_invar_pots = 0;
 
   number = 0;
   total_par = 0;
   total_ne_par = 0;
-
-  have_globals = 0;
-  number_globals = 0;
-  globals_usage = NULL;
-  globals_idx = NULL;
-
-  ratio = NULL;
-  charge = NULL;
-  last_charge = 0.0;
-  dp_kappa = NULL;
-  sw_kappa = 0;
-
-  dp_alpha = NULL;
-  dp_b = NULL;
-  dp_c = NULL;
 
   gradient = NULL;
   invar_pot = NULL;
@@ -106,8 +93,7 @@ void Potential::read_globals(FILE *infile) {
     have_globals = 1;
     total_par += number_globals;
 
-    global_params = new TableAnalytic(ptf);
-    global_params->init_bare("global parameters", number_globals);
+    global_params = new GlobalsTable(ptf, number_globals);
 
     // read the global parameters
     for (int j = 0; j < number_globals; j++) {
@@ -157,7 +143,8 @@ void Potential::read_potentials(FILE *infile) {
       pots[i] = new TableTab4(ptf);
     } else
       pots[i] = new TableAnalytic(ptf);
-    pots[i]->init(buffer);
+    pots[i]->init(name, i);
+    pots[i]->read_potential(infile);
   }
 
   return;

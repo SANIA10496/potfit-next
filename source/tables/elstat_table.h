@@ -1,6 +1,6 @@
 /****************************************************************
  *
- * table_tab3.cpp:
+ * elstat_table.h:
  *
  ****************************************************************
  *
@@ -28,38 +28,33 @@
  *
  ****************************************************************/
 
-#include <cstdlib>
-#include <cstring>
+#ifndef PTF_ELSTAT_TABLE_H
+#define PTF_ELSTAT_TABLE_H
 
-#include "table_tab3.h"
+#include <iostream>
 
-#include "../io.h"
-#include "../memory.h"
-#include "../settings.h"
+#include "../pointers.h"
 
-using namespace POTFIT_NS;
+namespace POTFIT_NS {
 
-TableTab3::TableTab3(POTFIT *ptf) : Table(ptf) {
+  class ElstatTable : protected Pointers {
+  public:
+    ElstatTable(class POTFIT *);
+    ~ElstatTable();
+
+  private:
+    // coulomb parameters
+    double *ratio;
+    double *charge;
+    double last_charge;
+    double *dp_kappa;
+    int sw_kappa;
+
+    // dipole parameters
+    double *dp_alpha;
+    double *dp_b;
+    double *dp_c;
+  };
 }
 
-TableTab3::~TableTab3() {
-}
-
-void TableTab3::init(const char *name, int index) {
-  return;
-}
-
-void TableTab3::init_bare(const char * a, int b) {
-}
-
-void TableTab3::read_potential(FILE *a) {
-}
-
-void TableTab3::set_value(int a, double b, double c) {
-}
-
-void TableTab3::set_value(int a, const char* b, double c, double d, double e) {
-}
-
-const char *TableTab3::get_param_name(int a) {
-}
+#endif // PTF_ELSTAT_TABLE_H

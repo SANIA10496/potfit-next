@@ -1,6 +1,6 @@
 /****************************************************************
  *
- * table_tab3.cpp:
+ * elstat_table.cpp:
  *
  ****************************************************************
  *
@@ -29,37 +29,13 @@
  ****************************************************************/
 
 #include <cstdlib>
-#include <cstring>
 
-#include "table_tab3.h"
-
-#include "../io.h"
-#include "../memory.h"
-#include "../settings.h"
+#include "elstat_table.h"
 
 using namespace POTFIT_NS;
 
-TableTab3::TableTab3(POTFIT *ptf) : Table(ptf) {
+ElstatTable::ElstatTable(POTFIT *ptf) : Pointers(ptf) {
 }
 
-TableTab3::~TableTab3() {
-}
-
-void TableTab3::init(const char *name, int index) {
-  return;
-}
-
-void TableTab3::init_bare(const char * a, int b) {
-}
-
-void TableTab3::read_potential(FILE *a) {
-}
-
-void TableTab3::set_value(int a, double b, double c) {
-}
-
-void TableTab3::set_value(int a, const char* b, double c, double d, double e) {
-}
-
-const char *TableTab3::get_param_name(int a) {
+ElstatTable::~ElstatTable() {
 }

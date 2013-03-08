@@ -1,6 +1,6 @@
 /****************************************************************
  *
- * table.h:
+ * chempot_table.h:
  *
  ****************************************************************
  *
@@ -28,37 +28,31 @@
  *
  ****************************************************************/
 
-#ifndef PTF_TABLES_H
-#define PTF_TABLES_H
+#ifndef PTF_CHEMPOT_TABLE_H
+#define PTF_CHEMPOT_TABLE_H
 
-#include "pointers.h"
+#include "../pointers.h"
 
 namespace POTFIT_NS {
 
-  class Table : protected Pointers {
+  class ChempotTable : protected Pointers {
   public:
-    Table(class POTFIT *);
-    ~Table();
+    ChempotTable(class POTFIT *, int);
+    ~ChempotTable();
 
-    // initialize with potential name
-    virtual void init(const char *) = 0;
-    // use raw potential for additional parameters
-    virtual void init_bare(const char *, int) = 0;
+    void add_value(int, const char*, double, double, double);
+    void set_value(int, double);
 
-    // for tabulated potentials
-    virtual void set_value(int, double, double) = 0;
-    // for analytic potentials
-    virtual void set_value(int, const char*, double, double, double) = 0;
-    virtual const char *get_param_name(int) = 0;
-  protected:
-    char *name; 	// name of analytic function / potential type
+  private:
+    int number;		// number of chemical potentials
+    int n_invar; 	// number of invariant parameters
 
-    double begin; 	// starting position of potential = r_min
-    double end; 	// end position of potential = cutoff radius
-
-    int n_par; 		// number of parameters
-    int invar; 		// is the potential invariant?
+    double *values; 	// values
+    char **param_name; 	// parameter names
+    double *val_min; 	// parameter minimum
+    double *val_max; 	// parameter maximum
+    int *invar_par; 	// invariant parameters
   };
 }
 
-#endif // PTF_TABLES_H
+#endif // PTF_GLOBALS_TABLE_H

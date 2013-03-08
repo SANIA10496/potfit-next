@@ -45,11 +45,14 @@ TableTab4::TableTab4(POTFIT *ptf) : Table(ptf) {
 TableTab4::~TableTab4() {
 }
 
-void TableTab4::init(const char *name) {
+void TableTab4::init(const char *name, int index) {
   return;
 }
 
 void TableTab4::init_bare(const char * a, int b) {
+}
+
+void TableTab4::read_potential(FILE *a) {
 }
 
 void TableTab4::set_value(int a, double b, double c) {

@@ -33,8 +33,7 @@
 
 #include <iostream>
 
-#include "../table.h"
-#include "../types.h"
+#include "table.h"
 
 namespace POTFIT_NS {
 
@@ -43,8 +42,10 @@ namespace POTFIT_NS {
     TableTab3(class POTFIT *);
     ~TableTab3();
 
-    void init(const char *);
+    void init(const char *, int);
     void init_bare(const char *, int);
+
+    void read_potential(FILE *);
 
     void set_value(int, double, double);
     void set_value(int, const char*, double, double, double);

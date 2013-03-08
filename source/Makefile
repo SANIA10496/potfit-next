@@ -299,7 +299,7 @@ TABLE_HEADERS:
 	${CXX} ${CFLAGS} -c $<
 
 clean: ${CLEANDIRS}
-	rm -f *.o *.u *~ \#* *.V *.T *.O *.il potfit
+	rm -f *.o *.u *~ \#* *.V *.T *.O *.il potfit version.h
 
 ${CLEANDIRS}:
 	$(MAKE) -C $(@:clean-%=%) clean

@@ -33,7 +33,8 @@
 
 #include <iostream>
 
-#include "../table.h"
+#include "table.h"
+
 #include "../types.h"
 #include "../functions/function.h"
 
@@ -45,8 +46,10 @@ class TableAnalytic : public Table {
     ~TableAnalytic();
 
     // initialize with name and invar
-    void init(const char *);
+    void init(const char *, int);
     void init_bare(const char *, int);
+
+    void read_potential(FILE *);
 
     void set_cutoff(double);
     void set_value(int, double, double);
@@ -63,6 +66,7 @@ class TableAnalytic : public Table {
 
   private:
     int bare;
+    int smooth_pot;
 
     double *values; 	// parameter values
     char **param_name; 	// parameter names

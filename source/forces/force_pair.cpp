@@ -34,7 +34,7 @@
 #include "../config.h"
 #include "../io.h"
 #include "../potential.h"
-#include "../table.h"
+#include "../tables/table.h"
 #include "../tables/table_analytic.h"
 
 using namespace POTFIT_NS;
@@ -70,8 +70,7 @@ void ForcePair::read_additional_data(FILE *infile) {
       fscanf(infile, "%s", buffer);
     } while (strcmp(buffer, "chempot") != 0 && !feof(infile));
 
-    potential->chem_pot = new TableAnalytic(ptf);
-    potential->chem_pot->init_bare("chemical potentials",config->ntypes);
+    potential->chem_pot = new ChempotTable(ptf, config->ntypes);
 
     // loop over all atom types
     for (int j = 0; j < config->ntypes; j++) {
@@ -90,7 +89,7 @@ void ForcePair::read_additional_data(FILE *infile) {
         io->write("Found \"%s\" instead of \"cp\"\n", name);
         io->error("No chemical potentials found in potential file.\n");
       }
-    potential->chem_pot->set_value(j, buffer, val, min, max);
+    potential->chem_pot->add_value(j, buffer, val, min, max);
     }
     io->write("- Enabled chemical potentials for %d elements.\n",config->ntypes);
   }
