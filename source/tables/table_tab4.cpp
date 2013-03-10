@@ -49,17 +49,14 @@ void TableTab4::init(const char *name, int index) {
   return;
 }
 
-void TableTab4::init_bare(const char * a, int b) {
-}
-
 void TableTab4::read_potential(FILE *a) {
 }
 
-void TableTab4::set_value(int a, double b, double c) {
+void TableTab4::write_potential(FILE *outfile) {
 }
 
-void TableTab4::set_value(int a, const char* b, double c, double d, double e) {
+void TableTab4::write_plot(FILE *outfile) {
 }
 
-const char *TableTab4::get_param_name(int a) {
+void TableTab4::write_plotpoint(FILE *outfile) {
 }

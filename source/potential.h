@@ -55,7 +55,7 @@ namespace POTFIT_NS {
 
     // flags for
     int enable_cp; 		// chemical potential (only for pair)
-    int enable_globals; 	// global potentials
+    int have_globals; 		// global potentials
     int have_grad; 		// ??
     int n_invar_pots; 		// number of invariant potentials
 

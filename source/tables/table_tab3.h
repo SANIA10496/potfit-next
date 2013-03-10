@@ -43,14 +43,13 @@ namespace POTFIT_NS {
     ~TableTab3();
 
     void init(const char *, int);
-    void init_bare(const char *, int);
 
     void read_potential(FILE *);
 
-    void set_value(int, double, double);
-    void set_value(int, const char*, double, double, double);
+    void write_potential(FILE *);
+    void write_plot(FILE *);
+    void write_plotpoint(FILE *);
 
-    const char *get_param_name(int);
   private:
   };
 }

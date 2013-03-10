@@ -45,15 +45,10 @@ class TableAnalytic : public Table {
     TableAnalytic(class POTFIT *);
     ~TableAnalytic();
 
-    // initialize with name and invar
+    // initialize with name and index
     void init(const char *, int);
-    void init_bare(const char *, int);
 
     void read_potential(FILE *);
-
-    void set_cutoff(double);
-    void set_value(int, double, double);
-    void set_value(int, const char *, double, double, double);
 
     void update_value(int, double);
     double calc_value(double);
@@ -65,7 +60,6 @@ class TableAnalytic : public Table {
     void write_plotpoint(FILE *);
 
   private:
-    int bare;
     int smooth_pot;
 
     double *values; 	// parameter values

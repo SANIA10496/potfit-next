@@ -39,12 +39,29 @@ namespace POTFIT_NS {
 
   class GlobalsTable : protected Pointers {
   public:
-    GlobalsTable(class POTFIT *);
+    GlobalsTable(class POTFIT *, int);
     ~GlobalsTable();
 
+    void add_param(int, const char *, double, double, double);
+    void set_value(int, double);
+    int get_index(const char *);
+    void add_usage(int, int, int);
+    void get_value(int, double *);
+
+    void get_values(int *, double *);
+
   private:
-    int *globals_usage;
-    int ***globals_idx;
+    int num_globals; 		// number of parameters
+    int num_free_params; 	// number of free parameters
+
+    char **param_name; 		// parameter names
+    double *values; 		// parameter values
+    double *val_min; 		// parameter minimum
+    double *val_max; 		// parameter maximum
+    int *invar_par; 		// invariant parameters
+    int *idx; 			// indirect index
+    int *usage; 		// how often each parameter is used
+    int ***global_idx; 		// where each parameter is used
   };
 }
 

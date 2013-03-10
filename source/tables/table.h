@@ -44,17 +44,13 @@ namespace POTFIT_NS {
 
     // initialize with potential name
     virtual void init(const char *, int) = 0;
-    // use raw potential for additional parameters
-    virtual void init_bare(const char *, int) = 0;
 
     // read one potential
     virtual void read_potential(FILE *) = 0;
 
-    // for tabulated potentials
-    virtual void set_value(int, double, double) = 0;
-    // for analytic potentials
-    virtual void set_value(int, const char*, double, double, double) = 0;
-    virtual const char *get_param_name(int) = 0;
+    virtual void write_potential(FILE *) = 0;
+    virtual void write_plot(FILE *) = 0;
+    virtual void write_plotpoint(FILE *) = 0;
   protected:
     char *name; 	// name of analytic function / potential type
 

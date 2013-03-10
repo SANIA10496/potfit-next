@@ -46,7 +46,7 @@ Potential::Potential(POTFIT *ptf) : Pointers(ptf) {
   format = 0;
 
   enable_cp = 0;
-  enable_globals = 0;
+  have_globals = 0;
   have_grad = 0;
   n_invar_pots = 0;
 
@@ -66,12 +66,22 @@ Potential::Potential(POTFIT *ptf) : Pointers(ptf) {
 Potential::~Potential() {
   memory->sfree(gradient);
   memory->sfree(invar_pot);
+
+  if (global_params)
+    delete global_params;
+
+  if (chem_pot)
+    delete chem_pot;
+
+  return;
 }
 
 void Potential::init(int size) {
   number = size;
   memory->create(gradient,interaction->force->cols(),"gradient");
   memory->create(invar_pot,interaction->force->cols(),"invar_pot");
+
+  return;
 }
 
 void Potential::read_globals(FILE *infile) {
@@ -82,46 +92,37 @@ void Potential::read_globals(FILE *infile) {
 
   do {
     fgetpos(infile, &filepos);
-    fscanf(infile, "%s", buffer);
+    ret_val = fscanf(infile, "%s", buffer);
   } while (strcmp(buffer, "globals") != 0 && !feof(infile));
   fsetpos(infile, &filepos);
 
   // check for global keyword
   if (strcmp(buffer, "globals") == 0) {
-    if (2 > fscanf(infile, "%s %d", buffer, &number_globals))
+    if (2 > fscanf(infile, "%s %d", buffer, &have_globals))
       io->error("Global parameters are missing in the potential file.");
-    have_globals = 1;
-    total_par += number_globals;
+    total_par += have_globals;
 
-    global_params = new GlobalsTable(ptf, number_globals);
+    global_params = new GlobalsTable(ptf, have_globals);
 
     // read the global parameters
-    for (int j = 0; j < number_globals; j++) {
+    for (int j = 0; j < have_globals; j++) {
       ret_val = fscanf(infile, "%s %lf %lf %lf", name, &val, &min, &max);
       if (4 > ret_val)
         if (strcmp(name, "type") == 0) {
           sprintf(buffer, "Not enough global parameters!\n");
-          io->error("%sYou specified %d parameter(s), but needed are %d.\nAborting", buffer, j, number_globals);
+          io->error("%sYou specified %d parameter(s), but needed are %d.\nAborting", buffer, j, have_globals);
         }
-
-      // check for duplicate names
-      for (int k = j - 1; k >= 0; k--)
-        if (strcmp(name, global_params->get_param_name(k)) == 0) {
-          sprintf(buffer, "Found duplicate global parameter name!\n");
-          io->error("%sParameter #%d (%s) is the same as #%d (%s)\n",
-                    j + 1, name, k + 1, global_params->get_param_name(k+1));
-        }
-
-      global_params->set_value(j, name, val, min, max);
+      global_params->add_param(j, name, val, min, max);
     }
   }
-  memory->create(globals_usage,number_globals,"globals usage");
-  io->write("- Read %d global parameters.\n",number_globals);
+  io->write("- Read %d global parameters.\n",have_globals);
+
   return;
 }
 
 void Potential::read_potentials(FILE *infile) {
   char  buffer[255], name[255];
+  int   ret_val;
   fpos_t filepos;
 
   pots = new Table*[number];
@@ -129,7 +130,7 @@ void Potential::read_potentials(FILE *infile) {
   for (int i=0; i<number; i++) {
     do {
       fgetpos(infile, &filepos);
-      fscanf(infile, "%s", buffer);
+      ret_val = fscanf(infile, "%s", buffer);
     } while (strcmp(buffer, "type") != 0 && !feof(infile));
     fsetpos(infile, &filepos);
     // read type

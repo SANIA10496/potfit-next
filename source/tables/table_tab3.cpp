@@ -49,17 +49,14 @@ void TableTab3::init(const char *name, int index) {
   return;
 }
 
-void TableTab3::init_bare(const char * a, int b) {
-}
-
 void TableTab3::read_potential(FILE *a) {
 }
 
-void TableTab3::set_value(int a, double b, double c) {
+void TableTab3::write_potential(FILE *outfile) {
 }
 
-void TableTab3::set_value(int a, const char* b, double c, double d, double e) {
+void TableTab3::write_plot(FILE *outfile) {
 }
 
-const char *TableTab3::get_param_name(int a) {
+void TableTab3::write_plotpoint(FILE *outfile) {
 }

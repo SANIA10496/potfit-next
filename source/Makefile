@@ -244,7 +244,7 @@ default: git potfit strip
 
 debug: CFLAGS += ${DEBUG_FLAGS}
 debug: TARGET = debug
-debug: potfit
+debug: git potfit
 potfit: CFLAGS += ${OPT_FLAGS}
 
 SUBDIRS = forces functions random tables

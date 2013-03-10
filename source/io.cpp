@@ -97,6 +97,16 @@ void IO::write(const char *msg, ...) {
   }
 }
 
+void IO::writef(FILE *outfile, const char *msg, ...) {
+  va_list ap;
+
+  if (screen) {
+    va_start(ap, msg);
+    vfprintf(outfile, msg, ap);
+    va_end(ap);
+  }
+}
+
 void IO::write_log(const char *msg, ...) {
   va_list ap;
 
