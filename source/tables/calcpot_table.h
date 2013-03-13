@@ -1,6 +1,6 @@
 /****************************************************************
  *
- * table_analytic.h:
+ * calcpot_table.h:
  *
  ****************************************************************
  *
@@ -28,46 +28,32 @@
  *
  ****************************************************************/
 
-#ifndef PTF_TABLE_ANALYTIC_H
-#define PTF_TABLE_ANALYTIC_H
-
-#include <iostream>
+#ifndef PTF_CALCPOT_TABLE_H
+#define PTF_CALCPOT_TABLE_H
 
 #include "table.h"
 
-#include "../types.h"
-#include "../functions/function.h"
-
 namespace POTFIT_NS {
 
-class TableAnalytic : public Table {
+  class CalcpotTable : protected Pointers {
   public:
-    TableAnalytic(class POTFIT *);
-    ~TableAnalytic();
+    CalcpotTable(class POTFIT *);
+    ~CalcpotTable();
 
-    // initialize with name and index
-    void init(const char *, int);
-
-    void read_potential(FILE *);
-
-    int get_number_params(void);
-    void set_params(double *);
-
-    void write_potential(FILE *);
-    void write_plot(FILE *);
-    void write_plotpoint(FILE *);
-
-  private:
-    int smooth_pot;
-
-    double *values; 	// parameter values
-    char **param_name; 	// parameter names
-    double *val_min; 	// parameter minimum
-    double *val_max; 	// parameter maximum
-    int *invar_par; 	// invariant parameters
-
-    Function *function; 	// function pointer for analytic potentials
-};
+  int   len;			/* total length of the table */
+  int   idxlen;			/* number of changeable potential values */
+  int   ncols;			/* number of columns */
+  double *begin;		/* first value in the table */
+  double *end;			/* last value in the table */
+  double *step;			/* table increment */
+  double *invstep;		/* inverse of increment */
+  int  *first;			/* index of first entry */
+  int  *last;			/* index of last entry */
+  double *xcoord;		/* the x-coordinates of sampling points */
+  double *table;		/* the actual data */
+  double *d2tab;		/* second derivatives of table data for spline int */
+  int  *idx;			/* indirect indexing */
+  };
 }
 
-#endif /* PTF_TABLE_ANALYTIC_H */
+#endif /* PTF_CALCPOT_TABLE_H */

@@ -46,6 +46,9 @@ namespace POTFIT_NS {
 
     void read_potential(FILE *);
 
+    int get_number_params(void);
+    void set_params(double *);
+
     void write_potential(FILE *);
     void write_plot(FILE *);
     void write_plotpoint(FILE *);

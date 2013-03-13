@@ -48,6 +48,9 @@ namespace POTFIT_NS {
     // read one potential
     virtual void read_potential(FILE *) = 0;
 
+    virtual int get_number_params(void) = 0;
+    virtual void set_params(double *) = 0;
+
     virtual void write_potential(FILE *) = 0;
     virtual void write_plot(FILE *) = 0;
     virtual void write_plotpoint(FILE *) = 0;
@@ -61,6 +64,8 @@ namespace POTFIT_NS {
     int n_par; 		// number of parameters
     int n_invar; 	// number of invariant parameters
     int init_done; 	// is the table initialized?
+
+    int *offset; 	// offset for the individual potential in the calc_pot
   };
 }
 

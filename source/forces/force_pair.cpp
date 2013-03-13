@@ -77,7 +77,7 @@ void ForcePair::read_additional_data(FILE *infile) {
 
       // read one line
       if (4 > fscanf(infile, "%s %lf %lf %lf", buffer, &val, &min, &max))
-        io->error("Could not read chemical potential for %d. atomtype.", j);
+        io->error("Could not read chemical potential for atomtype %d.", j + 1);
 
       // split cp and _#
       token = strchr(buffer, '_');
@@ -91,7 +91,7 @@ void ForcePair::read_additional_data(FILE *infile) {
       }
     potential->chem_pot->add_value(j, buffer, val, min, max);
     }
-    io->write("- Enabled chemical potentials for %d elements.\n",config->ntypes);
+    io->write("- Enabled chemical potentials for %d elements\n",config->ntypes);
   }
 
   return;

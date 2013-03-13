@@ -115,7 +115,7 @@ void Potential::read_globals(FILE *infile) {
       global_params->add_param(j, name, val, min, max);
     }
   }
-  io->write("- Read %d global parameters.\n",have_globals);
+  io->write("- Read %d global parameters\n",have_globals);
 
   return;
 }
@@ -147,6 +147,36 @@ void Potential::read_potentials(FILE *infile) {
     pots[i]->init(name, i);
     pots[i]->read_potential(infile);
   }
+  io->write("- Sucessfully read %d potentials\n",number);
 
   return;
+}
+
+void Potential::write_indirect_index(void) {
+  int i, j;
+
+//  k = 0;
+//  l = 0;
+//  val = pt->table;
+//  list = calc_list;
+//  for (i = 0; i < apt->number; i++) {	// loop over potentials
+//    val += 2;
+//    list += 2;
+//    l += 2;
+//    for (j = 0; j < apt->n_par[i]; j++) {	// loop over parameters
+//      *val = apt->values[i][j];
+//      *list = apt->values[i][j];
+//      val++;
+//      list++;
+//      if (!invar_pot[i] && !apt->invar_par[i][j]) {
+//        pt->idx[k] = l++;
+//        apt->idxpot[k] = i;
+//        apt->idxparam[k++] = j;
+//      } else
+//        l++;
+//    }
+//    if (!invar_pot[i])
+//      pt->idxlen += apt->n_par[i] - apt->invar_par[i][apt->n_par[i]];
+//    apt->total_par -= apt->invar_par[i][apt->n_par[i]];
+//  }
 }

@@ -52,6 +52,12 @@ void TableTab3::init(const char *name, int index) {
 void TableTab3::read_potential(FILE *a) {
 }
 
+int TableTab3::get_number_params(void) {
+}
+
+void TableTab3::set_params(double *val) {
+}
+
 void TableTab3::write_potential(FILE *outfile) {
 }
 

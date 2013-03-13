@@ -62,7 +62,7 @@ void ChempotTable::add_value(int i, const char *name, double val, double min, do
   char msg[255];
 
   if (min == max) {
-    invar_par[number] = 1;
+    invar_par[i] = 1;
 // what is this good for? global counter for invar_pars per potential^^
 //        apt->invar_par[i][apt->globals]++;
   } else if (min > max) {
@@ -75,17 +75,17 @@ void ChempotTable::add_value(int i, const char *name, double val, double min, do
         val = min;
       if (val > max)
         val = max;
-      sprintf(msg, "Starting value for %s #%d is ", name, number + 1);
+      sprintf(msg, "Starting value for %s #%d is ", name, i + 1);
       sprintf(msg, "%soutside of specified adjustment range.\n",msg);
-      io->warning("%sResetting it to %f.\n", msg, number + 1, val);
+      io->warning("%sResetting it to %f.\n", msg, i + 1, val);
       if (val == 0)
         io->warning("New value is 0 ! Please be careful about this.\n");
     }
   }
-  strcpy(param_name[number],name);
-  values[number] = val;
-  val_min[number] = min;
-  val_max[number] = max;
+  strcpy(param_name[i],name);
+  values[i] = val;
+  val_min[i] = min;
+  val_max[i] = max;
 
   return;
 }

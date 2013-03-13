@@ -239,10 +239,12 @@ void TableAnalytic::read_potential(FILE *infile) {
   }
 }
 
-const char *TableAnalytic::get_param_name(int index) {
-  if (index>=n_par)
-    io->error("There are only %d parameters in this potential table (%s).",n_par,name);
-  return param_name[index];
+int TableAnalytic::get_number_params(void) {
+  return n_invar;
+}
+
+void TableAnalytic::set_params(double *) {
+
 }
 
 void TableAnalytic::write_potential(FILE *outfile) {

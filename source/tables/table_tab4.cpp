@@ -52,6 +52,12 @@ void TableTab4::init(const char *name, int index) {
 void TableTab4::read_potential(FILE *a) {
 }
 
+int TableTab4::get_number_params(void) {
+}
+
+void TableTab4::set_params(double *val) {
+}
+
 void TableTab4::write_potential(FILE *outfile) {
 }
 

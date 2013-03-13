@@ -38,6 +38,7 @@
 #include "tables/table.h"
 #include "tables/globals_table.h"
 #include "tables/chempot_table.h"
+#include "tables/calcpot_table.h"
 
 namespace POTFIT_NS {
 
@@ -49,6 +50,11 @@ namespace POTFIT_NS {
     void init(int);
     void read_globals(FILE *);
     void read_potentials(FILE *);
+
+    void write_indirect_index(void);
+
+    void update_calc_pot(void);
+    void update_potentials(double *);
 
     // no longer used, will be removed
     int format;
@@ -67,11 +73,14 @@ namespace POTFIT_NS {
     int *gradient;
     int *invar_pot;
 
+    int *idxpot; 		// indirect index for potentials
+    int *idxparam; 		// indirect index for parameters
+
     // actual potential data
     Table 		**pots; 		// individual potentials
     GlobalsTable 	*global_params; 	// table for global parameters (apot)
     ChempotTable 	*chem_pot; 		// table for chemical potentials (pair)
-    Table 		*calc_pot; 		// table for calculations
+    CalcpotTable 	*calc_pot; 		// table for interpolated potentials
   private:
 
   };

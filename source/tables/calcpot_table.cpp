@@ -1,6 +1,6 @@
 /****************************************************************
  *
- * table_analytic.h:
+ * calcpot_table.cpp:
  *
  ****************************************************************
  *
@@ -28,46 +28,12 @@
  *
  ****************************************************************/
 
-#ifndef PTF_TABLE_ANALYTIC_H
-#define PTF_TABLE_ANALYTIC_H
+#include "calcpot_table.h"
 
-#include <iostream>
+using namespace POTFIT_NS;
 
-#include "table.h"
-
-#include "../types.h"
-#include "../functions/function.h"
-
-namespace POTFIT_NS {
-
-class TableAnalytic : public Table {
-  public:
-    TableAnalytic(class POTFIT *);
-    ~TableAnalytic();
-
-    // initialize with name and index
-    void init(const char *, int);
-
-    void read_potential(FILE *);
-
-    int get_number_params(void);
-    void set_params(double *);
-
-    void write_potential(FILE *);
-    void write_plot(FILE *);
-    void write_plotpoint(FILE *);
-
-  private:
-    int smooth_pot;
-
-    double *values; 	// parameter values
-    char **param_name; 	// parameter names
-    double *val_min; 	// parameter minimum
-    double *val_max; 	// parameter maximum
-    int *invar_par; 	// invariant parameters
-
-    Function *function; 	// function pointer for analytic potentials
-};
+CalcpotTable::CalcpotTable(POTFIT *ptf) : Pointers(ptf) {
 }
 
-#endif /* PTF_TABLE_ANALYTIC_H */
+CalcpotTable::~CalcpotTable() {
+}

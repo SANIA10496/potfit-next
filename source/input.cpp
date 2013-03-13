@@ -409,7 +409,7 @@ void Input::read_potential_file() {
       if (strcmp(buffer + 3, interaction->type) != 0) {
 	io->error("The potential types in your parameter and potential file do not match!\n");
       }
-      io->write("- Using %d %s potentials to calculate forces.\n", size, interaction->type);
+      io->write("- Using %d %s potentials to calculate forces\n", size, interaction->type);
       have_type = 1;
     }
 
@@ -468,6 +468,7 @@ void Input::read_potential_file() {
   potential->read_potentials(infile);
 
   io->write("Reading potential file >%s< ... done\n", startpot);
+  io->write("Total_par = %d\n",potential->total_par);
 
   fclose(infile);
 }
