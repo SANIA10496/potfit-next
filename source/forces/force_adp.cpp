@@ -29,7 +29,7 @@
  ****************************************************************/
 
 #include "force_adp.h"
-#include "../config.h"
+#include "../structures.h"
 
 using namespace POTFIT_NS;
 
@@ -39,10 +39,19 @@ ForceADP::ForceADP(POTFIT *ptf): Force(ptf) {
 ForceADP::~ForceADP() {
 }
 
+void ForceADP::read_additional_data(FILE *infile) {
+};
+
+int ForceADP::num_slots(void) {
+  return 4;
+}
+
+int ForceADP::neigh_type(void) {
+  return 2;
+}
+
 int ForceADP::cols() {
-  int n = config->ntypes;
+  int n = structures->ntypes;
   return (int)n*(n+1)/2.;
 }
 
-void ForceADP::read_additional_data(FILE *infile) {
-};

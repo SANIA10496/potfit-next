@@ -1,6 +1,6 @@
 /****************************************************************
  *
- * table_tab3.cpp:
+ * templates.h:
  *
  ****************************************************************
  *
@@ -28,48 +28,21 @@
  *
  ****************************************************************/
 
-#include <cstdlib>
-#include <cstring>
+#ifndef PTF_TEMPLATES_H
+#define PTF_TEMPLATES_H
 
-#include "table_tab3.h"
+#define MIN(A,B) ((A) < (B) ? (A) : (B))
+#define MAX(A,B) ((A) > (B) ? (A) : (B))
 
-#include "../io.h"
-#include "../memory.h"
-#include "../settings.h"
+#define SPROD(a,b) (((a).x * (b).x) + ((a).y * (b).y) + ((a).z * (b).z))
 
-using namespace POTFIT_NS;
+namespace POTFIT_NS {
 
-TableTab3::TableTab3(POTFIT *ptf) : Table(ptf) {
+  template<class T>
+  T square(T a) {
+    return a*a;
+  }
+
 }
 
-TableTab3::~TableTab3() {
-}
-
-void TableTab3::init(const char *name, int index) {
-  return;
-}
-
-void TableTab3::read_potential(FILE *a) {
-}
-
-int TableTab3::get_number_params(void) {
-}
-
-int TableTab3::get_number_free_params(void) {
-}
-
-double TableTab3::get_cutoff(void) {
-  return end;
-}
-
-void TableTab3::set_params(double *val) {
-}
-
-void TableTab3::write_potential(FILE *outfile) {
-}
-
-void TableTab3::write_plot(FILE *outfile) {
-}
-
-void TableTab3::write_plotpoint(FILE *outfile) {
-}
+#endif /* PTF_TEMPLATES_H */

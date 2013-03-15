@@ -35,9 +35,6 @@
 
 namespace POTFIT_NS {
 
-#define MIN(A,B) ((A) < (B) ? (A) : (B))
-#define MAX(A,B) ((A) > (B) ? (A) : (B))
-
   class Pointers {
   public:
     Pointers(POTFIT *ptr) :
@@ -48,7 +45,7 @@ namespace POTFIT_NS {
       interaction(ptr->interaction),
       optimization(ptr->optimization),
       random(ptr->random),
-      config(ptr->config),
+      structures(ptr->structures),
       settings(ptr->settings),
       potential(ptr->potential),
       memory(ptr->memory),
@@ -64,7 +61,7 @@ namespace POTFIT_NS {
     Interaction *&interaction;
     Optimization *&optimization;
     Random *&random;
-    Config *&config;
+    Structures *&structures;
     Settings *&settings;
     Potential *&potential;
     Memory *&memory;

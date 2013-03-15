@@ -44,7 +44,10 @@ namespace POTFIT_NS {
 
     virtual void read_additional_data(FILE *) = 0;
 
-    virtual int cols() = 0;
+    virtual int num_slots(void) = 0;
+    virtual int neigh_type(void) = 0;
+
+    virtual int cols(void) = 0;
   private:
   };
 

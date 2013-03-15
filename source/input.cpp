@@ -31,7 +31,6 @@
 #include <mpi.h>
 #include <cstdlib>
 
-#include "config.h"
 #include "force.h"
 #include "input.h"
 #include "interaction.h"
@@ -40,6 +39,7 @@
 #include "output.h"
 #include "random.h"
 #include "settings.h"
+#include "structures.h"
 #include "types.h"
 #include "utils.h"
 
@@ -79,9 +79,12 @@ Input::Input(POTFIT *ptf, int argc, char **argv) : Pointers(ptf) {
     io->print_version();
 
   strcpy(param_file,argv[1]);
+
+  return;
 }
 
 Input::~Input() {
+  return;
 }
 
 void Input::read_parameter_file() {
@@ -92,10 +95,10 @@ void Input::read_parameter_file() {
   int seed = 0;
   curline = 0;
 
-  io->write("Reading parameter file >%s< ... ",param_file);
+  io->write("Reading parameter file \"%s\" ... ",param_file);
   params = fopen(param_file, "r");
   if (NULL == params)
-    io->error("Could not open parameter file >%s<.\n",param_file);
+    io->error("Could not open parameter file \"%s\".\n",param_file);
 
   do {
     res = fgets(buffer, 1024, params);
@@ -110,7 +113,7 @@ void Input::read_parameter_file() {
 
     /* number of atom types */
     if (strcasecmp(token, "ntypes") == 0) {
-      get_param("ntypes", &config->ntypes, PARAM_INT, 1, 1);
+      get_param("ntypes", &structures->ntypes, PARAM_INT, 1, 1);
     }
     /* file with start potential */
     else if (strcasecmp(token, "startpot") == 0) {
@@ -124,7 +127,7 @@ void Input::read_parameter_file() {
     else if (strcasecmp(token, "output_prefix") == 0) {
       get_param("output_prefix", output->output_prefix, PARAM_STR, 1, 255);
       if (strcmp(output->output_prefix, "") != 0)
-	output->enable_output_files = 1;
+        output->enable_output_files = 1;
     }
     /* file for IMD potential */
     else if (strcasecmp(token, "imdpot") == 0) {
@@ -251,6 +254,8 @@ void Input::read_parameter_file() {
   fclose(params);
   check_params();
   interaction->init();
+
+  return;
 }
 
 int Input::get_param(const char *param_name, void *param, param_t ptype, int pnum_min, int pnum_max)
@@ -261,50 +266,50 @@ int Input::get_param(const char *param_name, void *param, param_t ptype, int pnu
 
   numread = 0;
   switch (ptype) {
-      case PARAM_STR:
-	str = strtok(NULL, " \t\r\n");
-	if (str == NULL)
-	  io->error("Parameter for %s missing in line %d\nstring expected!", param_name, curline);
-	else
-	  strncpy((char *)param, str, pnum_max);
-	numread++;
-	break;
-      case PARAM_INT:
-	for (i = 0; i < pnum_min; i++) {
-	  str = strtok(NULL, " \t\r\n");
-	  if (str == NULL)
-	    io->error("Parameter for %s missing in line %d!\nInteger vector of length %u expected!",
-	      param_name, curline, (unsigned)pnum_min);
-	  else
-	    ((int *)param)[i] = atoi(str);
-	  numread++;
-	}
-	for (i = pnum_min; i < pnum_max; i++) {
-	  if ((str = strtok(NULL, " \t\r\n")) != NULL) {
-	    ((int *)param)[i] = atoi(str);
-	    numread++;
-	  } else
-	    break;
-	}
-	break;
-      case PARAM_DOUBLE:
-	for (i = 0; i < pnum_min; i++) {
-	  str = strtok(NULL, " \t\r\n");
-	  if (str == NULL)
-	    io->error("Parameter for %s missing in line %d!\nDouble vector of length %u expected!",
-	      param_name, curline, (unsigned)pnum_min);
-	  else
-	    ((double *)param)[i] = atof(str);
-	  numread++;
-	}
-	for (i = pnum_min; i < pnum_max; i++) {
-	  if ((str = strtok(NULL, " \t\r\n")) != NULL) {
-	    ((double *)param)[i] = atof(str);
-	    numread++;
-	  } else
-	    break;
-	}
-	break;
+  case PARAM_STR:
+    str = strtok(NULL, " \t\r\n");
+    if (str == NULL)
+      io->error("Parameter for %s missing in line %d\nstring expected!", param_name, curline);
+    else
+      strncpy((char *)param, str, pnum_max);
+    numread++;
+    break;
+  case PARAM_INT:
+    for (i = 0; i < pnum_min; i++) {
+      str = strtok(NULL, " \t\r\n");
+      if (str == NULL)
+        io->error("Parameter for %s missing in line %d!\nInteger vector of length %u expected!",
+                  param_name, curline, (unsigned)pnum_min);
+      else
+        ((int *)param)[i] = atoi(str);
+      numread++;
+    }
+    for (i = pnum_min; i < pnum_max; i++) {
+      if ((str = strtok(NULL, " \t\r\n")) != NULL) {
+        ((int *)param)[i] = atoi(str);
+        numread++;
+      } else
+        break;
+    }
+    break;
+  case PARAM_DOUBLE:
+    for (i = 0; i < pnum_min; i++) {
+      str = strtok(NULL, " \t\r\n");
+      if (str == NULL)
+        io->error("Parameter for %s missing in line %d!\nDouble vector of length %u expected!",
+                  param_name, curline, (unsigned)pnum_min);
+      else
+        ((double *)param)[i] = atof(str);
+      numread++;
+    }
+    for (i = pnum_min; i < pnum_max; i++) {
+      if ((str = strtok(NULL, " \t\r\n")) != NULL) {
+        ((double *)param)[i] = atof(str);
+        numread++;
+      } else
+        break;
+    }
+    break;
   }
   return numread;
 }
@@ -317,13 +322,13 @@ int Input::get_param(const char *param_name, void *param, param_t ptype, int pnu
 
 void Input::check_params()
 {
-  if (config->ntypes <= 0)
+  if (structures->ntypes <= 0)
     io->error("Missing parameter or invalid value in %s : ntypes is \"%d\"",
-      param_file, config->ntypes);
+              param_file, structures->ntypes);
 
   if (strcmp(startpot, "\0") == 0)
     io->error("Missing parameter or invalid value in %s : startpot is \"%s\"",
-      param_file, startpot);
+              param_file, startpot);
 
   if (strcmp(output->endpot, "\0") == 0) {
     io->warning("endpot is missing in %s, setting it to %s_end", param_file, startpot);
@@ -334,32 +339,32 @@ void Input::check_params()
     io->error("Error in %s - 'interaction' keyword is missing!", param_file);
 
   if (strcmp(config_file, "\0") == 0)
-    io->error("Missing parameter or invalid value in >%s<: config is \"%s\"",
-      param_file, config_file);
+    io->error("Missing parameter or invalid value in %s: config is \"%s\"",
+              param_file, config_file);
 
   if (strcmp(output->tempfile, "\0") == 0)
-    io->error("Missing parameter or invalid value in >%s<: tempfile is \"%s\"",
-      param_file, output->tempfile);
+    io->error("Missing parameter or invalid value in %s: tempfile is \"%s\"",
+              param_file, output->tempfile);
 
   if (settings->eweight < 0)
-    io->error("Missing parameter or invalid value in >%s<: eng_weight is \"%f\"",
-      param_file, settings->eweight);
+    io->error("Missing parameter or invalid value in %s: eng_weight is \"%f\"",
+              param_file, settings->eweight);
 
   if (settings->sweight < 0)
-    io->error("Missing parameter or invalid value in >%s<: stress_weight is \"%f\"",
-      param_file, settings->sweight);
+    io->error("Missing parameter or invalid value in %s: stress_weight is \"%f\"",
+              param_file, settings->sweight);
 
   if (output->enable_imd_pot && output->imdpotsteps <= 0)
-    io->error("Missing parameter or invalid value in >%s<: imdpotsteps is \"%d\"",
-      param_file, output->imdpotsteps);
+    io->error("Missing parameter or invalid value in %s: imdpotsteps is \"%d\"",
+              param_file, output->imdpotsteps);
 
   if (output->plotmin < 0)
-    io->error("Missing parameter or invalid value in >%s<: plotmin is \"%f\"",
-      param_file, output->plotmin);
+    io->error("Missing parameter or invalid value in %s: plotmin is \"%f\"",
+              param_file, output->plotmin);
 
   if (potential->enable_cp != 0 && potential->enable_cp != 1)
-    io->error("Missing parameter or invalid value in >%s<: enable_cp is \"%d\"",
-      param_file, potential->enable_cp);
+    io->error("Missing parameter or invalid value in %s: enable_cp is \"%d\"",
+              param_file, potential->enable_cp);
 
   return;
 }
@@ -368,14 +373,14 @@ void Input::read_potential_file() {
   FILE *infile;
   char  buffer[1024], *res, *str;
   int   have_format = 0, have_type = 0, end_header = 0;
-  int   i, size;
+  int   format, i, size;
   fpos_t after_header;
 
   // open file
-  io->write("Starting to read potential file >%s<:\n",startpot);
+  io->write("Starting to read potential file \"%s\":\n",startpot);
   infile = fopen(startpot, "r");
   if (NULL == infile)
-    io->error("Could not open file >%s<\n", startpot);
+    io->error("Could not open file \"%s\"\n", startpot);
 
   // read the header
   do {
@@ -390,24 +395,29 @@ void Input::read_potential_file() {
     // see if it is the format line
     if (buffer[1] == 'F') {
       // format complete?
-      if (2 != sscanf((const char *)(buffer + 2), "%d %d", &potential->format, &size))
-	io->error("Corrupt format header line in file %s", startpot);
+      if (2 != sscanf((const char *)(buffer + 2), "%d %d", &format, &size))
+        io->error("Corrupt format header line in file %s", startpot);
 
       if (size != interaction->force->cols()) {
-	sprintf(buffer, "Wrong number of data columns in file \"%s\",\n", startpot);
-	io->error("%sshould be %d for %s, but are %d.", buffer,
-	  interaction->force->cols(), interaction->type, size);
+        sprintf(buffer, "Wrong number of data columns in file \"%s\",\n", startpot);
+        io->error("%sshould be %d for %s, but are %d.", buffer,
+                  interaction->force->cols(), interaction->type, size);
       }
       have_format = 1;
       potential->init(size);
     }
 
+    // read the C line
+    else if (buffer[1] == 'C') {
+      // TODO
+    }
+
     // read the TYPE line
     else if (buffer[1] == 'T') {
       if ((str = strchr(buffer + 3, '\n')) != NULL)
-	*str = '\0';
+        *str = '\0';
       if (strcmp(buffer + 3, interaction->type) != 0) {
-	io->error("The potential types in your parameter and potential file do not match!\n");
+        io->error("The potential types in your parameter and potential file do not match!\n");
       }
       io->write("- Using %d %s potentials to calculate forces\n", size, interaction->type);
       have_type = 1;
@@ -416,33 +426,19 @@ void Input::read_potential_file() {
     // invariant potentials
     else if (buffer[1] == 'I') {
       if (have_format && have_type) {
-	// check for enough items
-	for (i = 0; i < size; i++) {
-	  str = strtok(((i == 0) ? buffer + 2 : NULL), " \t\r\n");
-	  if (str == NULL) {
-	    io->error("Not enough items in #I header line.");
-	  } else {
-	    potential->invar_pot[i] = atoi(str);
-	    potential->n_invar_pots++;
-	  }
-	}
+        // check for enough items
+        for (i = 0; i < size; i++) {
+          str = strtok(((i == 0) ? buffer + 2 : NULL), " \t\r\n");
+          if (str == NULL) {
+            io->error("Not enough items in #I header line.");
+          } else {
+            potential->invar_pot[i] = atoi(str);
+            if (potential->invar_pot[i] == 1)
+              potential->num_free_pots--;
+          }
+        }
       } else
-	io->error("#I needs to be specified after the #F and #T lines in the potential file \"%s\"", startpot);
-    }
-
-    else if (buffer[1] == 'G') {
-      if (have_format) {
-	// check for enough items
-	for (i = 0; i < size; i++) {
-	  str = strtok(((i == 0) ? buffer + 2 : NULL), " \t\r\n");
-	  if (str == NULL)
-	    io->error("Not enough items in #G header line.");
-	  else
-	    potential->gradient[i] = atoi(str);
-	}
-	potential->have_grad = 1;
-      } else
-	io->error("#G needs to be specified after #F in file %s", startpot);
+        io->error("#I needs to be specified after the #F and #T lines in the potential file \"%s\"", startpot);
     }
 
     // stop after last header line
@@ -454,7 +450,7 @@ void Input::read_potential_file() {
 
   /* do we have a format in the header? */
   if (!have_format)
-    io->error("Format not specified in header of file %s", startpot);
+    io->error("Format not specified in header of file \"%s\"", startpot);
 
   fgetpos(infile, &after_header);
 
@@ -467,13 +463,42 @@ void Input::read_potential_file() {
   fsetpos(infile, &after_header);
   potential->read_potentials(infile);
 
-  io->write("Reading potential file >%s< ... done\n", startpot);
-  io->write("Total_par = %d\n",potential->total_par);
+  potential->global_params->check_usage();
+
+  io->write("Reading potential file \"%s\" ... done\n", startpot);
 
   fclose(infile);
+
+  return;
 }
 
 void Input::read_config_file() {
-  io->write("Reading config file >%s< ... ", config_file);
-  io->write("done\n");
+  FILE *infile;
+
+  // open file
+  io->write("Reading config file \"%s\" ... ", config_file);
+  infile = fopen(config_file, "r");
+  if (NULL == infile)
+    io->error("Could not open file \"s\"\n", config_file);
+
+  structures->init();
+  structures->read_config(infile);
+
+  fclose(infile);
+
+  io->write("done\n\n");
+
+  io->write("Read %d configurations (%d with forces, %d with stresses)\n",
+            structures->num_conf, structures->using_forces, structures->using_stresses);
+  io->write("with a total of %d atoms (", structures->num_atoms);
+  for (int i=0; i<structures->ntypes; i++) {
+    io->write("%d %s [%.2f%]",
+              structures->num_per_type[i], structures->elements[i],
+              100. * structures->num_per_type[i]/structures->num_atoms);
+    if (i != (structures->ntypes - 1))
+      io->write(", ");
+  }
+  io->write(").\n\n");
+
+  return;
 }

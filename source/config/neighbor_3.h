@@ -1,6 +1,6 @@
 /****************************************************************
  *
- * config.h:
+ * neighbor_3.h:
  *
  ****************************************************************
  *
@@ -28,25 +28,20 @@
  *
  ****************************************************************/
 
-#ifndef PTF_CONFIG_H
-#define PTF_CONFIG_H
+#ifndef PTF_NEIGHBOR_3_H
+#define PTF_NEIGHBOR_3_H
 
-#include <cstdio>
-
-#include "pointers.h"
+#include "neighbor.h"
 
 namespace POTFIT_NS {
 
-  class Config : protected Pointers {
+  class Neighbor_3 : public Neighbor {
   public:
-    Config(class POTFIT *);
-    ~Config();
-
-    int ntypes;
-  private:
+    Neighbor_3(class POTFIT *);
+    ~Neighbor_3();
 
   };
 
 }
 
-#endif /* PTF_CONFIG_H */
+#endif /* PTF_NEIGHBOR_3_H */

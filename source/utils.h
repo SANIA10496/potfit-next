@@ -46,4 +46,8 @@ namespace POTFIT_NS {
 
 }
 
+template<class T>
+T square(T a) {return a*a;}
+
+
 #endif /* PTF_UTILS_H */

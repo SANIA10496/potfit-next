@@ -1,6 +1,6 @@
 /****************************************************************
  *
- * config.cpp:
+ * neighbor.cpp:
  *
  ****************************************************************
  *
@@ -28,14 +28,11 @@
  *
  ****************************************************************/
 
-#include <mpi.h>
-
-#include "config.h"
+#include "neighbor.h"
 
 using namespace POTFIT_NS;
 
-Config::Config(POTFIT *ptf) : Pointers(ptf) {
-  ntypes = 0;
+Neighbor::Neighbor(POTFIT *ptf) : Pointers(ptf) {
 }
 
-Config::~Config() {}
+Neighbor::~Neighbor() {}

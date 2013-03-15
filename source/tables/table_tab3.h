@@ -47,6 +47,9 @@ namespace POTFIT_NS {
     void read_potential(FILE *);
 
     int get_number_params(void);
+    int get_number_free_params(void);
+    double get_cutoff(void);
+
     void set_params(double *);
 
     void write_potential(FILE *);

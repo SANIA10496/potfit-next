@@ -55,6 +55,13 @@ void TableTab4::read_potential(FILE *a) {
 int TableTab4::get_number_params(void) {
 }
 
+int TableTab4::get_number_free_params(void) {
+}
+
+double TableTab4::get_cutoff(void) {
+  return end;
+}
+
 void TableTab4::set_params(double *val) {
 }
 

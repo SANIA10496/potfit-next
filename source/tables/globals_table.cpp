@@ -35,13 +35,14 @@
 
 #include "../io.h"
 #include "../memory.h"
+#include "../potential.h"
 #include "../settings.h"
 
 using namespace POTFIT_NS;
 
 GlobalsTable::GlobalsTable(POTFIT *ptf, int num) : Pointers(ptf) {
   num_globals = num;
-  num_free_params = 0;
+  num_free_globals = num;
 
   param_name = (char **)malloc(num_globals * sizeof(char *));
   if (NULL == param_name)
@@ -120,11 +121,24 @@ void GlobalsTable::add_param(int index, const char *name, double val, double min
   val_min[index] = min;
   val_max[index] = max;
 
-  if (!invar_par[index])
-    idx[num_free_params++] = index;
-
   return;
 }
+
+void GlobalsTable::check_usage(void) {
+  for (int i=0; i<num_globals; i++)
+    if (usage[i] == 0)
+      num_free_globals--;
+  potential->num_free_params += num_free_globals;
+}
+
+int GlobalsTable::get_number_params(void) {
+  return num_globals;
+}
+
+int GlobalsTable::get_number_free_params(void) {
+  return num_free_globals;
+}
+
 
 void GlobalsTable::set_value(int index, double val) {
   values[index] = val;

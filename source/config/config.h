@@ -1,6 +1,6 @@
 /****************************************************************
  *
- * table_tab3.cpp:
+ * config.h:
  *
  ****************************************************************
  *
@@ -28,48 +28,43 @@
  *
  ****************************************************************/
 
-#include <cstdlib>
-#include <cstring>
+#ifndef PTF_CONFIG_H
+#define PTF_CONFIG_H
 
-#include "table_tab3.h"
+#include <iostream>
+#include <vector>
 
-#include "../io.h"
-#include "../memory.h"
-#include "../settings.h"
+#include "atom.h"
 
-using namespace POTFIT_NS;
+#include "../pointers.h"
+#include "../types.h"
 
-TableTab3::TableTab3(POTFIT *ptf) : Table(ptf) {
+namespace POTFIT_NS {
+
+  class Config : protected Pointers {
+  public:
+    Config(class POTFIT *);
+    ~Config();
+
+    void read(FILE *, int *);
+
+    std::vector<Atom *> atoms;
+    std::vector<int> num_per_type;
+    int use_forces;
+    int use_stresses;
+    int num_atoms;
+
+    double coh_energy;
+    int conf_weight;
+    double volume;
+    sym_tens stress;
+    vector box_x, box_y, box_z;
+    vector tbox_x, tbox_y, tbox_z;
+  private:
+    void calc_neighbors(void);
+    vector vec_prod(vector, vector);
+  };
+
 }
 
-TableTab3::~TableTab3() {
-}
-
-void TableTab3::init(const char *name, int index) {
-  return;
-}
-
-void TableTab3::read_potential(FILE *a) {
-}
-
-int TableTab3::get_number_params(void) {
-}
-
-int TableTab3::get_number_free_params(void) {
-}
-
-double TableTab3::get_cutoff(void) {
-  return end;
-}
-
-void TableTab3::set_params(double *val) {
-}
-
-void TableTab3::write_potential(FILE *outfile) {
-}
-
-void TableTab3::write_plot(FILE *outfile) {
-}
-
-void TableTab3::write_plotpoint(FILE *outfile) {
-}
+#endif /* PTF_CONFIG_H */

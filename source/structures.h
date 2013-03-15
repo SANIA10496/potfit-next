@@ -1,6 +1,6 @@
 /****************************************************************
  *
- * table_tab3.cpp:
+ * structures.h:
  *
  ****************************************************************
  *
@@ -28,48 +28,41 @@
  *
  ****************************************************************/
 
-#include <cstdlib>
-#include <cstring>
+#ifndef PTF_STRUCTURES_H
+#define PTF_STRUCTURES_H
 
-#include "table_tab3.h"
+#include <vector>
 
-#include "../io.h"
-#include "../memory.h"
-#include "../settings.h"
+#include "pointers.h"
 
-using namespace POTFIT_NS;
+#include "config/config.h"
 
-TableTab3::TableTab3(POTFIT *ptf) : Table(ptf) {
+namespace POTFIT_NS {
+
+  class Structures : protected Pointers {
+  public:
+    Structures(class POTFIT *);
+    ~Structures();
+
+    void init(void);
+
+    void read_config(FILE *);
+
+    int ntypes; 			// number of atom types
+    int num_atoms; 			// total number of atoms
+    int num_conf; 			// total number of configurations
+    std::vector<int> num_per_type; 	// total number of atoms per type
+    int using_forces; 			// total number of configs using forces
+    int using_stresses;			// total number of configs using stress
+
+    char **elements; 			// element names
+    double *min_dist; 			// minimal distances for all interactions
+
+    std::vector<Config *> config; 	// configurations
+  private:
+    int line;
+  };
+
 }
 
-TableTab3::~TableTab3() {
-}
-
-void TableTab3::init(const char *name, int index) {
-  return;
-}
-
-void TableTab3::read_potential(FILE *a) {
-}
-
-int TableTab3::get_number_params(void) {
-}
-
-int TableTab3::get_number_free_params(void) {
-}
-
-double TableTab3::get_cutoff(void) {
-  return end;
-}
-
-void TableTab3::set_params(double *val) {
-}
-
-void TableTab3::write_potential(FILE *outfile) {
-}
-
-void TableTab3::write_plot(FILE *outfile) {
-}
-
-void TableTab3::write_plotpoint(FILE *outfile) {
-}
+#endif /* PTF_SETTINGS_H */

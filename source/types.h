@@ -36,4 +36,20 @@ typedef enum Param_T { PARAM_STR, PARAM_INT, PARAM_DOUBLE } param_t;
 // function pointer for analytic potential evaluation
 typedef void (*fvalue_pointer) (double, double *, double *);
 
+typedef struct {
+  double x;
+  double y;
+  double z;
+} vector;
+
+/* This is the order of VASP for stresses */
+typedef struct {
+  double xx;
+  double yy;
+  double zz;
+  double xy;
+  double yz;
+  double zx;
+} sym_tens;
+
 #endif /* PTF_TYPES_H */

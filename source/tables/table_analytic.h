@@ -51,6 +51,9 @@ class TableAnalytic : public Table {
     void read_potential(FILE *);
 
     int get_number_params(void);
+    int get_number_free_params(void);
+    double get_cutoff(void);
+
     void set_params(double *);
 
     void write_potential(FILE *);
@@ -60,11 +63,9 @@ class TableAnalytic : public Table {
   private:
     int smooth_pot;
 
-    double *values; 	// parameter values
     char **param_name; 	// parameter names
     double *val_min; 	// parameter minimum
     double *val_max; 	// parameter maximum
-    int *invar_par; 	// invariant parameters
 
     Function *function; 	// function pointer for analytic potentials
 };

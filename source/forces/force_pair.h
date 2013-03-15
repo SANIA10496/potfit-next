@@ -46,8 +46,12 @@ namespace POTFIT_NS {
     ForcePair(class POTFIT *);
     virtual ~ForcePair();
 
-    int cols();
     void read_additional_data(FILE *);
+
+    int num_slots(void);
+    int neigh_type(void);
+
+    int cols(void);
   private:
   };
 

@@ -30,12 +30,12 @@
 
 #include <mpi.h>
 
-#include "config.h"
 #include "force.h"
 #include "interaction.h"
 #include "io.h"
 #include "memory.h"
 #include "potential.h"
+#include "templates.h"
 
 #include "tables/table.h"
 #include "tables/list_tables.h"
@@ -43,29 +43,32 @@
 using namespace POTFIT_NS;
 
 Potential::Potential(POTFIT *ptf) : Pointers(ptf) {
-  format = 0;
-
   enable_cp = 0;
-  have_globals = 0;
-  have_grad = 0;
-  n_invar_pots = 0;
+  num_globals = 0;
 
-  number = 0;
-  total_par = 0;
-  total_ne_par = 0;
+  num_pots = 0;
+  num_free_pots = 0;
 
-  gradient = NULL;
+  num_params = 0;
+  num_free_params = 0;
+
   invar_pot = NULL;
+
+  idxpot = NULL;
+  idxparam = NULL;
+
+  rcut_max = 0.0;
 
   pots = NULL;
   global_params = NULL;
   chem_pot = NULL;
   calc_pot = NULL;
+
+  return;
 }
 
 Potential::~Potential() {
-  memory->sfree(gradient);
-  memory->sfree(invar_pot);
+  delete [] invar_pot;
 
   if (global_params)
     delete global_params;
@@ -77,9 +80,11 @@ Potential::~Potential() {
 }
 
 void Potential::init(int size) {
-  number = size;
-  memory->create(gradient,interaction->force->cols(),"gradient");
-  memory->create(invar_pot,interaction->force->cols(),"invar_pot");
+  num_pots = size;
+  num_free_pots = size;
+  invar_pot = new int[interaction->force->cols()];
+  for (int i=0;i<interaction->force->cols();i++)
+    invar_pot[i] = 0;
 
   return;
 }
@@ -98,24 +103,25 @@ void Potential::read_globals(FILE *infile) {
 
   // check for global keyword
   if (strcmp(buffer, "globals") == 0) {
-    if (2 > fscanf(infile, "%s %d", buffer, &have_globals))
+    if (2 > fscanf(infile, "%s %d", buffer, &num_globals))
       io->error("Global parameters are missing in the potential file.");
-    total_par += have_globals;
 
-    global_params = new GlobalsTable(ptf, have_globals);
+    global_params = new GlobalsTable(ptf, num_globals);
 
     // read the global parameters
-    for (int j = 0; j < have_globals; j++) {
+    for (int j = 0; j < num_globals; j++) {
       ret_val = fscanf(infile, "%s %lf %lf %lf", name, &val, &min, &max);
       if (4 > ret_val)
         if (strcmp(name, "type") == 0) {
           sprintf(buffer, "Not enough global parameters!\n");
-          io->error("%sYou specified %d parameter(s), but needed are %d.\nAborting", buffer, j, have_globals);
+          io->error("%sYou specified %d parameter(s), but needed are %d.\nAborting", buffer, j, num_globals);
         }
       global_params->add_param(j, name, val, min, max);
     }
   }
-  io->write("- Read %d global parameters\n",have_globals);
+  io->write("- Read %d global parameters\n", num_globals);
+
+  num_params += global_params->get_number_params();
 
   return;
 }
@@ -125,9 +131,9 @@ void Potential::read_potentials(FILE *infile) {
   int   ret_val;
   fpos_t filepos;
 
-  pots = new Table*[number];
+  pots = new Table*[num_pots];
 
-  for (int i=0; i<number; i++) {
+  for (int i=0; i<num_pots; i++) {
     do {
       fgetpos(infile, &filepos);
       ret_val = fscanf(infile, "%s", buffer);
@@ -146,37 +152,18 @@ void Potential::read_potentials(FILE *infile) {
       pots[i] = new TableAnalytic(ptf);
     pots[i]->init(name, i);
     pots[i]->read_potential(infile);
+
+    num_params += pots[i]->get_number_params();
+    if (invar_pot[i] == 0)
+      num_free_params += pots[i]->get_number_free_params();
+    rcut_max = MAX(rcut_max, pots[i]->get_cutoff());
   }
-  io->write("- Sucessfully read %d potentials\n",number);
+  io->write("- Sucessfully read %d potentials\n", num_pots);
 
   return;
 }
 
-void Potential::write_indirect_index(void) {
+void Potential::create_indirect_index(void) {
   int i, j;
 
-//  k = 0;
-//  l = 0;
-//  val = pt->table;
-//  list = calc_list;
-//  for (i = 0; i < apt->number; i++) {	// loop over potentials
-//    val += 2;
-//    list += 2;
-//    l += 2;
-//    for (j = 0; j < apt->n_par[i]; j++) {	// loop over parameters
-//      *val = apt->values[i][j];
-//      *list = apt->values[i][j];
-//      val++;
-//      list++;
-//      if (!invar_pot[i] && !apt->invar_par[i][j]) {
-//        pt->idx[k] = l++;
-//        apt->idxpot[k] = i;
-//        apt->idxparam[k++] = j;
-//      } else
-//        l++;
-//    }
-//    if (!invar_pot[i])
-//      pt->idxlen += apt->n_par[i] - apt->invar_par[i][apt->n_par[i]];
-//    apt->total_par -= apt->invar_par[i][apt->n_par[i]];
-//  }
 }

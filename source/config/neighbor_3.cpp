@@ -1,6 +1,6 @@
 /****************************************************************
  *
- * table_tab3.cpp:
+ * neighbor_3.cpp:
  *
  ****************************************************************
  *
@@ -28,48 +28,11 @@
  *
  ****************************************************************/
 
-#include <cstdlib>
-#include <cstring>
-
-#include "table_tab3.h"
-
-#include "../io.h"
-#include "../memory.h"
-#include "../settings.h"
+#include "neighbor_3.h"
 
 using namespace POTFIT_NS;
 
-TableTab3::TableTab3(POTFIT *ptf) : Table(ptf) {
+Neighbor_3::Neighbor_3(POTFIT *ptf) : Neighbor(ptf) {
 }
 
-TableTab3::~TableTab3() {
-}
-
-void TableTab3::init(const char *name, int index) {
-  return;
-}
-
-void TableTab3::read_potential(FILE *a) {
-}
-
-int TableTab3::get_number_params(void) {
-}
-
-int TableTab3::get_number_free_params(void) {
-}
-
-double TableTab3::get_cutoff(void) {
-  return end;
-}
-
-void TableTab3::set_params(double *val) {
-}
-
-void TableTab3::write_potential(FILE *outfile) {
-}
-
-void TableTab3::write_plot(FILE *outfile) {
-}
-
-void TableTab3::write_plotpoint(FILE *outfile) {
-}
+Neighbor_3::~Neighbor_3() {}

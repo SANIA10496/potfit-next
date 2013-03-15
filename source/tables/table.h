@@ -28,8 +28,8 @@
  *
  ****************************************************************/
 
-#ifndef PTF_TABLES_H
-#define PTF_TABLES_H
+#ifndef PTF_TABLE_H
+#define PTF_TABLE_H
 
 #include <iostream>
 
@@ -45,28 +45,34 @@ namespace POTFIT_NS {
     // initialize with potential name
     virtual void init(const char *, int) = 0;
 
-    // read one potential
     virtual void read_potential(FILE *) = 0;
 
     virtual int get_number_params(void) = 0;
+    virtual int get_number_free_params(void) = 0;
+    virtual double get_cutoff(void) = 0;
+
     virtual void set_params(double *) = 0;
 
     virtual void write_potential(FILE *) = 0;
     virtual void write_plot(FILE *) = 0;
     virtual void write_plotpoint(FILE *) = 0;
+
   protected:
-    char *name; 	// name of analytic function / potential type
+    int init_done; 		// is the table initialized?
 
-    double begin; 	// starting position of potential = r_min
-    double end; 	// end position of potential = cutoff radius
+    char *name; 		// name of analytic function / potential type
 
-    int pot_number; 	// index of potential
-    int n_par; 		// number of parameters
-    int n_invar; 	// number of invariant parameters
-    int init_done; 	// is the table initialized?
+    double begin; 		// starting position of potential = r_min
+    double *values; 		// values
+    double end; 		// end position of potential = cutoff radius
 
-    int *offset; 	// offset for the individual potential in the calc_pot
+    int *invar_par; 		// invariant parameters
+    int *idx; 			// indirect index for parameters
+
+    int pot_number; 		// index of potential
+    int num_params; 		// number of parameters
+    int num_free_params; 	// number of invariant parameters
   };
 }
 
-#endif // PTF_TABLES_H
+#endif // PTF_TABLE_H

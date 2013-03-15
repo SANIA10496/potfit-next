@@ -51,30 +51,27 @@ namespace POTFIT_NS {
     void read_globals(FILE *);
     void read_potentials(FILE *);
 
-    void write_indirect_index(void);
+    void create_indirect_index(void);
 
     void update_calc_pot(void);
-    void update_potentials(double *);
+    void update_potentials(void);
 
-    // no longer used, will be removed
-    int format;
-
-    // flags for
     int enable_cp; 		// chemical potential (only for pair)
-    int have_globals; 		// global potentials
-    int have_grad; 		// ??
-    int n_invar_pots; 		// number of invariant potentials
+    int num_globals; 		// global potentials
 
-    int number; 		// total number of potentials
-    int total_par; 		// total number of free parameters
-    int total_ne_par; 		// total number of non-electrostatic parameters (??)
+    int num_pots; 		// total number of potentials
+    int num_free_pots; 		// total number of invariant potentials
 
-    // gradient and invar_pot data from potential header
-    int *gradient;
+    int num_params; 		// total number of free parameters
+    int num_free_params; 	// total number of invariant parameters
+
+    // invar_pot data from potential header
     int *invar_pot;
 
     int *idxpot; 		// indirect index for potentials
     int *idxparam; 		// indirect index for parameters
+
+    double rcut_max;
 
     // actual potential data
     Table 		**pots; 		// individual potentials

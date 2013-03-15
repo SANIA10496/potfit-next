@@ -1,6 +1,6 @@
 /****************************************************************
  *
- * table_tab3.cpp:
+ * neighbor.h:
  *
  ****************************************************************
  *
@@ -28,48 +28,39 @@
  *
  ****************************************************************/
 
-#include <cstdlib>
-#include <cstring>
+#ifndef PTF_NEIGHBOR_H
+#define PTF_NEIGHBOR_H
 
-#include "table_tab3.h"
+#include "../pointers.h"
+#include "../types.h"
 
-#include "../io.h"
-#include "../memory.h"
-#include "../settings.h"
+namespace POTFIT_NS {
 
-using namespace POTFIT_NS;
+  class Neighbor : protected Pointers {
+  public:
+    Neighbor(class POTFIT *);
+    ~Neighbor();
 
-TableTab3::TableTab3(POTFIT *ptf) : Table(ptf) {
+    int   typ;
+    int   nr;
+    double r;
+    vector dist;			/* distance divided by r */
+    int   *slot;
+    double *shift;
+    double *step;
+    int   *col;		/* coloumn of interaction for this neighbor */
+    // ADP
+    vector rdist;			/* real distance */
+    sym_tens sqrdist;		/* real squared distance */
+    double u_val, u_grad;		/* value and gradient of u(r) */
+    double w_val, w_grad;		/* value and gradient of w(r) */
+    // Coulomb
+    double r2;			/* r^2 */
+    double fnval_el;		/* stores tail of electrostatic potential */
+    double grad_el;		/* stores tail of first derivative of electrostatic potential */
+    double ggrad_el;		/* stores tail of second derivative of electrostatic potential */
+
+  };
 }
 
-TableTab3::~TableTab3() {
-}
-
-void TableTab3::init(const char *name, int index) {
-  return;
-}
-
-void TableTab3::read_potential(FILE *a) {
-}
-
-int TableTab3::get_number_params(void) {
-}
-
-int TableTab3::get_number_free_params(void) {
-}
-
-double TableTab3::get_cutoff(void) {
-  return end;
-}
-
-void TableTab3::set_params(double *val) {
-}
-
-void TableTab3::write_potential(FILE *outfile) {
-}
-
-void TableTab3::write_plot(FILE *outfile) {
-}
-
-void TableTab3::write_plotpoint(FILE *outfile) {
-}
+#endif /* PTF_NEIGHBOR_H */

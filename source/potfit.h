@@ -42,7 +42,7 @@ namespace POTFIT_NS {
     class Interaction *interaction;	// Force routines
     class Optimization *optimization; 	// Optimization algorithms
     class Random *random; 		// RNG
-    class Config *config; 		// Configurations
+    class Structures *structures;	// Reference structures
     class Potential *potential; 	// Potential
     class Memory *memory; 		// Memory management
     class Communication *communication; // Process communication

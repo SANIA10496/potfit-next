@@ -44,14 +44,14 @@ namespace POTFIT_NS {
     void set_value(int, double);
 
   private:
-    int number;		// number of chemical potentials
-    int n_invar; 	// number of invariant parameters
+    int num_params;		// number of chemical potentials
+    int num_invar_params; 	// number of invariant parameters
 
-    double *values; 	// values
-    char **param_name; 	// parameter names
-    double *val_min; 	// parameter minimum
-    double *val_max; 	// parameter maximum
-    int *invar_par; 	// invariant parameters
+    double *values; 		// values
+    char **param_name; 		// parameter names
+    double *val_min; 		// parameter minimum
+    double *val_max; 		// parameter maximum
+    int *invar_par; 		// invariant parameters
   };
 }
 

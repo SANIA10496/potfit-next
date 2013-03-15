@@ -1,6 +1,6 @@
 /****************************************************************
  *
- * table_tab3.cpp:
+ * structures.cpp:
  *
  ****************************************************************
  *
@@ -28,48 +28,69 @@
  *
  ****************************************************************/
 
-#include <cstdlib>
 #include <cstring>
+#include <cstdlib>
 
-#include "table_tab3.h"
-
-#include "../io.h"
-#include "../memory.h"
-#include "../settings.h"
+#include "io.h"
+#include "structures.h"
 
 using namespace POTFIT_NS;
 
-TableTab3::TableTab3(POTFIT *ptf) : Table(ptf) {
-}
+Structures::Structures(POTFIT *ptf) : Pointers(ptf) {
+  ntypes = 0;
+  num_atoms = 0;
+  num_conf = 0;
 
-TableTab3::~TableTab3() {
-}
+  using_forces = 0;
+  using_stresses = 0;
 
-void TableTab3::init(const char *name, int index) {
+  elements = NULL;
+  min_dist = NULL;
+
+  line = 0;
+
   return;
 }
 
-void TableTab3::read_potential(FILE *a) {
+Structures::~Structures() {
+  for (int i=0; i<ntypes; i++)
+    delete [] elements[i];
+  delete [] elements;
+  delete [] min_dist;
+
+  for (unsigned i = 0; i < config.size(); ++i)
+    delete config[i];
+  config.clear();
+  num_per_type.clear();
+
+  return;
 }
 
-int TableTab3::get_number_params(void) {
+void Structures::init(void) {
+  if (ntypes == 0) {
+    io->error("Ntypes is 0!\n");
+  }
+
+  elements = new char*[ntypes];
+  for (int i=0; i<ntypes; i++) {
+    num_per_type.push_back(0);
+    elements[i] = new char[3];
+    strcpy(elements[i],"\0");
+  }
+  min_dist = new double[ntypes*ntypes];
+
+  return;
 }
 
-int TableTab3::get_number_free_params(void) {
-}
+void Structures::read_config(FILE *infile) {
+  do {
+    config.push_back(new Config(ptf));
+    config[num_conf]->read(infile, &line);
+    num_atoms += config[num_conf]->num_atoms;
+    for (int i=0;i<ntypes;i++)
+      num_per_type[i] += config[num_conf]->num_per_type[i];
+    num_conf++;
+  } while (!feof(infile));
 
-double TableTab3::get_cutoff(void) {
-  return end;
-}
-
-void TableTab3::set_params(double *val) {
-}
-
-void TableTab3::write_potential(FILE *outfile) {
-}
-
-void TableTab3::write_plot(FILE *outfile) {
-}
-
-void TableTab3::write_plotpoint(FILE *outfile) {
+  return;
 }

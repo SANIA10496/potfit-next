@@ -43,14 +43,20 @@
 using namespace POTFIT_NS;
 
 TableAnalytic::TableAnalytic(POTFIT *ptf) : Table(ptf) {
+  // from table.h
+  init_done = 0;
+
   name = NULL;
+
   begin = 0.0;
   end = 0.0;
-  n_par = 0;
-  n_invar = 0;
-  init_done = 0;
-  smooth_pot = 0;
+
   pot_number = 0;
+  num_params = 0;
+  num_free_params = 0;
+
+  // from table_analytic.h
+  smooth_pot = 0;
 
   values = NULL;
   param_name = NULL;
@@ -96,29 +102,26 @@ void TableAnalytic::init(const char *fname, int index) {
     if (!function)
       io->error("Could not create an analytic potential of type \"%s\".\n",fname);
 
-    n_par = function->num_params();
+    num_params = function->num_params();
 
     // add one parameter for cutoff function if _sc is found
     if (smooth_pot == 1)
-      n_par++;
-    potential->total_par += n_par;
+      num_params++;
 
-    memory->create(values,n_par,"potential values");
-    memory->create(val_min,n_par,"minimum potential values");
-    memory->create(val_max,n_par,"maximum potential values");
-    // one int more for total number of invar_par
-    memory->create(invar_par,n_par + 1,"maximum potential values");
+    memory->create(values, num_params, "potential values");
+    memory->create(val_min, num_params, "minimum potential values");
+    memory->create(val_max, num_params, "maximum potential values");
+    memory->create(invar_par, num_params, "maximum potential values");
 
-    for (int i=0; i<n_par; i++) {
+    for (int i=0; i<num_params; i++) {
       values[i] = 0.0;
       val_min[i] = 0.0;
       val_max[i] = 0.0;
       invar_par[i] = 0;
     }
-    invar_par[n_par] = 0;
 
-    param_name = (char **)malloc(n_par * sizeof(char *));
-    for (int i=0; i<n_par; i++) {
+    param_name = (char **)malloc(num_params * sizeof(char *));
+    for (int i=0; i<num_params; i++) {
       param_name[i] = (char *)malloc(30 * sizeof(char));
       strcpy(param_name[i],"\0");
     }
@@ -138,7 +141,7 @@ void TableAnalytic::read_potential(FILE *infile) {
   if (!init_done)
     io->error("Please initialize the potential before reading any potentials.\n");
 
-  // read cutoff */
+  // read cutoff
   if (2 > fscanf(infile, "%s %lf", buffer, &end))
     io->error("Could not read cutoff for potential #%d in potential file.\n", pot_number);
   if (strcmp(buffer, "cutoff") != 0)
@@ -159,9 +162,9 @@ void TableAnalytic::read_potential(FILE *infile) {
   }
   fsetpos(infile, &filepos);
 
-  // read parameters */
-  n_invar = 0;
-  for (i = 0; i < n_par; i++) {
+  // read parameters
+  num_free_params = num_params;
+  for (i = 0; i < num_params; i++) {
     param_name[i] = (char *)malloc(30 * sizeof(char));
     if (NULL == param_name[i])
       io->error("Error in allocating memory for parameter name");
@@ -172,7 +175,7 @@ void TableAnalytic::read_potential(FILE *infile) {
 
     // if last char of name is "!" we have a global parameter
     if (strrchr(param_name[i], '!') != NULL) {
-      if (potential->have_globals == 0)
+      if (potential->num_globals == 0)
         io->error("You need to define a global parameter before using it!");
       param_name[i][strlen(param_name[i]) - 1] = '\0';
       j = potential->global_params->get_index(param_name[i]);
@@ -181,7 +184,8 @@ void TableAnalytic::read_potential(FILE *infile) {
       sprintf(param_name[i], "%s!", param_name[i]);
 
       // register global parameter
-      potential->global_params->add_usage(j, pot_number, i);
+      if (potential->invar_pot[pot_number] == 0)
+        potential->global_params->add_usage(j, pot_number, i);
 
       // get value from global parameter table
       double temp[3];
@@ -190,7 +194,7 @@ void TableAnalytic::read_potential(FILE *infile) {
       val_min[i] = temp[1];
       val_max[i] = temp[2];
       invar_par[i] = 1;
-      invar_par[n_par]++;
+      num_free_params--;
     } else {
       // this is not a global parameter
       if (4 > ret_val) {
@@ -215,8 +219,7 @@ void TableAnalytic::read_potential(FILE *infile) {
       // parameter will not be optimized if min==max
       if (val_min[i] == val_max[i]) {
         invar_par[i] = 1;
-        // what is this good for? global counter for invar_pars per potential^^
-        //        apt->invar_par[i][apt->globals]++;
+	num_free_params--;
       } else if (val_min[i] > val_max[i]) {
         double temp = val_min[i];
         val_min[i] = val_max[i];
@@ -237,10 +240,21 @@ void TableAnalytic::read_potential(FILE *infile) {
       }
     }
   }
+
+  // create indirect indexing array
+
 }
 
 int TableAnalytic::get_number_params(void) {
-  return n_invar;
+  return num_params;
+}
+
+int TableAnalytic::get_number_free_params(void) {
+  return num_free_params;
+}
+
+double TableAnalytic::get_cutoff(void) {
+  return end;
 }
 
 void TableAnalytic::set_params(double *) {
@@ -257,7 +271,7 @@ void TableAnalytic::write_potential(FILE *outfile) {
   }
   io->writef(outfile, "cutoff %f\n",end);
   io->writef(outfile, "# r_min 1.2.3\n");
-  for (int i=0; i<n_par; i++) {
+  for (int i=0; i<num_params; i++) {
     if (param_name[i][strlen(param_name[i]) - 1] != '!') {
       io->writef(outfile, "%s %f %f %f\n",param_name[i],values[i],val_min[i],val_max[i]);
     } else {

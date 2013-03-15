@@ -29,7 +29,7 @@
  ****************************************************************/
 
 #include "force_dipole.h"
-#include "../config.h"
+#include "../structures.h"
 
 using namespace POTFIT_NS;
 
@@ -37,6 +37,14 @@ ForceDipole::ForceDipole(POTFIT *ptf): Force(ptf) {
 }
 
 ForceDipole::~ForceDipole() {
+}
+
+int ForceDipole::num_slots(void) {
+  return 2;
+}
+
+int ForceDipole::neigh_type(void) {
+  return 2;
 }
 
 int ForceDipole::cols() {

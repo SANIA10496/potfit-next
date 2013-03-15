@@ -31,9 +31,9 @@
 #include <cstring>
 
 #include "force_pair.h"
-#include "../config.h"
 #include "../io.h"
 #include "../potential.h"
+#include "../structures.h"
 #include "../tables/table.h"
 #include "../tables/table_analytic.h"
 
@@ -45,8 +45,16 @@ ForcePair::ForcePair(POTFIT *ptf): Force(ptf) {
 ForcePair::~ForcePair() {
 }
 
+int ForcePair::num_slots(void) {
+	return 1;
+}
+
+int ForcePair::neigh_type(void) {
+	return 2;
+}
+
 int ForcePair::cols() {
-  int n = config->ntypes;
+  int n = structures->ntypes;
   return (int)n*(n+1)/2.;
 }
 
@@ -70,10 +78,10 @@ void ForcePair::read_additional_data(FILE *infile) {
       fscanf(infile, "%s", buffer);
     } while (strcmp(buffer, "chempot") != 0 && !feof(infile));
 
-    potential->chem_pot = new ChempotTable(ptf, config->ntypes);
+    potential->chem_pot = new ChempotTable(ptf, structures->ntypes);
 
     // loop over all atom types
-    for (int j = 0; j < config->ntypes; j++) {
+    for (int j = 0; j < structures->ntypes; j++) {
 
       // read one line
       if (4 > fscanf(infile, "%s %lf %lf %lf", buffer, &val, &min, &max))
@@ -91,7 +99,7 @@ void ForcePair::read_additional_data(FILE *infile) {
       }
     potential->chem_pot->add_value(j, buffer, val, min, max);
     }
-    io->write("- Enabled chemical potentials for %d elements\n",config->ntypes);
+    io->write("- Enabled chemical potentials for %d elements\n",structures->ntypes);
   }
 
   return;

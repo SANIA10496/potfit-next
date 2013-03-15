@@ -1,6 +1,6 @@
 /****************************************************************
  *
- * table_tab3.cpp:
+ * atom.h:
  *
  ****************************************************************
  *
@@ -28,48 +28,48 @@
  *
  ****************************************************************/
 
-#include <cstdlib>
-#include <cstring>
+#ifndef PTF_ATOM_H
+#define PTF_ATOM_H
 
-#include "table_tab3.h"
+#include "neighbor.h"
 
-#include "../io.h"
-#include "../memory.h"
-#include "../settings.h"
+#include "../pointers.h"
+#include "../types.h"
 
-using namespace POTFIT_NS;
+namespace POTFIT_NS {
 
-TableTab3::TableTab3(POTFIT *ptf) : Table(ptf) {
+  class Atom : protected Pointers {
+  public:
+    Atom(class POTFIT *);
+    ~Atom();
+
+    int type;
+    int num_neighbors;
+    vector pos;
+    vector force;
+    double absforce;
+    int contrib;
+
+    Neighbor *neighs;
+
+    // EAM
+    double rho;
+    double gradf;
+
+    // ADP
+    vector mu;
+    sym_tens lambda;
+    double nu;
+
+    // dipole
+    vector E_stat;
+    vector p_sr;
+    vector E_ind;
+    vector p_ind;
+    vector E_old;
+    vector E_tot;
+  };
+
 }
 
-TableTab3::~TableTab3() {
-}
-
-void TableTab3::init(const char *name, int index) {
-  return;
-}
-
-void TableTab3::read_potential(FILE *a) {
-}
-
-int TableTab3::get_number_params(void) {
-}
-
-int TableTab3::get_number_free_params(void) {
-}
-
-double TableTab3::get_cutoff(void) {
-  return end;
-}
-
-void TableTab3::set_params(double *val) {
-}
-
-void TableTab3::write_potential(FILE *outfile) {
-}
-
-void TableTab3::write_plot(FILE *outfile) {
-}
-
-void TableTab3::write_plotpoint(FILE *outfile) {
-}
+#endif /* PTF_CONFIG_H */

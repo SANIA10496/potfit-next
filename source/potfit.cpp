@@ -36,7 +36,7 @@
 #include "interaction.h"
 #include "optimization.h"
 #include "random.h"
-#include "config.h"
+#include "structures.h"
 #include "settings.h"
 #include "potential.h"
 #include "memory.h"
@@ -51,7 +51,7 @@ POTFIT::POTFIT(int argc, char **argv) {
   interaction = new Interaction(this);
   optimization = new Optimization(this);
   random = new Random(this);
-  config = new Config(this);
+  structures = new Structures(this);
   settings = new Settings(this);
   potential = new Potential(this);
   memory = new Memory(this);
@@ -67,7 +67,7 @@ POTFIT::~POTFIT() {
   delete interaction;
   delete optimization;
   delete random;
-  delete config;
+  delete structures;
   delete settings;
   delete potential;
   delete memory;

@@ -35,21 +35,29 @@
 
 #include "../io.h"
 #include "../memory.h"
+#include "../potential.h"
 #include "../settings.h"
 
 using namespace POTFIT_NS;
 
 ChempotTable::ChempotTable(POTFIT *ptf, int ntypes) : Pointers(ptf) {
-  number = ntypes;
-  n_invar = 0;
+  num_params = ntypes;
+  num_invar_params = 0;
 
-  memory->create(values,number,"chemical potentials");
-  memory->create(val_min,number,"chemical potentials");
-  memory->create(val_max,number,"chemical potentials");
-  memory->create(invar_par,number,"chemical potentials");
+  memory->create(values,num_params,"chemical potentials");
+  memory->create(val_min,num_params,"chemical potentials");
+  memory->create(val_max,num_params,"chemical potentials");
+  memory->create(invar_par,num_params,"chemical potentials");
 
-  param_name = (char **)malloc(number * sizeof(char *));
-  for (int i=0; i<number; i++) {
+  for (int i=0;i<num_params;i++) {
+    values[i] = 0.0;
+    val_min[i] = 0.0;
+    val_max[i] = 0.0;
+    invar_par[i] = 0;
+  }
+
+  param_name = (char **)malloc(num_params * sizeof(char *));
+  for (int i=0; i<num_params; i++) {
     param_name[i] = (char *)malloc(30 * sizeof(char));
     strcpy(param_name[i],"\0");
   }
@@ -63,8 +71,6 @@ void ChempotTable::add_value(int i, const char *name, double val, double min, do
 
   if (min == max) {
     invar_par[i] = 1;
-// what is this good for? global counter for invar_pars per potential^^
-//        apt->invar_par[i][apt->globals]++;
   } else if (min > max) {
     double temp = min;
     min = max;
@@ -75,7 +81,7 @@ void ChempotTable::add_value(int i, const char *name, double val, double min, do
         val = min;
       if (val > max)
         val = max;
-      sprintf(msg, "Starting value for %s #%d is ", name, i + 1);
+      sprintf(msg, "Starting value for %s is ", name, i + 1);
       sprintf(msg, "%soutside of specified adjustment range.\n",msg);
       io->warning("%sResetting it to %f.\n", msg, i + 1, val);
       if (val == 0)
@@ -86,6 +92,10 @@ void ChempotTable::add_value(int i, const char *name, double val, double min, do
   values[i] = val;
   val_min[i] = min;
   val_max[i] = max;
+
+  potential->num_params++;
+  if (invar_par[i] == 0)
+    potential->num_free_params++;
 
   return;
 }
