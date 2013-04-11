@@ -97,16 +97,6 @@ void IO::write(const char *msg, ...) {
   }
 }
 
-void IO::writef(FILE *outfile, const char *msg, ...) {
-  va_list ap;
-
-  if (screen) {
-    va_start(ap, msg);
-    vfprintf(outfile, msg, ap);
-    va_end(ap);
-  }
-}
-
 void IO::write_log(const char *msg, ...) {
   va_list ap;
 
@@ -114,6 +104,33 @@ void IO::write_log(const char *msg, ...) {
     va_start(ap, msg);
     if (write_logfile)
       vfprintf(logfile, msg, ap);
+    va_end(ap);
+  }
+
+  return;
+}
+
+void IO::write_debug(const char *msg, ...) {
+#ifdef DEBUG
+  va_list ap;
+  char temp[1024];
+
+  if (screen) {
+    va_start(ap, msg);
+    sprintf(temp, msg, ap);
+    va_end(ap);
+    fprintf(stderr, "DEBUG: %s", temp);
+  }
+#endif // DEBUG
+  return;
+}
+
+void IO::writef(FILE *outfile, const char *msg, ...) {
+  va_list ap;
+
+  if (screen) {
+    va_start(ap, msg);
+    vfprintf(outfile, msg, ap);
     va_end(ap);
   }
 }

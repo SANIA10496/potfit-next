@@ -54,6 +54,9 @@ namespace POTFIT_NS {
     void write(const char *, ...);
     void write_log(const char *, ...);
 
+    // debug
+    void write_debug(const char *, ...);
+
     // output to files
     void writef(FILE *, const char *, ...);
 

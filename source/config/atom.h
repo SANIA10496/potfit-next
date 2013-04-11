@@ -31,6 +31,8 @@
 #ifndef PTF_ATOM_H
 #define PTF_ATOM_H
 
+#include <vector>
+
 #include "neighbor.h"
 
 #include "../pointers.h"
@@ -50,7 +52,7 @@ namespace POTFIT_NS {
     double absforce;
     int contrib;
 
-    Neighbor *neighs;
+    std::vector<Neighbor *> neighs;
 
     // EAM
     double rho;

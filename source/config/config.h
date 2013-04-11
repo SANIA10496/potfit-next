@@ -55,11 +55,12 @@ namespace POTFIT_NS {
     int num_atoms;
 
     double coh_energy;
-    int conf_weight;
+    double conf_weight;
     double volume;
+
     sym_tens stress;
     vector box_x, box_y, box_z;
-    vector tbox_x, tbox_y, tbox_z;
+
   private:
     void calc_neighbors(void);
     vector vec_prod(vector, vector);

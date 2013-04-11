@@ -47,21 +47,20 @@ Config::Config(POTFIT *ptf) : Pointers(ptf) {
   use_stresses = 0;
   num_atoms = 0;
 
-  coh_energy = 0;
-  conf_weight = 0;
-  volume = 0;
+  coh_energy = 0.0;
+  conf_weight = 0.0;
+  volume = 0.0;
+
   stress.xx = 0.0;
   stress.yy = 0.0;
   stress.zz = 0.0;
   stress.xy = 0.0;
   stress.zx = 0.0;
   stress.yz = 0.0;
+
   box_x.x = box_x.y = box_x.z = 0.0;
   box_y.x = box_y.y = box_y.z = 0.0;
   box_z.x = box_z.y = box_z.z = 0.0;
-  tbox_x.x = tbox_x.y = tbox_x.z = 0.0;
-  tbox_y.x = tbox_y.y = tbox_y.z = 0.0;
-  tbox_z.x = tbox_z.y = tbox_z.z = 0.0;
 
   return;
 }
@@ -206,7 +205,7 @@ void Config::read(FILE *infile, int *line) {
   if (0 == volume)
     io->error("Box edges are parallel\n");
 
-  /* normalization */
+  // normalization
   tbox_x.x /= volume;
   tbox_x.y /= volume;
   tbox_x.z /= volume;
@@ -217,7 +216,7 @@ void Config::read(FILE *infile, int *line) {
   tbox_z.y /= volume;
   tbox_z.z /= volume;
 
-  /* read the atoms */
+  // read the atoms
   Atom *atom;
   for (int i = 0; i < num_atoms; i++) {
     atoms.push_back(new Atom(ptf));
@@ -261,8 +260,8 @@ void Config::read(FILE *infile, int *line) {
       atom->contrib = 1;
     num_per_type[atom->type] += 1;
   }
-  /* check cell size */
-  /* inverse height in direction */
+  // check cell size
+  // inverse height in direction
   iheight.x = sqrt(SPROD(tbox_x, tbox_x));
   iheight.y = sqrt(SPROD(tbox_y, tbox_y));
   iheight.z = sqrt(SPROD(tbox_z, tbox_z));
@@ -277,19 +276,19 @@ void Config::read(FILE *infile, int *line) {
   cell_scale[2] = (int)ceil(potential->rcut_max * iheight.z);
 
 #ifdef DEBUG
-  fprintf(stderr, "Checking cell size for configuration %d:\n", nconf);
-  fprintf(stderr, "Box dimensions:\n");
-  fprintf(stderr, "     %10.6f %10.6f %10.6f\n", box_x.x, box_x.y, box_x.z);
-  fprintf(stderr, "     %10.6f %10.6f %10.6f\n", box_y.x, box_y.y, box_y.z);
-  fprintf(stderr, "     %10.6f %10.6f %10.6f\n", box_z.x, box_z.y, box_z.z);
-  fprintf(stderr, "Box normals:\n");
-  fprintf(stderr, "     %10.6f %10.6f %10.6f\n", tbox_x.x, tbox_x.y, tbox_x.z);
-  fprintf(stderr, "     %10.6f %10.6f %10.6f\n", tbox_y.x, tbox_y.y, tbox_y.z);
-  fprintf(stderr, "     %10.6f %10.6f %10.6f\n", tbox_z.x, tbox_z.y, tbox_z.z);
-  fprintf(stderr, "Box heights:\n");
-  fprintf(stderr, "     %10.6f %10.6f %10.6f\n", 1. / iheight.x, 1. / iheight.y, 1. / iheight.z);
-  fprintf(stderr, "Potential range:  %f\n", rcutmax);
-  fprintf(stderr, "Periodic images needed: %d %d %d\n\n",
+  io->write_debug("Checking cell size for configuration %d:\n", nconf);
+  io->write_debug("Box dimensions:\n");
+  io->write_debug("     %10.6f %10.6f %10.6f\n", box_x.x, box_x.y, box_x.z);
+  io->write_debug("     %10.6f %10.6f %10.6f\n", box_y.x, box_y.y, box_y.z);
+  io->write_debug("     %10.6f %10.6f %10.6f\n", box_z.x, box_z.y, box_z.z);
+  io->write_debug("Box normals:\n");
+  io->write_debug("     %10.6f %10.6f %10.6f\n", tbox_x.x, tbox_x.y, tbox_x.z);
+  io->write_debug("     %10.6f %10.6f %10.6f\n", tbox_y.x, tbox_y.y, tbox_y.z);
+  io->write_debug("     %10.6f %10.6f %10.6f\n", tbox_z.x, tbox_z.y, tbox_z.z);
+  io->write_debug("Box heights:\n");
+  io->write_debug("     %10.6f %10.6f %10.6f\n", 1. / iheight.x, 1. / iheight.y, 1. / iheight.z);
+  io->write_debug("Potential range:  %f\n", rcutmax);
+  io->write_debug("Periodic images needed: %d %d %d\n\n",
           2 * cell_scale[0] + 1, 2 * cell_scale[1] + 1, 2 * cell_scale[2] + 1);
 #endif /* DEBUG */
 
