@@ -53,6 +53,7 @@ class TableAnalytic : public Table {
     int get_number_params(void);
     int get_number_free_params(void);
     double get_cutoff(void);
+    double get_rmin(void);
 
     void set_params(double *);
 

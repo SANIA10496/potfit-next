@@ -47,6 +47,7 @@ namespace POTFIT_NS {
     void init(void);
 
     void read_config(FILE *);
+    void print_mindist(void);
 
     int ntypes; 			// number of atom types
     int num_atoms; 			// total number of atoms
@@ -55,7 +56,6 @@ namespace POTFIT_NS {
     int using_forces; 			// total number of configs using forces
     int using_stresses;			// total number of configs using stress
 
-    char **elements; 			// element names
     double *min_dist; 			// minimal distances for all interactions
 
     std::vector<Config *> config; 	// configurations

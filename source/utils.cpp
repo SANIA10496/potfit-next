@@ -28,7 +28,8 @@
  *
  ****************************************************************/
 
-#include <mpi.h>
+#include <cmath>
+#include <cstring>
 
 #include "utils.h"
 
@@ -40,3 +41,6 @@ Utils::Utils(POTFIT *ptf) : Pointers(ptf) {
 
 Utils::~Utils() {}
 
+double Utils::vect_dist(vector a, vector b) {
+  return sqrt(square(b.x-a.x)+square(b.y-a.y)+square(b.z-a.z));
+}

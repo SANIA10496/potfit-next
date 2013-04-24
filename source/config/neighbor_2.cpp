@@ -28,11 +28,107 @@
  *
  ****************************************************************/
 
+#include <cstdio>
+#include <cmath>
+
+#include "config.h"
 #include "neighbor_2.h"
+
+#include "../io.h"
+#include "../interaction.h"
+#include "../potential.h"
+#include "../structures.h"
+#include "../templates.h"
+#include "../utils.h"
 
 using namespace POTFIT_NS;
 
 Neighbor_2::Neighbor_2(POTFIT *ptf) : Neighbor(ptf) {
+  type = -1;
+  nr = -1;
+  r = 0.0;
+  dist.x = 0.0;
+  dist.y = 0.0;
+  dist.z = 0.0;
+
+  slot = new int[interaction->force->num_slots()];
+  shift = new double[interaction->force->num_slots()];
+  step = new double[interaction->force->num_slots()];
+  col = new int[interaction->force->num_slots()];
+
+  // ADP
+  rdist.x = 0.0;
+  rdist.y = 0.0;
+  rdist.z = 0.0;
+  sqrdist.xx = 0.0;
+  sqrdist.yy = 0.0;
+  sqrdist.zz = 0.0;
+  sqrdist.zx = 0.0;
+  sqrdist.xy = 0.0;
+  sqrdist.yz = 0.0;
+
+  u_val = 0.0;
+  u_grad = 0.0;
+  w_val = 0.0;
+  w_grad = 0.0;
+
+  // Coulomb
+  r2 = 0.0;
+  fnval_el = 0.0;
+  grad_el = 0.0;
+  ggrad_el = 0.0;
+
+  return;
 }
 
-Neighbor_2::~Neighbor_2() {}
+Neighbor_2::~Neighbor_2() {
+  delete [] slot;
+  delete [] shift;
+  delete [] step;
+  delete [] col;
+
+  return;
+}
+
+void Neighbor_2::init(Config *conf, int i, int j, vector *dd) {
+  int type1 = conf->atoms[i]->type;
+  int col_temp = -1;
+
+  r = sqrt(SPROD(*dd,*dd));
+
+  dist.x = dd->x / r;
+  dist.y = dd->y / r;
+  dist.z = dd->z / r;
+
+  type = conf->atoms[j]->type;
+  nr = j;
+
+  // Coulomb
+  r2 = r * r;
+
+  // ADP
+  rdist.x = dd->x * r;
+  rdist.y = dd->y * r;
+  rdist.z = dd->z * r;
+  sqrdist.xx = dd->x * dd->x * r * r;
+  sqrdist.yy = dd->y * dd->y * r * r;
+  sqrdist.zz = dd->z * dd->z * r * r;
+  sqrdist.yz = dd->y * dd->z * r * r;
+  sqrdist.zx = dd->z * dd->x * r * r;
+  sqrdist.xy = dd->x * dd->y * r * r;
+
+  conf->atoms[i]->num_neighbors++;
+
+  col_temp = (type1 <= type) ? type1 * structures->ntypes + type - ((type1 * (type1 + 1)) / 2)
+	  : type * structures->ntypes + type1 - ((type * (type + 1)) / 2);
+  col[0] = col_temp;
+  structures->min_dist[col_temp] = MIN(structures->min_dist[col_temp], r);
+
+  return;
+}
+
+void Neighbor_2::init(Config *conf, int i, int j, int k,  vector *dd_ij, vector *dd_ik) {
+  io->error("The three-body neighbor function cannot be called for two-body neighbor lists!");
+
+  return;
+}

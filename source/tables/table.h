@@ -50,6 +50,7 @@ namespace POTFIT_NS {
     virtual int get_number_params(void) = 0;
     virtual int get_number_free_params(void) = 0;
     virtual double get_cutoff(void) = 0;
+    virtual double get_rmin(void) = 0;
 
     virtual void set_params(double *) = 0;
 

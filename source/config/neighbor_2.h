@@ -40,6 +40,8 @@ namespace POTFIT_NS {
     Neighbor_2(class POTFIT *);
     ~Neighbor_2();
 
+    void init (class Config *, int, int, vector *);
+    void init (class Config *, int, int, int, vector *, vector *);
   };
 
 }

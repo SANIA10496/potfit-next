@@ -80,8 +80,7 @@ void POTFIT::run() {
   input->read_parameter_file();
   input->read_potential_file();
   input->read_config_file();
-  io->write("Setting up neighbor list ...\n");
-  io->write("Running optimization algs ...\n");
+  optimization->run();
   io->write("Calculating error reports ...\n");
   io->write("Cleaning up ...\n");
 }

@@ -372,7 +372,8 @@ void Input::check_params()
 void Input::read_potential_file() {
   FILE *infile;
   char  buffer[1024], *res, *str;
-  int   have_format = 0, have_type = 0, end_header = 0;
+  char  temp_char[255];
+  int   have_format = 0, have_type = 0, have_elements = 0, end_header = 0;
   int   format, i, size;
   fpos_t after_header;
 
@@ -405,15 +406,33 @@ void Input::read_potential_file() {
       }
       have_format = 1;
       potential->init(size);
+    } else if (!have_format && buffer[1] != '#') {
+      io->error("Format line missing or not first line in potential file.", startpot);
     }
 
     // read the C line
-    else if (buffer[1] == 'C') {
-      // TODO
+    if (buffer[1] == 'C') {
+      // remove newline at the end of buffer
+      if ((str = strchr(buffer + 3, '\n')) != NULL)
+        *str = '\0';
+      res = strtok(buffer, " ");
+      for (int i=0;i<structures->ntypes;i++) {
+        res = strtok(NULL, " ");
+	if (res == NULL)
+	  io->error("Not enough items in #C header line.");
+	if (strlen(res) > 10) {
+	  strncpy(potential->elements[i], res, 10);
+	  potential->elements[i][10] = '\0';
+	} else {
+	  strcpy(potential->elements[i], res);
+	}
+      }
+      have_elements = 1;
     }
 
     // read the TYPE line
     else if (buffer[1] == 'T') {
+      // remove newline at the end of buffer
       if ((str = strchr(buffer + 3, '\n')) != NULL)
         *str = '\0';
       if (strcmp(buffer + 3, interaction->type) != 0) {
@@ -451,6 +470,9 @@ void Input::read_potential_file() {
   /* do we have a format in the header? */
   if (!have_format)
     io->error("Format not specified in header of file \"%s\"", startpot);
+
+  if (!have_elements)
+    io->error("The elements are not specified in the potential file (#C tag is missing).");
 
   fgetpos(infile, &after_header);
 
@@ -493,12 +515,14 @@ void Input::read_config_file() {
   io->write("with a total of %d atoms (", structures->num_atoms);
   for (int i=0; i<structures->ntypes; i++) {
     io->write("%d %s [%.2f%]",
-              structures->num_per_type[i], structures->elements[i],
+              structures->num_per_type[i], potential->elements[i],
               100. * structures->num_per_type[i]/structures->num_atoms);
     if (i != (structures->ntypes - 1))
       io->write(", ");
   }
   io->write(").\n\n");
+
+  structures->print_mindist();
 
   return;
 }

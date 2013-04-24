@@ -31,7 +31,8 @@
 #ifndef PTF_POTENTIAL_H
 #define PTF_POTENTIAL_H
 
-#include <cstdio>
+#include <cstring>
+#include <vector>
 
 #include "pointers.h"
 
@@ -56,6 +57,8 @@ namespace POTFIT_NS {
     void update_calc_pot(void);
     void update_potentials(void);
 
+    std::vector<char *> elements;
+
     int enable_cp; 		// chemical potential (only for pair)
     int num_globals; 		// global potentials
 
@@ -71,6 +74,8 @@ namespace POTFIT_NS {
     int *idxpot; 		// indirect index for potentials
     int *idxparam; 		// indirect index for parameters
 
+    double *rcut;
+    double *rmin;
     double rcut_max;
 
     // actual potential data
@@ -78,8 +83,6 @@ namespace POTFIT_NS {
     GlobalsTable 	*global_params; 	// table for global parameters (apot)
     ChempotTable 	*chem_pot; 		// table for chemical potentials (pair)
     CalcpotTable 	*calc_pot; 		// table for interpolated potentials
-  private:
-
   };
 
 }

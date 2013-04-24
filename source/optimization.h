@@ -42,6 +42,8 @@ namespace POTFIT_NS {
     Optimization(class POTFIT *);
     ~Optimization();
 
+    void run(void);
+
   private:
 
   };

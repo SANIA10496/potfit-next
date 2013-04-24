@@ -31,17 +31,24 @@
 #ifndef PTF_NEIGHBOR_H
 #define PTF_NEIGHBOR_H
 
+#include <vector>
+
 #include "../pointers.h"
 #include "../types.h"
 
 namespace POTFIT_NS {
+
+  class Atom;
 
   class Neighbor : protected Pointers {
   public:
     Neighbor(class POTFIT *);
     ~Neighbor();
 
-    int   typ;
+    virtual void init(class Config *, int, int, vector *) = 0;
+    virtual void init(class Config *, int, int, int, vector *, vector *) = 0;
+
+    int   type;
     int   nr;
     double r;
     vector dist;			/* distance divided by r */

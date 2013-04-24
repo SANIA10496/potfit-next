@@ -35,6 +35,9 @@
 
 #include "config.h"
 
+#include "list_neighbors.h"
+
+#include "../interaction.h"
 #include "../io.h"
 #include "../potential.h"
 #include "../structures.h"
@@ -42,10 +45,14 @@
 
 using namespace POTFIT_NS;
 
-Config::Config(POTFIT *ptf) : Pointers(ptf) {
+Config::Config(POTFIT *ptf, int idx) : Pointers(ptf) {
+  cell_scale[0] = 0;
+  cell_scale[1] = 0;
+  cell_scale[2] = 0;
+  num_per_type = NULL;
+  num_atoms = 0;
   use_forces = 0;
   use_stresses = 0;
-  num_atoms = 0;
 
   coh_energy = 0.0;
   conf_weight = 0.0;
@@ -62,6 +69,8 @@ Config::Config(POTFIT *ptf) : Pointers(ptf) {
   box_y.x = box_y.y = box_y.z = 0.0;
   box_z.x = box_z.y = box_z.z = 0.0;
 
+  index = idx;
+
   return;
 }
 
@@ -70,7 +79,7 @@ Config::~Config() {
     delete atoms[i];
   atoms.clear();
 
-  num_per_type.clear();
+  delete [] num_per_type;
   return;
 }
 
@@ -80,7 +89,6 @@ void Config::read(FILE *infile, int *line) {
   int h_eng = 0, h_stress = 0, h_boxx = 0, h_boxy = 0, h_boxz = 0;
   int have_contrib = 0;
   int have_contrib_box = 0;
-  int cell_scale[3];
   vector iheight;
   vector tbox_x, tbox_y, tbox_z;
   vector cbox_o;				// origin of box of contrib. atoms
@@ -97,21 +105,20 @@ void Config::read(FILE *infile, int *line) {
   if (NULL == res)
     io->error("Unexpected end of config file on line %d.", *line);
   h_eng = h_stress = h_boxx = h_boxy = h_boxz = 0;
-  if (res[1] == 'N') {	// Atom number line
+  if (res[1] == 'N') {
     if (sscanf(res + 3, "%d %d", &num_atoms, &use_forces) < 2)
       io->error("Error in atom number specification on line %d\n", *line);
   } else {
     io->error("Error - number of atoms missing on line %d\n", *line);
   }
 
-  for (int i=0; i<structures->ntypes; i++)
-    num_per_type.push_back(0);
+  num_per_type = new int[structures->ntypes];
 
   do {
     res = fgets(buffer, 1024, infile);
     if ((ptr = strchr(res, '\n')) != NULL)
       *ptr = '\0';
-    line++;
+    (*line)++;
     // read the box vectors
     if (res[1] == 'X') {
       if (sscanf(res + 3, "%lf %lf %lf\n", &box_x.x, &box_x.y, &box_x.z) == 3)
@@ -169,9 +176,18 @@ void Config::read(FILE *infile, int *line) {
     } else if (res[1] == 'W') {
       if (sscanf(res + 3, "%lf\n", &conf_weight) != 1)
         io->error("Error in configuration weight on line %d\n", line);
-    } else if (res[1] == 'C') {
-      // TODO
+
       // read C line and compare to values from potential file
+    } else if (res[1] == 'C') {
+      ptr = strtok(buffer, " ");
+      int counter = 0;
+      while (NULL != (ptr = strtok(NULL, " "))) {
+        if (strcmp(potential->elements[counter++],ptr) != 0) {
+          char temp_char[1024] = "\0";
+          sprintf(temp_char, "Element mismatch in configuration %d on line %d\n", index, *line);
+          io->error("%sExpected >%s< but found >%s<.", temp_char, potential->elements[counter-1], ptr);
+        }
+      }
     }
 
     // read stress
@@ -225,7 +241,7 @@ void Config::read(FILE *infile, int *line) {
                    &(atom->pos.x), &(atom->pos.y), &(atom->pos.z), &(atom->force.x), &(atom->force.y),
                    &(atom->force.z)))
       io->error("Corrupt configuration file on line %d\n", *line + 1);
-    line++;
+    (*line)++;
     if (atom->type >= structures->ntypes || atom->type < 0)
       io->error("Corrupt configuration file on line %d: Incorrect atom type (%d)\n", *line, atom->type);
     atom->absforce = sqrt(square(atom->force.x) + square(atom->force.y) + square(atom->force.z));
@@ -289,7 +305,7 @@ void Config::read(FILE *infile, int *line) {
   io->write_debug("     %10.6f %10.6f %10.6f\n", 1. / iheight.x, 1. / iheight.y, 1. / iheight.z);
   io->write_debug("Potential range:  %f\n", rcutmax);
   io->write_debug("Periodic images needed: %d %d %d\n\n",
-          2 * cell_scale[0] + 1, 2 * cell_scale[1] + 1, 2 * cell_scale[2] + 1);
+                  2 * cell_scale[0] + 1, 2 * cell_scale[1] + 1, 2 * cell_scale[2] + 1);
 #endif /* DEBUG */
 
   calc_neighbors();
@@ -298,6 +314,48 @@ void Config::read(FILE *infile, int *line) {
 }
 
 void Config::calc_neighbors(void) {
+  Atom *atom_i, *atom_j;
+  double r;
+  int type1, type2;
+  vector d, dd;
+
+  if (interaction->force->neigh_type() == 2) {
+    for (int i=0; i<atoms.size(); i++) {
+      atom_i = atoms[i];
+      for (int j=i; j<atoms.size(); j++) {
+        atom_j = atoms[j];
+	d.x = atom_j->pos.x - atom_i->pos.x;
+        d.y = atom_j->pos.y - atom_i->pos.y;
+        d.z = atom_j->pos.z - atom_i->pos.z;
+  	for (int ix = -cell_scale[0]; ix <= cell_scale[0]; ix++)
+	  for (int iy = -cell_scale[1]; iy <= cell_scale[1]; iy++)
+	    for (int iz = -cell_scale[2]; iz <= cell_scale[2]; iz++) {
+		if ((ix == 0) && (iy == 0) && (iz == 0) && (i == j))
+	           continue;
+		dd.x = d.x + ix * box_x.x + iy * box_y.x + iz * box_z.x;
+		dd.y = d.y + ix * box_x.y + iy * box_y.y + iz * box_z.y;
+		dd.z = d.z + ix * box_x.z + iy * box_y.z + iz * box_z.z;
+		r = sqrt(SPROD(dd, dd));
+		type1 = atom_i->type;
+		type2 = atom_j->type;
+		if (r <= potential->rcut[type1 * structures->ntypes + type2]) {
+		  if (r <= potential->rmin[type1 * structures->ntypes + type2]) {
+		    io->error("Short distance in configuration %d", index);
+		  }
+        	  atoms[i]->neighs.push_back(new Neighbor_2(ptf));
+	          atoms[i]->neighs[atoms[i]->neighs.size()-1]->init(this, i, j, &dd);
+		}
+	     }
+      }
+    }
+  } else if (interaction->force->neigh_type() == 3) {
+    // TODO
+  } else {
+      io->error("Unknown return value of neigh_type from force routine!");
+  }
+
+  //for (int i=0; i<atoms.size(); i++)
+    //printf("atom %d has %ld neighbors\n",i,atoms[i]->neighs.size());
 
   return;
 }

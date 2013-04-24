@@ -257,6 +257,10 @@ double TableAnalytic::get_cutoff(void) {
   return end;
 }
 
+double TableAnalytic::get_rmin(void) {
+  return begin;
+}
+
 void TableAnalytic::set_params(double *) {
 
 }

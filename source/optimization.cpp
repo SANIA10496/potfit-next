@@ -28,12 +28,25 @@
  *
  ****************************************************************/
 
-#include <mpi.h>
-
+#include "io.h"
 #include "optimization.h"
+#include "potential.h"
+#include "settings.h"
 
 using namespace POTFIT_NS;
 
 Optimization::Optimization(POTFIT *ptf) : Pointers(ptf) {}
 
 Optimization::~Optimization() {}
+
+void Optimization::run(void) {
+
+  io->write("Starting optimization with the following parameters:\n");
+  if (settings->eweight != 0.0)
+    io->write(" - Global energy weight %f\n",settings->eweight);
+  if (settings->sweight != 0.0)
+    io->write(" - Global stress weight %f\n",settings->sweight);
+  io->write(" - %d free parameters\n\n",potential->num_free_params);
+
+  return;
+}

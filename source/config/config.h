@@ -43,16 +43,18 @@ namespace POTFIT_NS {
 
   class Config : protected Pointers {
   public:
-    Config(class POTFIT *);
+    Config(class POTFIT *, int);
     ~Config();
 
     void read(FILE *, int *);
 
     std::vector<Atom *> atoms;
-    std::vector<int> num_per_type;
+    int cell_scale[3];
+    int num_atoms;
+    int *num_per_type;
     int use_forces;
     int use_stresses;
-    int num_atoms;
+    int index;
 
     double coh_energy;
     double conf_weight;
@@ -64,6 +66,7 @@ namespace POTFIT_NS {
   private:
     void calc_neighbors(void);
     vector vec_prod(vector, vector);
+
   };
 
 }

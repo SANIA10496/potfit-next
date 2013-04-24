@@ -32,6 +32,7 @@
 #include <cstdlib>
 
 #include "io.h"
+#include "potential.h"
 #include "structures.h"
 
 using namespace POTFIT_NS;
@@ -44,7 +45,6 @@ Structures::Structures(POTFIT *ptf) : Pointers(ptf) {
   using_forces = 0;
   using_stresses = 0;
 
-  elements = NULL;
   min_dist = NULL;
 
   line = 0;
@@ -53,9 +53,6 @@ Structures::Structures(POTFIT *ptf) : Pointers(ptf) {
 }
 
 Structures::~Structures() {
-  for (int i=0; i<ntypes; i++)
-    delete [] elements[i];
-  delete [] elements;
   delete [] min_dist;
 
   for (unsigned i = 0; i < config.size(); ++i)
@@ -68,29 +65,51 @@ Structures::~Structures() {
 
 void Structures::init(void) {
   if (ntypes == 0) {
-    io->error("Ntypes is 0!\n");
+    io->error("ntypes is 0!\n");
   }
 
-  elements = new char*[ntypes];
+  min_dist = new double[ntypes*ntypes];
+
   for (int i=0; i<ntypes; i++) {
     num_per_type.push_back(0);
-    elements[i] = new char[3];
-    strcpy(elements[i],"\0");
+    for (int j=0; j<ntypes; j++)
+      min_dist[i*ntypes+j] = 999.9;
   }
-  min_dist = new double[ntypes*ntypes];
 
   return;
 }
 
 void Structures::read_config(FILE *infile) {
   do {
-    config.push_back(new Config(ptf));
+    config.push_back(new Config(ptf, num_conf));
     config[num_conf]->read(infile, &line);
     num_atoms += config[num_conf]->num_atoms;
     for (int i=0;i<ntypes;i++)
       num_per_type[i] += config[num_conf]->num_per_type[i];
     num_conf++;
   } while (!feof(infile));
+
+  return;
+}
+
+void Structures::print_mindist(void) {
+  int i, j, k;
+
+  io->write("Minimal Distances Matrix:\n");
+  io->write("Atom\t");
+  for (i = 0; i < ntypes; i++)
+    io->write("%8s\t", potential->elements[i]);
+  io->write("with\n");
+  for (i = 0; i < ntypes; i++) {
+    io->write("%s\t", potential->elements[i]);
+    for (j = 0; j < ntypes; j++) {
+      k = (i <= j) ? i * ntypes + j - ((i * (i + 1)) / 2) : j * ntypes + i - ((j * (j + 1)) / 2);
+      io->write("%f\t", min_dist[k]);
+
+    }
+    io->write("\n");
+  }
+  io->write("\n");
 
   return;
 }

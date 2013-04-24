@@ -32,6 +32,7 @@
 #define PTF_UTILS_H
 
 #include "pointers.h"
+#include "types.h"
 
 namespace POTFIT_NS {
 
@@ -39,6 +40,8 @@ namespace POTFIT_NS {
   public:
     Utils(class POTFIT *);
     ~Utils();
+
+    double vect_dist(vector, vector);
 
     char flagfile[255];
   private:

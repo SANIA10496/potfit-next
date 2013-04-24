@@ -62,6 +62,10 @@ double TableTab4::get_cutoff(void) {
   return end;
 }
 
+double TableTab4::get_rmin(void) {
+  return begin;
+}
+
 void TableTab4::set_params(double *val) {
 }
 

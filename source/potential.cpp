@@ -28,13 +28,12 @@
  *
  ****************************************************************/
 
-#include <mpi.h>
-
 #include "force.h"
 #include "interaction.h"
 #include "io.h"
 #include "memory.h"
 #include "potential.h"
+#include "structures.h"
 #include "templates.h"
 
 #include "tables/table.h"
@@ -57,6 +56,8 @@ Potential::Potential(POTFIT *ptf) : Pointers(ptf) {
   idxpot = NULL;
   idxparam = NULL;
 
+  rcut = NULL;
+  rmin = NULL;
   rcut_max = 0.0;
 
   pots = NULL;
@@ -69,6 +70,12 @@ Potential::Potential(POTFIT *ptf) : Pointers(ptf) {
 
 Potential::~Potential() {
   delete [] invar_pot;
+  delete [] rcut;
+  delete [] rmin;
+
+  for (unsigned i = 0; i < elements.size(); ++i)
+    delete elements[i];
+  elements.clear();
 
   if (global_params)
     delete global_params;
@@ -85,12 +92,16 @@ void Potential::init(int size) {
   invar_pot = new int[interaction->force->cols()];
   for (int i=0;i<interaction->force->cols();i++)
     invar_pot[i] = 0;
+  for (int i = 0; i < structures->ntypes; ++i) {
+    elements.push_back(new char[11]);
+    sprintf(elements[i],"%d",i);
+  }
 
   return;
 }
 
 void Potential::read_globals(FILE *infile) {
-  char  buffer[255], name[255];
+  char  buffer[1024], name[255];
   double val, min, max;
   int ret_val;
   fpos_t filepos;
@@ -158,6 +169,16 @@ void Potential::read_potentials(FILE *infile) {
       num_free_params += pots[i]->get_number_free_params();
     rcut_max = MAX(rcut_max, pots[i]->get_cutoff());
   }
+  rcut = new double[square(structures->ntypes)];
+  rmin = new double[square(structures->ntypes)];
+  for (int i=0; i<structures->ntypes; i++)
+    for (int j=0; j<structures->ntypes; j++) {
+       int k = (i <= j) ? i * structures->ntypes + j - ((i * (i + 1)) / 2)
+	: j * structures->ntypes + i - ((j * (j + 1)) / 2);
+       rcut[i*structures->ntypes+j] = pots[k]->get_cutoff();
+       rmin[i*structures->ntypes+j] = pots[k]->get_rmin();
+    }
+
   io->write("- Sucessfully read %d potentials\n", num_pots);
 
   return;

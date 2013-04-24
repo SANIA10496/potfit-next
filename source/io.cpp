@@ -52,13 +52,13 @@ IO::~IO() {
 }
 
 void IO::print_header() {
-  write("This is potfit-%s compiled on %s.\n\n",POTFIT_VERSION,POTFIT_DATE);
+  write("This is potfit-next %s compiled on %s.\n\n",POTFIT_VERSION,POTFIT_DATE);
 }
 
 void IO::print_version() {
   MPI::COMM_WORLD.Barrier();
   if (screen) {
-    printf("potfit version %s\n",POTFIT_VERSION);
+    printf("potfit-next version %s\n",POTFIT_VERSION);
     printf("Copyright © 2013 Institute for Theoretical and Applied Physics (ITAP).\n");
     printf("License GPLv2+: GNU GPL version 2 or later <http://gnu.org/licenses/gpl.html>.\n");
     printf("This is free software: you are free to change and redistribute it.\n");
@@ -191,7 +191,7 @@ void IO::set_logfile(const char *filename) {
     logfile = fopen(filename, "w");
     if (logfile == NULL)
       error("Could not open logfile '%s'\n",filename);
-    write_log("This is potfit-%s compiled on %s.\n\n",POTFIT_VERSION,POTFIT_DATE);
+    write_log("This is potfit-next %s compiled on %s.\n\n",POTFIT_VERSION,POTFIT_DATE);
     write_log("Reading parameter file >%s< ... ",input->param_file);
   }
 }
