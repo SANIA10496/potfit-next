@@ -39,7 +39,6 @@
 #include "tables/table.h"
 #include "tables/globals_table.h"
 #include "tables/chempot_table.h"
-#include "tables/calcpot_table.h"
 
 namespace POTFIT_NS {
 
@@ -82,7 +81,6 @@ namespace POTFIT_NS {
     Table 		**pots; 		// individual potentials
     GlobalsTable 	*global_params; 	// table for global parameters (apot)
     ChempotTable 	*chem_pot; 		// table for chemical potentials (pair)
-    CalcpotTable 	*calc_pot; 		// table for interpolated potentials
   };
 
 }

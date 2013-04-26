@@ -31,6 +31,8 @@
 #ifndef PTF_POTFIT_H
 #define PTF_POTFIT_H
 
+#define POT_STEPS 500
+
 namespace POTFIT_NS {
 
   class POTFIT {

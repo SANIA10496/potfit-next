@@ -113,6 +113,8 @@ void Config::read(FILE *infile, int *line) {
   }
 
   num_per_type = new int[structures->ntypes];
+  for (int i=0;i<structures->ntypes;i++)
+    num_per_type[i] = 0;
 
   do {
     res = fgets(buffer, 1024, infile);

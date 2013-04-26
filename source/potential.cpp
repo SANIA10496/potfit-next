@@ -63,7 +63,6 @@ Potential::Potential(POTFIT *ptf) : Pointers(ptf) {
   pots = NULL;
   global_params = NULL;
   chem_pot = NULL;
-  calc_pot = NULL;
 
   return;
 }
@@ -129,7 +128,10 @@ void Potential::read_globals(FILE *infile) {
         }
       global_params->add_param(j, name, val, min, max);
     }
+  } else {
+    global_params = new GlobalsTable(ptf, 0);
   }
+
   io->write("- Read %d global parameters\n", num_globals);
 
   num_params += global_params->get_number_params();

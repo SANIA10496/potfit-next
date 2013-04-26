@@ -47,6 +47,7 @@ TableAnalytic::TableAnalytic(POTFIT *ptf) : Table(ptf) {
   init_done = 0;
 
   name = NULL;
+  format = 0;
 
   begin = 0.0;
   end = 0.0;

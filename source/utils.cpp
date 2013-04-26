@@ -41,6 +41,23 @@ Utils::Utils(POTFIT *ptf) : Pointers(ptf) {
 
 Utils::~Utils() {}
 
+char *Utils::tolowercase(char *str) {
+  int differ = 'A'-'a';
+  char ch;
+  int ii = strlen(str);
+
+  for (int i=0; i <ii; i++)
+  {
+    strncpy(&ch,str+i,1);
+    if (ch>='A' && ch<='Z')
+    {
+      ch = ch-differ;
+      memcpy(str+i,&ch,1);
+    }
+  }
+  return str;
+}
+
 double Utils::vect_dist(vector a, vector b) {
   return sqrt(square(b.x-a.x)+square(b.y-a.y)+square(b.z-a.z));
 }

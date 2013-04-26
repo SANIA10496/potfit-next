@@ -58,10 +58,10 @@ namespace POTFIT_NS {
     virtual void write_plot(FILE *) = 0;
     virtual void write_plotpoint(FILE *) = 0;
 
-  protected:
     int init_done; 		// is the table initialized?
 
     char *name; 		// name of analytic function / potential type
+    int  format; 		// potential format
 
     double begin; 		// starting position of potential = r_min
     double *values; 		// values
@@ -73,6 +73,15 @@ namespace POTFIT_NS {
     int pot_number; 		// index of potential
     int num_params; 		// number of parameters
     int num_free_params; 	// number of invariant parameters
+
+    // former calcpot table
+    int    len;			// total length of the table
+    double step;		// table increment
+    double invstep;		// inverse of increment
+    double grad[2]; 		// gradient on left and right end
+    double *xcoord;		// the x-coordinates of sampling points
+    double *table;		// the actual data
+    double *d2tab;		// second derivatives of table data for spline int
   };
 }
 

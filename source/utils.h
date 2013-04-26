@@ -41,6 +41,7 @@ namespace POTFIT_NS {
     Utils(class POTFIT *);
     ~Utils();
 
+    char *tolowercase(char *);
     double vect_dist(vector, vector);
 
     char flagfile[255];

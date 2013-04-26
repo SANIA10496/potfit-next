@@ -435,7 +435,7 @@ void Input::read_potential_file() {
       // remove newline at the end of buffer
       if ((str = strchr(buffer + 3, '\n')) != NULL)
         *str = '\0';
-      if (strcmp(buffer + 3, interaction->type) != 0) {
+      if (strcmp(utils->tolowercase(buffer + 3), utils->tolowercase(interaction->type)) != 0) {
         io->error("The potential types in your parameter and potential file do not match!\n");
       }
       io->write("- Using %d %s potentials to calculate forces\n", size, interaction->type);
