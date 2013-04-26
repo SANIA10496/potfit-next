@@ -34,7 +34,6 @@
 #include "table_analytic.h"
 
 #include "../io.h"
-#include "../memory.h"
 #include "../potential.h"
 #include "../settings.h"
 
@@ -55,6 +54,15 @@ TableAnalytic::TableAnalytic(POTFIT *ptf) : Table(ptf) {
   pot_number = 0;
   num_params = 0;
   num_free_params = 0;
+
+  len = 0;
+  step = 0.0;
+  invstep = 0.0;
+  grad[0] = 0.0;
+  grad[1] = 0.0;
+  xcoord = NULL;
+  table = NULL;
+  d2tab = NULL;
 
   // from table_analytic.h
   smooth_pot = 0;
@@ -109,21 +117,18 @@ void TableAnalytic::init(const char *fname, int index) {
     if (smooth_pot == 1)
       num_params++;
 
-    memory->create(values, num_params, "potential values");
-    memory->create(val_min, num_params, "minimum potential values");
-    memory->create(val_max, num_params, "maximum potential values");
-    memory->create(invar_par, num_params, "maximum potential values");
+    values = new double[num_params];
+    val_min = new double[num_params];
+    val_max = new double[num_params];
+    invar_par = new int[num_params];
+    param_name = new char*[num_params];
 
     for (int i=0; i<num_params; i++) {
       values[i] = 0.0;
       val_min[i] = 0.0;
       val_max[i] = 0.0;
       invar_par[i] = 0;
-    }
-
-    param_name = (char **)malloc(num_params * sizeof(char *));
-    for (int i=0; i<num_params; i++) {
-      param_name[i] = (char *)malloc(30 * sizeof(char));
+      param_name[i] = new char[30];
       strcpy(param_name[i],"\0");
     }
 

@@ -34,7 +34,6 @@
 #include "globals_table.h"
 
 #include "../io.h"
-#include "../memory.h"
 #include "../potential.h"
 #include "../settings.h"
 
@@ -54,14 +53,14 @@ GlobalsTable::GlobalsTable(POTFIT *ptf, int num) : Pointers(ptf) {
     strcpy(param_name[i],"\0");
   }
 
-  memory->create(values, num_globals, "global parameter values");
-  memory->create(val_min, num_globals, "global parameter minimum values");
-  memory->create(val_max, num_globals, "global parameter maximum values");
-  memory->create(invar_par, num_globals, "global parameter invariant setting");
-  memory->create(idx, num_globals, "global parameter indirect index");
-  memory->create(usage, num_globals, "global parameter indirect index");
+  values = new double[num_globals];
+  val_min = new double[num_globals];
+  val_max = new double[num_globals];
+  invar_par = new int[num_globals];
+  idx = new int[num_globals];
+  usage = new int[num_globals];
 
-  global_idx = (int ***)malloc(num_globals * sizeof(int **));
+  global_idx = new int**[num_globals];
 
   for (int i=0; i<num_globals; i++) {
     values[i] = 0.0;
@@ -74,11 +73,12 @@ GlobalsTable::GlobalsTable(POTFIT *ptf, int num) : Pointers(ptf) {
 }
 
 GlobalsTable::~GlobalsTable() {
-  memory->destroy(values);
-  memory->destroy(val_min);
-  memory->destroy(val_max);
-  memory->destroy(invar_par);
-  memory->destroy(usage);
+  delete [] values;
+  delete [] val_min;
+  delete [] val_max;
+  delete [] invar_par;
+  delete [] idx;
+  delete [] usage;
 }
 
 void GlobalsTable::add_param(int index, const char *name, double val, double min, double max) {

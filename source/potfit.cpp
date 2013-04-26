@@ -39,7 +39,6 @@
 #include "structures.h"
 #include "settings.h"
 #include "potential.h"
-#include "memory.h"
 #include "communication.h"
 #include "utils.h"
 
@@ -54,7 +53,6 @@ POTFIT::POTFIT(int argc, char **argv) {
   structures = new Structures(this);
   settings = new Settings(this);
   potential = new Potential(this);
-  memory = new Memory(this);
   communication = new Communication(this);
   utils = new Utils(this);
   input = new Input(this, argc, argv);
@@ -70,7 +68,6 @@ POTFIT::~POTFIT() {
   delete structures;
   delete settings;
   delete potential;
-  delete memory;
   delete communication;
   delete utils;
 }

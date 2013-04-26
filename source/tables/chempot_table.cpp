@@ -34,7 +34,6 @@
 #include "chempot_table.h"
 
 #include "../io.h"
-#include "../memory.h"
 #include "../potential.h"
 #include "../settings.h"
 
@@ -44,26 +43,32 @@ ChempotTable::ChempotTable(POTFIT *ptf, int ntypes) : Pointers(ptf) {
   num_params = ntypes;
   num_invar_params = 0;
 
-  memory->create(values,num_params,"chemical potentials");
-  memory->create(val_min,num_params,"chemical potentials");
-  memory->create(val_max,num_params,"chemical potentials");
-  memory->create(invar_par,num_params,"chemical potentials");
+  values = new double[num_params];
+  val_min = new double[num_params];
+  val_max = new double[num_params];
+  invar_par = new int[num_params];
+  param_name = new char*[num_params];
 
   for (int i=0;i<num_params;i++) {
     values[i] = 0.0;
     val_min[i] = 0.0;
     val_max[i] = 0.0;
     invar_par[i] = 0;
-  }
-
-  param_name = (char **)malloc(num_params * sizeof(char *));
-  for (int i=0; i<num_params; i++) {
-    param_name[i] = (char *)malloc(30 * sizeof(char));
+    param_name[i] = new char[30];
     strcpy(param_name[i],"\0");
   }
+
+  return;
 }
 
 ChempotTable::~ChempotTable() {
+  delete [] values;
+  delete [] val_min;
+  delete [] val_max;
+  delete [] invar_par;
+  for (int i=0;i<num_params;i++)
+    delete [] param_name[i];
+  delete [] param_name;
 }
 
 void ChempotTable::add_value(int i, const char *name, double val, double min, double max) {

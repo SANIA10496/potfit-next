@@ -34,7 +34,6 @@
 #include "table_tab4.h"
 
 #include "../io.h"
-#include "../memory.h"
 #include "../settings.h"
 
 using namespace POTFIT_NS;
