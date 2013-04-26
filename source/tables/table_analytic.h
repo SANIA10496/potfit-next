@@ -40,7 +40,7 @@
 
 namespace POTFIT_NS {
 
-class TableAnalytic : public Table {
+  class TableAnalytic : public Table {
   public:
     TableAnalytic(class POTFIT *);
     ~TableAnalytic();
@@ -56,6 +56,8 @@ class TableAnalytic : public Table {
     double get_rmin(void);
 
     void set_params(double *);
+    void init_calc_table(void);
+    void update_calc_table(void);
 
     void write_potential(FILE *);
     void write_plot(FILE *);
@@ -64,12 +66,15 @@ class TableAnalytic : public Table {
   private:
     int smooth_pot;
 
-    char **param_name; 	// parameter names
-    double *val_min; 	// parameter minimum
-    double *val_max; 	// parameter maximum
+    double cutoff(double, double, double);
+
+    char **param_name; 		// parameter names
+    double *val_min; 		// parameter minimum
+    double *val_max; 		// parameter maximum
+    double *stored_values; 	// values currently used in the calc_pot tables
 
     Function *function; 	// function pointer for analytic potentials
-};
+  };
 }
 
 #endif /* PTF_TABLE_ANALYTIC_H */

@@ -53,6 +53,7 @@ namespace POTFIT_NS {
     virtual double get_rmin(void) = 0;
 
     virtual void set_params(double *) = 0;
+    virtual void update_calc_table(void) = 0;
 
     virtual void write_potential(FILE *) = 0;
     virtual void write_plot(FILE *) = 0;

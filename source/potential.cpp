@@ -73,8 +73,12 @@ Potential::~Potential() {
   delete [] rmin;
 
   for (unsigned i = 0; i < elements.size(); ++i)
-    delete elements[i];
+    delete [] elements[i];
   elements.clear();
+
+  for (int i=0; i<num_pots; i++)
+    delete pots[i];
+  delete [] pots;
 
   if (global_params)
     delete global_params;
@@ -89,7 +93,7 @@ void Potential::init(int size) {
   num_pots = size;
   num_free_pots = size;
   invar_pot = new int[interaction->force->cols()];
-  for (int i=0;i<interaction->force->cols();i++)
+  for (int i=0; i<interaction->force->cols(); i++)
     invar_pot[i] = 0;
   for (int i = 0; i < structures->ntypes; ++i) {
     elements.push_back(new char[11]);
@@ -175,10 +179,10 @@ void Potential::read_potentials(FILE *infile) {
   rmin = new double[square(structures->ntypes)];
   for (int i=0; i<structures->ntypes; i++)
     for (int j=0; j<structures->ntypes; j++) {
-       int k = (i <= j) ? i * structures->ntypes + j - ((i * (i + 1)) / 2)
-	: j * structures->ntypes + i - ((j * (j + 1)) / 2);
-       rcut[i*structures->ntypes+j] = pots[k]->get_cutoff();
-       rmin[i*structures->ntypes+j] = pots[k]->get_rmin();
+      int k = (i <= j) ? i * structures->ntypes + j - ((i * (i + 1)) / 2)
+              : j * structures->ntypes + i - ((j * (j + 1)) / 2);
+      rcut[i*structures->ntypes+j] = pots[k]->get_cutoff();
+      rmin[i*structures->ntypes+j] = pots[k]->get_rmin();
     }
 
   io->write("- Sucessfully read %d potentials\n", num_pots);

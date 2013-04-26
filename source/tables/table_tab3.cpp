@@ -68,6 +68,11 @@ double TableTab3::get_rmin(void) {
 void TableTab3::set_params(double *val) {
 }
 
+void TableTab3::update_calc_table(void) {
+
+  return;
+}
+
 void TableTab3::write_potential(FILE *outfile) {
 }
 

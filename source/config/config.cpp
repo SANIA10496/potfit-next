@@ -75,11 +75,19 @@ Config::Config(POTFIT *ptf, int idx) : Pointers(ptf) {
 }
 
 Config::~Config() {
+  for (int i=0; i<atoms.size(); i++) {
+    for (int j=0; j<atoms[i]->neighs.size(); j++) {
+      delete atoms[i]->neighs[j];
+    }
+    atoms[i]->neighs.clear();
+  }
+
   for (unsigned i = 0; i < atoms.size(); ++i)
     delete atoms[i];
   atoms.clear();
 
   delete [] num_per_type;
+
   return;
 }
 
@@ -113,7 +121,7 @@ void Config::read(FILE *infile, int *line) {
   }
 
   num_per_type = new int[structures->ntypes];
-  for (int i=0;i<structures->ntypes;i++)
+  for (int i=0; i<structures->ntypes; i++)
     num_per_type[i] = 0;
 
   do {
@@ -326,38 +334,38 @@ void Config::calc_neighbors(void) {
       atom_i = atoms[i];
       for (int j=i; j<atoms.size(); j++) {
         atom_j = atoms[j];
-	d.x = atom_j->pos.x - atom_i->pos.x;
+        d.x = atom_j->pos.x - atom_i->pos.x;
         d.y = atom_j->pos.y - atom_i->pos.y;
         d.z = atom_j->pos.z - atom_i->pos.z;
-  	for (int ix = -cell_scale[0]; ix <= cell_scale[0]; ix++)
-	  for (int iy = -cell_scale[1]; iy <= cell_scale[1]; iy++)
-	    for (int iz = -cell_scale[2]; iz <= cell_scale[2]; iz++) {
-		if ((ix == 0) && (iy == 0) && (iz == 0) && (i == j))
-	           continue;
-		dd.x = d.x + ix * box_x.x + iy * box_y.x + iz * box_z.x;
-		dd.y = d.y + ix * box_x.y + iy * box_y.y + iz * box_z.y;
-		dd.z = d.z + ix * box_x.z + iy * box_y.z + iz * box_z.z;
-		r = sqrt(SPROD(dd, dd));
-		type1 = atom_i->type;
-		type2 = atom_j->type;
-		if (r <= potential->rcut[type1 * structures->ntypes + type2]) {
-		  if (r <= potential->rmin[type1 * structures->ntypes + type2]) {
-		    io->error("Short distance in configuration %d", index);
-		  }
-        	  atoms[i]->neighs.push_back(new Neighbor_2(ptf));
-	          atoms[i]->neighs[atoms[i]->neighs.size()-1]->init(this, i, j, &dd);
-		}
-	     }
+        for (int ix = -cell_scale[0]; ix <= cell_scale[0]; ix++)
+          for (int iy = -cell_scale[1]; iy <= cell_scale[1]; iy++)
+            for (int iz = -cell_scale[2]; iz <= cell_scale[2]; iz++) {
+              if ((ix == 0) && (iy == 0) && (iz == 0) && (i == j))
+                continue;
+              dd.x = d.x + ix * box_x.x + iy * box_y.x + iz * box_z.x;
+              dd.y = d.y + ix * box_x.y + iy * box_y.y + iz * box_z.y;
+              dd.z = d.z + ix * box_x.z + iy * box_y.z + iz * box_z.z;
+              r = sqrt(SPROD(dd, dd));
+              type1 = atom_i->type;
+              type2 = atom_j->type;
+              if (r <= potential->rcut[type1 * structures->ntypes + type2]) {
+                if (r <= potential->rmin[type1 * structures->ntypes + type2]) {
+                  io->error("Short distance in configuration %d", index);
+                }
+                atoms[i]->neighs.push_back(new Neighbor_2(ptf));
+                atoms[i]->neighs[atoms[i]->neighs.size()-1]->init(this, i, j, &dd);
+              }
+            }
       }
     }
   } else if (interaction->force->neigh_type() == 3) {
     // TODO
   } else {
-      io->error("Unknown return value of neigh_type from force routine!");
+    io->error("Unknown return value of neigh_type from force routine!");
   }
 
   //for (int i=0; i<atoms.size(); i++)
-    //printf("atom %d has %ld neighbors\n",i,atoms[i]->neighs.size());
+  //printf("atom %d has %ld neighbors\n",i,atoms[i]->neighs.size());
 
   return;
 }

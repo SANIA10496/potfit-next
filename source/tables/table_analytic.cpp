@@ -74,9 +74,28 @@ TableAnalytic::TableAnalytic(POTFIT *ptf) : Table(ptf) {
   invar_par = NULL;
 
   function = NULL;
+
+  return;
 }
 
 TableAnalytic::~TableAnalytic() {
+  for (int i=0; i<num_params; i++) {
+    delete [] param_name[i];
+  }
+  delete [] values;
+  delete [] val_min;
+  delete [] val_max;
+  delete [] stored_values;
+  delete [] invar_par;
+  delete [] param_name;
+
+  if (len != 0) {
+    delete [] xcoord;
+    delete [] table;
+    delete [] d2tab;
+  }
+
+  return;
 }
 
 void TableAnalytic::init(const char *fname, int index) {
@@ -120,6 +139,7 @@ void TableAnalytic::init(const char *fname, int index) {
     values = new double[num_params];
     val_min = new double[num_params];
     val_max = new double[num_params];
+    stored_values = new double[num_params];
     invar_par = new int[num_params];
     param_name = new char*[num_params];
 
@@ -171,7 +191,7 @@ void TableAnalytic::read_potential(FILE *infile) {
   // read parameters
   num_free_params = num_params;
   for (i = 0; i < num_params; i++) {
-    param_name[i] = (char *)malloc(30 * sizeof(char));
+    param_name[i] = new char[30];
     if (NULL == param_name[i])
       io->error("Error in allocating memory for parameter name");
     strcpy(param_name[i], "\0");
@@ -225,7 +245,7 @@ void TableAnalytic::read_potential(FILE *infile) {
       // parameter will not be optimized if min==max
       if (val_min[i] == val_max[i]) {
         invar_par[i] = 1;
-	num_free_params--;
+        num_free_params--;
       } else if (val_min[i] > val_max[i]) {
         double temp = val_min[i];
         val_min[i] = val_max[i];
@@ -246,6 +266,8 @@ void TableAnalytic::read_potential(FILE *infile) {
       }
     }
   }
+
+  init_calc_table();
 
   // create indirect indexing array
 
@@ -269,6 +291,54 @@ double TableAnalytic::get_rmin(void) {
 
 void TableAnalytic::set_params(double *) {
 
+  return;
+}
+
+void TableAnalytic::init_calc_table(void) {
+  double fval, h;
+
+  len = POT_STEPS;
+  step = (end - begin) / (len - 1);
+  invstep = 1. / step;
+  grad[0] = 10e30;
+  grad[1] = 0.0;
+  xcoord = new double[POT_STEPS];
+  table = new double[POT_STEPS];
+  d2tab = new double[POT_STEPS];
+
+  h = values[num_params - 1];
+  for (int i=0; i<POT_STEPS; i++) {
+    xcoord[i] = begin + i * step;
+    function->calc(xcoord[i], values , &fval);
+    table[i] = smooth_pot ? fval * cutoff(xcoord[i], end, h) : fval;
+  }
+
+  for (int i=0; i<num_params; i++) {
+    stored_values[i] = values[i];
+  }
+
+  return;
+}
+
+void TableAnalytic::update_calc_table(void) {
+  double fval, h;
+  int change = 0;
+
+  for (int i=0; i<num_params; i++)
+    if (stored_values[i] != values[i])
+      change = 1;
+
+  if (change == 0)
+    return;
+
+  h = values[num_params - 1];
+  for (int i=0; i<POT_STEPS; i++) {
+    xcoord[i] = begin + i * step;
+    function->calc(xcoord[i], values , &fval);
+    table[i] = smooth_pot ? fval * cutoff(xcoord[i], end, h) : fval;
+  }
+
+  return;
 }
 
 void TableAnalytic::write_potential(FILE *outfile) {
@@ -288,10 +358,27 @@ void TableAnalytic::write_potential(FILE *outfile) {
       io->writef(outfile, "%s\n",param_name[i]);
     }
   }
+
+  return;
 }
 
 void TableAnalytic::write_plot(FILE *outfile) {
+  return;
 }
 
 void TableAnalytic::write_plotpoint(FILE *outfile) {
+  return;
+}
+
+double TableAnalytic::cutoff(double x, double rcut, double h) {
+  if ((x-rcut)>0)
+    return 0.0;
+
+  static double fval = 0.0;
+
+  fval = (x-rcut) / h;
+  fval *= fval;
+  fval *= fval;
+
+  return fval / (1. + fval);
 }
