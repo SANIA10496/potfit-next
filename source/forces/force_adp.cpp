@@ -50,6 +50,10 @@ int ForceADP::neigh_type(void) {
   return 2;
 }
 
+int ForceADP::get_col(int slot, int a, int b) {
+  return 0;
+}
+
 int ForceADP::cols() {
   int n = structures->ntypes;
   return (int)n*(n+1)/2.;

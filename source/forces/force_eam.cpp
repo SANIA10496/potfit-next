@@ -47,6 +47,10 @@ int ForceEAM::neigh_type(void) {
 	return 2;
 }
 
+int ForceEAM::get_col(int col, int a, int b) {
+  return 0;
+}
+
 int ForceEAM::cols() {
 }
 

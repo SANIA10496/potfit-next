@@ -40,17 +40,31 @@
 using namespace POTFIT_NS;
 
 ForcePair::ForcePair(POTFIT *ptf): Force(ptf) {
+  return;
 }
 
 ForcePair::~ForcePair() {
+  return;
 }
 
 int ForcePair::num_slots(void) {
-	return 1;
+  return 1;
 }
 
 int ForcePair::neigh_type(void) {
-	return 2;
+  return 2;
+}
+
+int ForcePair::get_col(int slot, int a, int b) {
+  int col;
+
+  if (slot != 0)
+    io->error("Pair potentials only use 1 slot.");
+
+  col = (a <= b) ? a * structures->ntypes + b - ((a * (a + 1)) / 2)
+        : b * structures->ntypes + a - ((b * (b + 1)) / 2);
+
+  return col;
 }
 
 int ForcePair::cols() {
@@ -97,7 +111,7 @@ void ForcePair::read_additional_data(FILE *infile) {
         io->write("Found \"%s\" instead of \"cp\"\n", name);
         io->error("No chemical potentials found in potential file.\n");
       }
-    potential->chem_pot->add_value(j, buffer, val, min, max);
+      potential->chem_pot->add_value(j, buffer, val, min, max);
     }
     io->write("- Enabled chemical potentials for %d elements\n",structures->ntypes);
   }

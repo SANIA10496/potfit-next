@@ -92,7 +92,8 @@ Neighbor_2::~Neighbor_2() {
 
 void Neighbor_2::init(Config *conf, int i, int j, vector *dd) {
   int type1 = conf->atoms[i]->type;
-  int col_temp = -1;
+  int col_temp = 0;
+  int k, l;
 
   r = sqrt(SPROD(*dd,*dd));
 
@@ -119,10 +120,23 @@ void Neighbor_2::init(Config *conf, int i, int j, vector *dd) {
 
   conf->atoms[i]->num_neighbors++;
 
-  col_temp = (type1 <= type) ? type1 * structures->ntypes + type - ((type1 * (type1 + 1)) / 2)
-	  : type * structures->ntypes + type1 - ((type * (type + 1)) / 2);
-  col[0] = col_temp;
-  structures->min_dist[col_temp] = MIN(structures->min_dist[col_temp], r);
+  col[0] = interaction->force->get_col(0, type1, type);
+  structures->min_dist[col[0]] = MIN(structures->min_dist[col[0]], r);
+
+  // loop over all slots
+  for (k=0;k<interaction->force->num_slots();k++) {
+    col_temp = interaction->force->get_col(k, type1, type);
+    l = 0;
+    while (potential->pots[col_temp]->xcoord[l] < r) {
+      l++;
+    }
+    slot[k] = --l;
+    step[k] = potential->pots[col_temp]->xcoord[l+1] - potential->pots[col_temp]->xcoord[l];
+    shift[k] = (r - potential->pots[col_temp]->xcoord[l]) / step[k];
+    col[k] = col_temp;
+    printf("slot %d, step %f shift %f, col %d\n",slot[k],step[k],shift[k],col[k]);
+  }
+
 
   return;
 }
