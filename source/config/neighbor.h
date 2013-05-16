@@ -56,11 +56,13 @@ namespace POTFIT_NS {
     double *shift;
     double *step;
     int   *col;		/* coloumn of interaction for this neighbor */
+
     // ADP
     vector rdist;			/* real distance */
     sym_tens sqrdist;		/* real squared distance */
     double u_val, u_grad;		/* value and gradient of u(r) */
     double w_val, w_grad;		/* value and gradient of w(r) */
+
     // Coulomb
     double r2;			/* r^2 */
     double fnval_el;		/* stores tail of electrostatic potential */

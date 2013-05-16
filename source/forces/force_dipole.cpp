@@ -47,6 +47,10 @@ int ForceDipole::neigh_type(void) {
   return 2;
 }
 
+int ForceDipole::get_col(int col, int a, int b) {
+  return 0;
+}
+
 int ForceDipole::cols() {
 }
 

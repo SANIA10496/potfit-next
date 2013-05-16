@@ -50,6 +50,7 @@ namespace POTFIT_NS {
 
     int num_slots(void);
     int neigh_type(void);
+    int get_col(int, int, int);
 
     int cols(void);
   };
