@@ -37,6 +37,7 @@
 #include "pointers.h"
 
 #include "tables/table.h"
+#include "tables/opt_table.h"
 #include "tables/globals_table.h"
 #include "tables/chempot_table.h"
 
@@ -51,10 +52,9 @@ namespace POTFIT_NS {
     void read_globals(FILE *);
     void read_potentials(FILE *);
 
-    void create_indirect_index(void);
-
-    void update_calc_pot(void);
     void update_potentials(void);
+
+    void init_opt_table(void);
 
     std::vector<char *> elements;
 
@@ -79,6 +79,7 @@ namespace POTFIT_NS {
 
     // actual potential data
     Table 		**pots; 		// individual potentials
+    OptTable 		*opt; 			// optimization table
     GlobalsTable 	*global_params; 	// table for global parameters (apot)
     ChempotTable 	*chem_pot; 		// table for chemical potentials (pair)
   };

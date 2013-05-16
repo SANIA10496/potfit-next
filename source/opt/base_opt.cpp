@@ -1,6 +1,6 @@
 /****************************************************************
  *
- * optimization.h:
+ * base_opt.cpp:
  *
  ****************************************************************
  *
@@ -28,33 +28,16 @@
  *
  ****************************************************************/
 
-#ifndef PTF_OPTIMIZATION_H
-#define PTF_OPTIMIZATION_H
+#include "base_opt.h"
 
-#include <cstdio>
-#include <vector>
+using namespace POTFIT_NS;
 
-#include "pointers.h"
-#include "opt/base_opt.h"
+BaseOpt::BaseOpt(POTFIT *ptf, int n) : Pointers(ptf) {
+  maxsteps = n;
 
-namespace POTFIT_NS {
-
-  class Optimization : protected Pointers {
-  public:
-    Optimization(class POTFIT *);
-    ~Optimization();
-
-    void run(void);
-
-    void add_algorithm(void);
-
-    std::vector<char *> algorithms;
-    std::vector<int> maxsteps;
-    int num_algs;
-
-  private:
-    BaseOpt *opt;
-  };
+  return;
 }
 
-#endif // PTF_OPTIMIZATION_H
+BaseOpt::~BaseOpt() {
+  return;
+}

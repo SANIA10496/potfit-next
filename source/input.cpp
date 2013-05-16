@@ -36,6 +36,7 @@
 #include "interaction.h"
 #include "io.h"
 #include "potential.h"
+#include "optimization.h"
 #include "output.h"
 #include "random.h"
 #include "settings.h"
@@ -230,11 +231,11 @@ void Input::read_parameter_file() {
     else if (strcasecmp(token, "dp_tol") == 0) {
       get_param("dp_tol", &settings->dp_tol, PARAM_DOUBLE, 1, 1);
     }
-    /* mixing parameter for damping dipole iteration loop */
+    // mixing parameter for damping dipole iteration loop
     else if (strcasecmp(token, "dp_mix") == 0) {
       get_param("dp_mix", &settings->dp_mix, PARAM_DOUBLE, 1, 1);
     }
-    /* log file */
+    // log file
     else if (strcasecmp(token, "write_log") == 0) {
       get_param("write_log", &io->write_logfile, PARAM_INT, 1, 1);
     }
@@ -242,7 +243,11 @@ void Input::read_parameter_file() {
     else if (strcasecmp(token, "interaction") == 0) {
       get_param("interaction", interaction->type, PARAM_STR, 1, 255);
     }
-    /* unknown tag */
+    // optimization algorithm
+    else if (strcasecmp(token, "opt_alg") == 0) {
+      optimization->add_algorithm();
+    }
+    // unknown tag
     else {
       fprintf(stderr, "Unknown tag <%s> ignored!\n", token);
       fflush(stderr);

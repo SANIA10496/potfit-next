@@ -1,6 +1,6 @@
 /****************************************************************
  *
- * optimization.h:
+ * opt_simann.h:
  *
  ****************************************************************
  *
@@ -28,33 +28,20 @@
  *
  ****************************************************************/
 
-#ifndef PTF_OPTIMIZATION_H
-#define PTF_OPTIMIZATION_H
+#ifndef PTF_OPT_SIMANN_H
+#define PTF_OPT_SIMANN_H
 
-#include <cstdio>
-#include <vector>
-
-#include "pointers.h"
-#include "opt/base_opt.h"
+#include "base_opt.h"
 
 namespace POTFIT_NS {
 
-  class Optimization : protected Pointers {
+  class OptSimann : public BaseOpt {
   public:
-    Optimization(class POTFIT *);
-    ~Optimization();
+    OptSimann(class POTFIT *, int);
+    ~OptSimann();
 
     void run(void);
-
-    void add_algorithm(void);
-
-    std::vector<char *> algorithms;
-    std::vector<int> maxsteps;
-    int num_algs;
-
-  private:
-    BaseOpt *opt;
   };
 }
 
-#endif // PTF_OPTIMIZATION_H
+#endif // PTF_OPT_SIMANN_H

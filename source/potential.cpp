@@ -61,6 +61,7 @@ Potential::Potential(POTFIT *ptf) : Pointers(ptf) {
   rcut_max = 0.0;
 
   pots = NULL;
+  opt = NULL;
   global_params = NULL;
   chem_pot = NULL;
 
@@ -72,6 +73,9 @@ Potential::~Potential() {
   delete [] rcut;
   delete [] rmin;
 
+  delete [] idxpot;
+  delete [] idxparam;
+
   for (unsigned i = 0; i < elements.size(); ++i)
     delete [] elements[i];
   elements.clear();
@@ -79,6 +83,7 @@ Potential::~Potential() {
   for (int i=0; i<num_pots; i++)
     delete pots[i];
   delete [] pots;
+  delete opt;
 
   if (global_params)
     delete global_params;
@@ -177,20 +182,51 @@ void Potential::read_potentials(FILE *infile) {
   }
   rcut = new double[square(structures->ntypes)];
   rmin = new double[square(structures->ntypes)];
-  for (int i=0; i<structures->ntypes; i++)
+
+  // TODO: this only works for pair interactions
+  for (int i=0; i<structures->ntypes; i++) {
     for (int j=0; j<structures->ntypes; j++) {
       int k = (i <= j) ? i * structures->ntypes + j - ((i * (i + 1)) / 2)
               : j * structures->ntypes + i - ((j * (j + 1)) / 2);
       rcut[i*structures->ntypes+j] = pots[k]->get_cutoff();
       rmin[i*structures->ntypes+j] = pots[k]->get_rmin();
     }
+  }
 
   io->write("- Sucessfully read %d potentials\n", num_pots);
+
+  opt = new OptTable(ptf, num_free_params);
+  init_opt_table();
 
   return;
 }
 
-void Potential::create_indirect_index(void) {
-  int i, j;
+void Potential::init_opt_table(void) {
+  int count = 0;
 
+  idxpot = new int[num_free_params];
+  idxparam = new int[num_free_params];
+
+  for (int i=0; i<num_pots;i++) {
+    if (invar_pot[i] == 0) {
+      for (int j=0; j<pots[i]->get_number_params(); j++) {
+        if (pots[i]->invar_par[j] == 0) {
+	  idxpot[count] = i;
+	  idxparam[count] = j;
+	  opt->values[count++] = pots[i]->values[j];
+        }
+      }
+    }
+  }
+
+  if (count != num_free_params) {
+    io->error("Number of free parameters is inconsistent!");
+  }
+
+  io->write("Opt_Table:\n");
+  for (int i=0;i<num_free_params;i++) {
+    io->write("%d: %f\n",i,opt->values[i]);
+  }
+
+  return;
 }

@@ -28,6 +28,8 @@
  *
  ****************************************************************/
 
+#include<cstdlib>
+
 #include "io.h"
 #include "optimization.h"
 #include "potential.h"
@@ -47,6 +49,28 @@ void Optimization::run(void) {
   if (settings->sweight != 0.0)
     io->write(" - Global stress weight %f\n",settings->sweight);
   io->write(" - %d free parameters\n\n",potential->num_free_params);
+
+  io->write("num_algs = %d\n",num_algs);
+  for (int i=0;i<num_algs;i++)
+	  io->write("alg_%d: %s\n",i,algorithms[i]);
+  return;
+}
+
+void Optimization::add_algorithm(void) {
+  char *str;
+
+  // read algorithm name
+  str = strtok(NULL, " \t\r\n");
+  if (str == NULL)
+    io->error("Algorithm name is missing!");
+  algorithms.push_back(new char[20]);
+  sprintf(algorithms[num_algs++], str);
+
+  // read maxsteps
+  str = strtok(NULL, " \t\r\n");
+  if (str == NULL)
+    io->error("Algorithm name is missing!");
+  maxsteps.push_back(atoi(str));
 
   return;
 }

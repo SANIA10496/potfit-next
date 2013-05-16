@@ -192,7 +192,7 @@ void IO::set_logfile(const char *filename) {
     if (logfile == NULL)
       error("Could not open logfile '%s'\n",filename);
     write_log("This is potfit-next %s compiled on %s.\n\n",POTFIT_VERSION,POTFIT_DATE);
-    write_log("Reading parameter file >%s< ... ",input->param_file);
+    write_log("Reading parameter file \"%s\" ... ",input->param_file);
   }
 }
 
