@@ -30,6 +30,7 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <limits>
 
 #include "table_tab3.h"
 
@@ -39,9 +40,11 @@
 using namespace POTFIT_NS;
 
 TableTab3::TableTab3(POTFIT *ptf) : Table(ptf) {
+  return;
 }
 
 TableTab3::~TableTab3() {
+  return;
 }
 
 void TableTab3::init(const char *name, int index) {
@@ -49,12 +52,15 @@ void TableTab3::init(const char *name, int index) {
 }
 
 void TableTab3::read_potential(FILE *a) {
+  return;
 }
 
 int TableTab3::get_number_params(void) {
+  return num_params;
 }
 
 int TableTab3::get_number_free_params(void) {
+  return num_free_params;
 }
 
 double TableTab3::get_cutoff(void) {
@@ -63,6 +69,14 @@ double TableTab3::get_cutoff(void) {
 
 double TableTab3::get_rmin(void) {
   return begin;
+}
+
+double TableTab3::get_val_min(int n) {
+  return -std::numeric_limits<double>::infinity();
+}
+
+double TableTab3::get_val_max(int n) {
+  return std::numeric_limits<double>::infinity();
 }
 
 void TableTab3::set_params(double *val) {

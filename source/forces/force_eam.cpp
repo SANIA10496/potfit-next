@@ -34,17 +34,19 @@
 using namespace POTFIT_NS;
 
 ForceEAM::ForceEAM(POTFIT *ptf): Force(ptf) {
+  return;
 }
 
 ForceEAM::~ForceEAM() {
+  return;
 }
 
 int ForceEAM::num_slots(void) {
-	return 2;
+  return 2;
 }
 
 int ForceEAM::neigh_type(void) {
-	return 2;
+  return 2;
 }
 
 int ForceEAM::get_col(int col, int a, int b) {
@@ -55,4 +57,8 @@ int ForceEAM::cols() {
 }
 
 void ForceEAM::read_additional_data(FILE *infile) {
+}
+
+double ForceEAM::calc_forces(double *forces) {
+  return 0.0;
 }

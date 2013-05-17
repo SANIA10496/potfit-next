@@ -28,18 +28,27 @@
  *
  ****************************************************************/
 
-#include<cstdlib>
+#include <cstdlib>
 
 #include "io.h"
 #include "optimization.h"
 #include "potential.h"
 #include "settings.h"
 
+#include "opt/list_opt.h"
+
 using namespace POTFIT_NS;
 
-Optimization::Optimization(POTFIT *ptf) : Pointers(ptf) {}
+Optimization::Optimization(POTFIT *ptf) : Pointers(ptf) {
+  num_algs = 0;
+  opt = NULL;
 
-Optimization::~Optimization() {}
+  return;
+}
+
+Optimization::~Optimization() {
+  return;
+}
 
 void Optimization::run(void) {
 
@@ -50,9 +59,18 @@ void Optimization::run(void) {
     io->write(" - Global stress weight %f\n",settings->sweight);
   io->write(" - %d free parameters\n\n",potential->num_free_params);
 
-  io->write("num_algs = %d\n",num_algs);
-  for (int i=0;i<num_algs;i++)
-	  io->write("alg_%d: %s\n",i,algorithms[i]);
+  for (int i=0;i<num_algs;i++) {
+    io->write("Starting %d. optimization\n",i+1);
+    opt = init_algorithm(algorithms[i].c_str());
+    if (NULL == opt)
+      io->error("Could not find algorithm \"%s\"",algorithms[i].c_str());
+    opt->init(params[i]);
+    io->write(" type: %s\t parameters: %f %f %f\n\n",algorithms[i].c_str(),params[i][0],params[i][1],params[i][2]);
+    opt->run();
+    io->write("Finished %d. optimization\n\n",i+1);
+    delete opt;
+  }
+
   return;
 }
 
@@ -63,14 +81,30 @@ void Optimization::add_algorithm(void) {
   str = strtok(NULL, " \t\r\n");
   if (str == NULL)
     io->error("Algorithm name is missing!");
-  algorithms.push_back(new char[20]);
-  sprintf(algorithms[num_algs++], str);
+  algorithms.push_back(str);
+  params.push_back(new double[3]);
 
-  // read maxsteps
-  str = strtok(NULL, " \t\r\n");
-  if (str == NULL)
-    io->error("Algorithm name is missing!");
-  maxsteps.push_back(atoi(str));
+  // read params
+  for (int i=0;i<3;i++) {
+    str = strtok(NULL, " \t\r\n");
+    if (str != NULL)
+      params[num_algs][i] = atof(str);
+    else
+      params[num_algs][i] = 0;
+  }
+  num_algs++;
 
   return;
+}
+
+BaseOpt *Optimization::init_algorithm(const char *algo_type) {
+  if (strcmp(algo_type,"none") == 0)
+    return NULL;
+#define OPTALG_TYPE
+#define OptAlgType(key,Class) \
+  else if (strcmp(algo_type,#key) == 0) \
+    return new Class(ptf);
+#include "opt/list_opt.h"
+#undef OPTALG_TYPE
+  return NULL;
 }

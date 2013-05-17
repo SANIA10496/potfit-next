@@ -118,3 +118,7 @@ void ForcePair::read_additional_data(FILE *infile) {
 
   return;
 }
+
+double ForcePair::calc_forces(double *forces) {
+  return 0.0;
+}

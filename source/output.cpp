@@ -53,6 +53,14 @@ Output::Output(POTFIT *ptf) : Pointers(ptf) {
   enable_log = 0;
 
   plotmin = 0.1;
+
+  return;
 }
 
-Output::~Output() {}
+Output::~Output() {
+  return;
+}
+
+void Output::write_tempfile(void) {
+  return;
+}

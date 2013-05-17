@@ -28,6 +28,8 @@
  *
  ****************************************************************/
 
+#include <cstdlib>
+
 #include "opt_table.h"
 
 using namespace POTFIT_NS;
@@ -35,6 +37,7 @@ using namespace POTFIT_NS;
 OptTable::OptTable(POTFIT *ptf, int n) : Pointers(ptf) {
   len = 0;
   values = new double[n];
+  val_p = NULL;
 
   return;
 }

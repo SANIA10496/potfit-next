@@ -31,6 +31,8 @@
 #include <cmath>
 #include <cstring>
 
+#include "potential.h"
+#include "templates.h"
 #include "utils.h"
 
 using namespace POTFIT_NS;
@@ -60,4 +62,46 @@ char *Utils::tolowercase(char *str) {
 
 double Utils::vect_dist(vector a, vector b) {
   return sqrt(square(b.x-a.x)+square(b.y-a.y)+square(b.z-a.z));
+}
+
+void Utils::quicksort(double *x, int low, int high, double **p) {
+  int newIndex;
+
+  if (low<high) {
+    int index = (low + high) / 2.;
+    newIndex = partition(x, low, high, index, p);
+    quicksort(x, low, newIndex - 1, p);
+    quicksort(x, newIndex + 1, high, p);
+  }
+}
+
+int Utils::partition(double *x, int low, int high, int index, double **p) {
+  int   store;
+  double ind_val = x[index], temp;
+
+  SWAP(x[index], x[high], temp);
+  swap_population(p[index], p[high]);
+
+  store = low;
+
+  for (int i = low; i < high; i++)
+    if (x[i] <= ind_val) {
+      SWAP(x[i], x[store], temp);
+      swap_population(p[i], p[store]);
+      store++;
+    }
+  SWAP(x[store], x[high], temp);
+  swap_population(p[store], p[high]);
+
+  return store;
+}
+
+void Utils::swap_population(double *a, double *b) {
+  double temp;
+
+  for (int i = 0; i < potential->num_free_params + 2; i++) {
+    SWAP(a[i], b[i], temp);
+  }
+
+  return;
 }

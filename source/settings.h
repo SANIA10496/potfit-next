@@ -50,16 +50,12 @@ namespace POTFIT_NS {
     double sweight;
     double extend;
     double evo_threshold;
-    double anneal_temp;
     double apot_punish_value;
     double d_eps;
     double dp_cut;
     double dp_tol;
     double dp_mix;
-
-  private:
   };
-
 }
 
 #endif /* PTF_SETTINGS_H */

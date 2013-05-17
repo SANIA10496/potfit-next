@@ -28,6 +28,12 @@
  *
  ****************************************************************/
 
+#ifdef OPTALG_TYPE
+
+OptAlgType(simann,OptSimann)
+
+#else
+
 #ifndef PTF_OPT_SIMANN_H
 #define PTF_OPT_SIMANN_H
 
@@ -37,11 +43,16 @@ namespace POTFIT_NS {
 
   class OptSimann : public BaseOpt {
   public:
-    OptSimann(class POTFIT *, int);
+    OptSimann(class POTFIT *);
     ~OptSimann();
 
+    void init(double *);
     void run(void);
+  private:
+    void randomize_parameter(int, double *, double *);
   };
 }
 
 #endif // PTF_OPT_SIMANN_H
+
+#endif // OPTALG_TYPE

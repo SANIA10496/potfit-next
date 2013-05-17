@@ -52,6 +52,8 @@ namespace POTFIT_NS {
     int neigh_type(void);
     int get_col(int, int, int);
 
+    double calc_forces(double *);
+
     int cols(void);
   };
 

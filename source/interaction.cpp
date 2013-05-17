@@ -40,16 +40,30 @@ Interaction::Interaction(POTFIT *ptf) : Pointers(ptf)
 {
   strcpy(type,"\0");
   force = NULL;
+
+  return;
 }
 
 Interaction::~Interaction()
 {
   if (force) delete force;
+
+  return;
 }
 
 void Interaction::init()
 {
   force = init_force(type);
+
+  return;
+}
+
+double Interaction::calc_forces(void) {
+  return force->calc_forces(NULL);
+}
+
+double Interaction::calc_forces(double *f) {
+  return force->calc_forces(f);
 }
 
 Force *Interaction::init_force(const char *force_type)

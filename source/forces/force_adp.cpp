@@ -34,12 +34,15 @@
 using namespace POTFIT_NS;
 
 ForceADP::ForceADP(POTFIT *ptf): Force(ptf) {
+  return;
 }
 
 ForceADP::~ForceADP() {
+  return;
 }
 
 void ForceADP::read_additional_data(FILE *infile) {
+  return;
 };
 
 int ForceADP::num_slots(void) {
@@ -59,3 +62,6 @@ int ForceADP::cols() {
   return (int)n*(n+1)/2.;
 }
 
+double ForceADP::calc_forces(double *forces) {
+  return 0.0;
+}

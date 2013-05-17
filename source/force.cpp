@@ -33,8 +33,11 @@
 using namespace POTFIT_NS;
 
 Force::Force(POTFIT *ptf) : Pointers(ptf) {
+  force_vect = new double[10];
+
+  return;
 }
 
 Force::~Force() {
-
+  return;
 }

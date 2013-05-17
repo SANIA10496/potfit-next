@@ -43,13 +43,16 @@ namespace POTFIT_NS {
     Interaction(class POTFIT *);
     ~Interaction();
 
-    void init();
-    class Force *init_force(const char *);
+    void init(void);
+    double calc_forces(void);
+    double calc_forces(double *);
 
     char type[255];
 
     Force *force;
+
   private:
+    class Force *init_force(const char *);
   };
 
 }

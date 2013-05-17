@@ -46,7 +46,8 @@ namespace POTFIT_NS {
     ~Random();
 
     void set_seed(int);
-    double eqdist() {return dsfmt_genrand_close_open(&dsfmt);}
+    double eqdist(void) {return dsfmt_genrand_close_open(&dsfmt);}
+    double normdist(void);
   private:
     int seed;
     dsfmt_t dsfmt;

@@ -289,6 +289,14 @@ double TableAnalytic::get_rmin(void) {
   return begin;
 }
 
+double TableAnalytic::get_val_min(int n) {
+  return val_min[n];
+}
+
+double TableAnalytic::get_val_max(int n) {
+  return val_max[n];
+}
+
 void TableAnalytic::set_params(double *) {
 
   return;

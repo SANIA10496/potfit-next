@@ -30,6 +30,7 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <limits>
 
 #include "table_tab4.h"
 
@@ -63,6 +64,14 @@ double TableTab4::get_cutoff(void) {
 
 double TableTab4::get_rmin(void) {
   return begin;
+}
+
+double TableTab4::get_val_min(int n) {
+  return -std::numeric_limits<double>::infinity();
+}
+
+double TableTab4::get_val_max(int n) {
+  return std::numeric_limits<double>::infinity();
 }
 
 void TableTab4::set_params(double *val) {

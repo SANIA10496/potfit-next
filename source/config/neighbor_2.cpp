@@ -134,7 +134,6 @@ void Neighbor_2::init(Config *conf, int i, int j, vector *dd) {
     step[k] = potential->pots[col_temp]->xcoord[l+1] - potential->pots[col_temp]->xcoord[l];
     shift[k] = (r - potential->pots[col_temp]->xcoord[l]) / step[k];
     col[k] = col_temp;
-    printf("slot %d, step %f shift %f, col %d\n",slot[k],step[k],shift[k],col[k]);
   }
 
 

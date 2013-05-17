@@ -51,6 +51,8 @@ namespace POTFIT_NS {
     virtual int get_number_free_params(void) = 0;
     virtual double get_cutoff(void) = 0;
     virtual double get_rmin(void) = 0;
+    virtual double get_val_min(int) =0;
+    virtual double get_val_max(int) =0;
 
     virtual void set_params(double *) = 0;
     virtual void update_calc_table(void) = 0;

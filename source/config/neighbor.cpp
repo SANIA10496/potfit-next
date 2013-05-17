@@ -33,6 +33,9 @@
 using namespace POTFIT_NS;
 
 Neighbor::Neighbor(POTFIT *ptf) : Pointers(ptf) {
+  return;
 }
 
-Neighbor::~Neighbor() {}
+Neighbor::~Neighbor() {
+  return;
+}

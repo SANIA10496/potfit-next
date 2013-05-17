@@ -28,12 +28,14 @@
  *
  ****************************************************************/
 
+#include <cstdlib>
+
 #include "base_opt.h"
 
 using namespace POTFIT_NS;
 
-BaseOpt::BaseOpt(POTFIT *ptf, int n) : Pointers(ptf) {
-  maxsteps = n;
+BaseOpt::BaseOpt(POTFIT *ptf) : Pointers(ptf) {
+  params = NULL;
 
   return;
 }

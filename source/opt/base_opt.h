@@ -37,12 +37,13 @@ namespace POTFIT_NS {
 
   class BaseOpt : protected Pointers {
   public:
-    BaseOpt(class POTFIT *, int);
+    BaseOpt(class POTFIT *);
     ~BaseOpt();
 
+    virtual void init(double *) = 0;
     virtual void run(void) = 0;
 
-    int maxsteps;
+    double *params;
   };
 }
 

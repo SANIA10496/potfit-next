@@ -56,3 +56,7 @@ int ForceDipole::cols() {
 
 void ForceDipole::read_additional_data(FILE *infile) {
 }
+
+double ForceDipole::calc_forces(double *forces) {
+  return 0.0;
+}

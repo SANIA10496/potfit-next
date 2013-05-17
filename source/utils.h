@@ -43,9 +43,12 @@ namespace POTFIT_NS {
 
     char *tolowercase(char *);
     double vect_dist(vector, vector);
+    void quicksort(double *, int, int, double **);
 
     char flagfile[255];
   private:
+    int partition(double *, int, int, int, double **);
+    void swap_population(double *, double *);
   };
 
 }

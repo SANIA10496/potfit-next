@@ -230,3 +230,7 @@ void Potential::init_opt_table(void) {
 
   return;
 }
+
+void Potential::update_potentials(void) {
+  return;
+}

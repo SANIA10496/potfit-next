@@ -195,14 +195,6 @@ void Input::read_parameter_file() {
       get_param("seed", &seed, PARAM_INT, 1, 1);
       random->set_seed(seed);
     }
-    /* stopping criterion for differential evolution */
-    else if (strcasecmp(token, "evo_threshold") == 0) {
-      get_param("evo_threshold", &settings->evo_threshold, PARAM_DOUBLE, 1, 1);
-    }
-    /* starting temperature for annealing */
-    else if (strcasecmp(token, "anneal_temp") == 0) {
-      get_param("anneal_temp", &settings->anneal_temp, PARAM_STR, 1, 20);
-    }
     /* Scaling Constant for APOT Punishment */
     else if (strcasecmp(token, "apot_punish") == 0) {
       get_param("apot_punish", &settings->apot_punish_value, PARAM_DOUBLE, 1, 1);
@@ -210,10 +202,6 @@ void Input::read_parameter_file() {
     /* Energy Weight */
     else if (strcasecmp(token, "eng_weight") == 0) {
       get_param("eng_weight", &settings->eweight, PARAM_DOUBLE, 1, 1);
-    }
-    /* error margin delta epsilon */
-    else if (strcasecmp(token, "d_eps") == 0) {
-      get_param("d_eps", &settings->d_eps, PARAM_DOUBLE, 1, 1);
     }
     /* Energy Weight */
     else if (strcasecmp(token, "stress_weight") == 0) {
@@ -377,7 +365,6 @@ void Input::check_params()
 void Input::read_potential_file() {
   FILE *infile;
   char  buffer[1024], *res, *str;
-  char  temp_char[255];
   int   have_format = 0, have_type = 0, have_elements = 0, end_header = 0;
   int   format, i, size;
   fpos_t after_header;

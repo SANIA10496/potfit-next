@@ -35,6 +35,7 @@
 #define MAX(A,B) ((A) > (B) ? (A) : (B))
 
 #define SPROD(a,b) (((a).x * (b).x) + ((a).y * (b).y) + ((a).z * (b).z))
+#define SWAP(A,B,C) (C)=(A);(A)=(B);(B)=(C);
 
 namespace POTFIT_NS {
 

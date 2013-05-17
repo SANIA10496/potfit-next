@@ -245,7 +245,7 @@ default: git potfit strip
 debug: CFLAGS += ${DEBUG_FLAGS}
 debug: TARGET = debug
 debug: git potfit
-potfit: CFLAGS += ${OPT_FLAGS}
+#potfit: CFLAGS += ${OPT_FLAGS}
 
 SUBDIRS = config forces functions opt random tables
 CLEANDIRS = $(SUBDIRS:%=clean-%)

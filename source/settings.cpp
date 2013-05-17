@@ -28,7 +28,7 @@
  *
  ****************************************************************/
 
-#include <mpi.h>
+#include <cstring>
 
 #include "settings.h"
 
@@ -42,13 +42,15 @@ Settings::Settings(POTFIT *ptf) : Pointers(ptf) {
   eweight = -1.;
   sweight = -1.;
   extend = 0;
-  evo_threshold = 0;
-  anneal_temp = 0;
   apot_punish_value = 0;
   d_eps = 0;
   dp_cut = 0;
   dp_tol = 0;
   dp_mix = 0;
+
+  return;
 }
 
-Settings::~Settings() {}
+Settings::~Settings() {
+  return;
+}

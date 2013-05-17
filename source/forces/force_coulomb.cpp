@@ -58,3 +58,7 @@ int ForceCoulomb::cols() {
 
 void ForceCoulomb::read_additional_data(FILE *infile) {
 }
+
+double ForceCoulomb::calc_forces(double *forces) {
+  return 0.0;
+}

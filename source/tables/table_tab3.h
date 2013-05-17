@@ -50,6 +50,8 @@ namespace POTFIT_NS {
     int get_number_free_params(void);
     double get_cutoff(void);
     double get_rmin(void);
+    double get_val_min(int);
+    double get_val_max(int);
 
     void set_params(double *);
     void update_calc_table(void);

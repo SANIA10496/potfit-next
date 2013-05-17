@@ -42,6 +42,7 @@ namespace POTFIT_NS {
 
     int len;
     double *values;
+    double *val_p;
 
   };
 }

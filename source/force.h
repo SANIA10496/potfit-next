@@ -48,7 +48,11 @@ namespace POTFIT_NS {
     virtual int neigh_type(void) = 0;
     virtual int get_col(int, int, int) = 0;
 
+    virtual double calc_forces(double *) = 0;
+
     virtual int cols(void) = 0;
+
+    double *force_vect;
   private:
   };
 
