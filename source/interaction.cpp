@@ -59,11 +59,7 @@ void Interaction::init()
 }
 
 double Interaction::calc_forces(void) {
-  return force->calc_forces(NULL);
-}
-
-double Interaction::calc_forces(double *f) {
-  return force->calc_forces(f);
+  return force->calc_forces();
 }
 
 Force *Interaction::init_force(const char *force_type)

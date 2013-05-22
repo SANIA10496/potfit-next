@@ -52,7 +52,7 @@ namespace POTFIT_NS {
     void read_globals(FILE *);
     void read_potentials(FILE *);
 
-    void update_potentials(void);
+    void update_potentials(int);
 
     void init_opt_table(void);
 

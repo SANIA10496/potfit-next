@@ -46,8 +46,10 @@ namespace POTFIT_NS {
     FuncEOPP();
     ~FuncEOPP();
 
-    int num_params();
+    int num_params(void);
     void calc(double, double *, double *);
+  private:
+    double power[2];
   };
 
 }

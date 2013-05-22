@@ -78,6 +78,21 @@ int ForcePair::cols() {
   return (int)n*(n+1)/2.;
 }
 
+void ForcePair::update_min_dist(double *min_dist) {
+  int k = 0;
+  int n = structures->ntypes;
+
+  for (int i=0;i<n;i++)
+    for (int j=0;j<n;j++) {
+      k = (i <= j) ? i * n + j - ((i * (i + 1)) / 2) : j * n + i - ((j * (j + 1)) / 2);
+      potential->pots[i*n+j]->begin = 0.95 * min_dist[k];
+    }
+
+  potential->update_potentials(1);
+
+  return;
+}
+
 /****************************************************************
  *
  * ForcePair::read_additional_data(FILE *infile)
@@ -132,7 +147,7 @@ void ForcePair::read_additional_data(FILE *infile) {
  *
  ****************************************************************/
 
-double ForcePair::calc_forces(double *ret_forces) {
+double ForcePair::calc_forces(void) {
   int   h, i, j, k, l;
   int   self, uf;
   int   us, stresses;
@@ -147,7 +162,7 @@ double ForcePair::calc_forces(double *ret_forces) {
   // This is the start of an infinite loop
   while (1) {
     communication->broadcast_params();
-    potential->update_potentials();
+    potential->update_potentials(0);
 
     tmpsum = 0.;		// sum of squares of local process
 
@@ -186,6 +201,7 @@ double ForcePair::calc_forces(double *ret_forces) {
           force_vect[k + 1] = 0.;
           force_vect[k + 2] = 0.;
         }
+//        printf("force atom %d: %f %f %f\n",i,force_vect[k],force_vect[k+1],force_vect[k+2]);
       }
       // end first loop
 
@@ -214,6 +230,9 @@ double ForcePair::calc_forces(double *ret_forces) {
               phi_val *= 0.5;
               phi_grad *= 0.5;
             }
+	    printf("begin: %f\n",pot->begin);
+	    printf("atom %d neigh %d (dist %f) - phi: %f %f\n",i,j,neigh->r,phi_val,phi_grad);
+	    printf("slot %d shift %f step %f\n",neigh->slot[0],neigh->shift[0],neigh->step[0]);
             // not double force: cohesive energy
             force_vect[energy_p + h] += phi_val;
 

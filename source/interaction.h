@@ -45,7 +45,6 @@ namespace POTFIT_NS {
 
     void init(void);
     double calc_forces(void);
-    double calc_forces(double *);
 
     char type[255];
 

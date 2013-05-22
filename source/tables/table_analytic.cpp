@@ -37,6 +37,7 @@
 #include "../io.h"
 #include "../potential.h"
 #include "../settings.h"
+#include "../structures.h"
 
 #include "../functions/list_functions.h"
 
@@ -316,7 +317,7 @@ void TableAnalytic::init_calc_table(void) {
   d2tab = new double[POT_STEPS];
 
   h = values[num_params - 1];
-  for (int i=0; i<POT_STEPS; i++) {
+  for (int i=0; i<len; i++) {
     xcoord[i] = begin + i * step;
     function->calc(xcoord[i], values , &fval);
     table[i] = smooth_pot ? fval * cutoff(xcoord[i], end, h) : fval;
@@ -330,7 +331,7 @@ void TableAnalytic::init_calc_table(void) {
   return;
 }
 
-void TableAnalytic::update_calc_table(void) {
+void TableAnalytic::update_calc_table(int update) {
   double fval, h;
   int change = 0;
 
@@ -338,17 +339,48 @@ void TableAnalytic::update_calc_table(void) {
     if (stored_values[i] != values[i])
       change = 1;
 
-  if (change == 0)
+  if (0 == change && 0 == update)
     return;
 
   h = values[num_params - 1];
-  for (int i=0; i<POT_STEPS; i++) {
+  for (int i=0; i<len; i++) {
     xcoord[i] = begin + i * step;
     function->calc(xcoord[i], values , &fval);
     table[i] = smooth_pot ? fval * cutoff(xcoord[i], end, h) : fval;
   }
 
   splines->spline_ed(step, table, len, 10e30, 0, d2tab);
+  update_slots();
+
+  return;
+}
+
+void TableAnalytic::update_slots(void) {
+  double r = 0.0, rr = 0.0;
+  Config *conf = NULL;
+  Atom *atom = NULL;
+  Neighbor *neigh = NULL;
+  Table *pot = NULL;
+
+  for (int i = 0; i < structures->total_num_conf; i++) {
+    conf = structures->config[i];
+    for (int j = 0; j < conf->num_atoms; j++) {
+      atom = conf->atoms[j];
+      for (int k = 0; k < atom->num_neighbors; k++) {
+        neigh = atom->neighs[k];
+        r = neigh->r;
+
+        // update slots for pair potential part, slot 0
+        pot = potential->pots[neigh->col[0]];
+        if (r < pot->end) {
+          rr = r - pot->begin;
+          neigh->slot[0] = (int)(rr * pot->invstep);
+          neigh->step[0] = pot->step;
+          neigh->shift[0] = (rr - neigh->slot[0] * pot->step) * pot->invstep;
+        }
+      }
+    }
+  }
 
   return;
 }

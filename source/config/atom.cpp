@@ -33,6 +33,56 @@
 using namespace POTFIT_NS;
 
 Atom::Atom(POTFIT *ptf) : Pointers(ptf) {
+  type = 0;
+  num_neighbors = 0;
+  pos.x = 0.0;
+  pos.y = 0.0;
+  pos.z = 0.0;
+  force.x = 0.0;
+  force.y = 0.0;
+  force.z = 0.0;
+  absforce = 0.0;
+  contrib = 0;
+
+  // EAM
+  rho = 0.0;
+  gradf = 0.0;
+
+  // ADP
+  mu.x = 0.0;
+  mu.y = 0.0;
+  mu.z = 0.0;
+  lambda.xx = 0.0;
+  lambda.yy = 0.0;
+  lambda.zz = 0.0;
+  lambda.xx = 0.0;
+  lambda.xx = 0.0;
+  lambda.xx = 0.0;
+  nu = 0.0;
+
+  // dipole
+  E_stat.x = 0.0;
+  E_stat.y = 0.0;
+  E_stat.z = 0.0;
+  p_sr.x = 0.0;
+  p_sr.y = 0.0;
+  p_sr.z = 0.0;
+  E_ind.x = 0.0;
+  E_ind.y = 0.0;
+  E_ind.z = 0.0;
+  p_ind.x = 0.0;
+  p_ind.y = 0.0;
+  p_ind.z = 0.0;
+  E_old.x = 0.0;
+  E_old.y = 0.0;
+  E_old.z = 0.0;
+  E_tot.x = 0.0;
+  E_tot.y = 0.0;
+  E_tot.z = 0.0;
+
+  return;
 }
 
-Atom::~Atom() {}
+Atom::~Atom() {
+  return;
+}

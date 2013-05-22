@@ -208,7 +208,7 @@ void Potential::init_opt_table(void) {
   idxparam = new int[num_free_params];
 
   for (int i=0; i<num_pots;i++) {
-    if (invar_pot[i] == 0) {
+    if (0 == invar_pot[i]) {
       for (int j=0; j<pots[i]->get_number_params(); j++) {
         if (pots[i]->invar_par[j] == 0) {
 	  idxpot[count] = i;
@@ -223,18 +223,13 @@ void Potential::init_opt_table(void) {
     io->error("Number of free parameters is inconsistent!");
   }
 
-//  io->write("Opt_Table:\n");
-//  for (int i=0;i<num_free_params;i++) {
-//    io->write("%d: %f\n",i,opt->values[i]);
-//  }
-
   return;
 }
 
-void Potential::update_potentials(void) {
+void Potential::update_potentials(int update) {
   for (int i=0;i<num_pots;i++) {
-    if (invar_pot[i] == 0)
-      pots[i]->update_calc_table();
+    if (0 == invar_pot[i] || update)
+      pots[i]->update_calc_table(update);
   }
 
   return;

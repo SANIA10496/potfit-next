@@ -51,12 +51,16 @@ int ForceDipole::get_col(int col, int a, int b) {
   return 0;
 }
 
+void ForceDipole::update_min_dist(double *min_dist) {
+  return;
+}
+
 int ForceDipole::cols() {
 }
 
 void ForceDipole::read_additional_data(FILE *infile) {
 }
 
-double ForceDipole::calc_forces(double *forces) {
+double ForceDipole::calc_forces(void) {
   return 0.0;
 }

@@ -59,7 +59,8 @@ namespace POTFIT_NS {
 
     void set_params(double *);
     void init_calc_table(void);
-    void update_calc_table(void);
+    void update_calc_table(int);
+    void update_slots(void);
 
     void write_potential(FILE *);
     void write_plot(FILE *);

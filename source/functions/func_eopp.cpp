@@ -35,25 +35,25 @@
 using namespace POTFIT_NS;
 
 FuncEOPP::FuncEOPP() {
+  power[0] = 0.0;
+  power[1] = 0.0;
+
+  return;
 }
 
 FuncEOPP::~FuncEOPP() {
+  return;
 }
 
-int FuncEOPP::num_params() {
+int FuncEOPP::num_params(void) {
   return 6;
 }
 
 void FuncEOPP::calc(double r, double *p, double *f) {
-  static double x[2], y[2], power[2];
-
-  x[0] = r;
-  x[1] = r;
-  y[0] = p[1];
-  y[1] = p[3];
-
-  power[0] = pow(x[0], y[0]);
-  power[1] = pow(x[1], y[1]);
+  power[0] = pow(r, p[1]);
+  power[1] = pow(r, p[3]);
 
   *f = p[0] / power[0] + (p[2] / power[1]) * cos(p[4] * r + p[5]);
+
+  return;
 }

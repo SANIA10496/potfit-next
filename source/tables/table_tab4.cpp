@@ -77,7 +77,12 @@ double TableTab4::get_val_max(int n) {
 void TableTab4::set_params(double *val) {
 }
 
-void TableTab4::update_calc_table(void) {
+void TableTab4::update_calc_table(int update) {
+
+  return;
+}
+
+void TableTab4::update_slots(void) {
 
   return;
 }

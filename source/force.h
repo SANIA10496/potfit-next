@@ -47,8 +47,9 @@ namespace POTFIT_NS {
     virtual int num_slots(void) = 0;
     virtual int neigh_type(void) = 0;
     virtual int get_col(int, int, int) = 0;
+    virtual void update_min_dist(double *) = 0;
 
-    virtual double calc_forces(double *) = 0;
+    virtual double calc_forces(void) = 0;
 
     virtual int cols(void) = 0;
 

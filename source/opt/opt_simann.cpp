@@ -175,7 +175,7 @@ void OptSimann::run(void) {
                 xopt[n] = xi2[n];
               Fopt = F2;
               if (output->tempfile != '\0') {
-                potential->update_potentials();
+                potential->update_potentials(0);
                 output->write_tempfile();
               }
             }
@@ -252,7 +252,7 @@ void OptSimann::run(void) {
 
   F = Fopt;
   if (output->tempfile != '\0') {
-    potential->update_potentials();
+    potential->update_potentials(0);
     output->write_tempfile();
   }
 

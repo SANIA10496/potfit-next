@@ -104,7 +104,7 @@ void Structures::print_mindist(void) {
   io->write("Atom\t");
   for (i = 0; i < ntypes; i++)
     io->write("%8s\t", potential->elements[i]);
-  io->write("with\n");
+  io->write("\n");
   for (i = 0; i < ntypes; i++) {
     io->write("%s\t", potential->elements[i]);
     for (j = 0; j < ntypes; j++) {
@@ -115,6 +115,8 @@ void Structures::print_mindist(void) {
     io->write("\n");
   }
   io->write("\n");
+
+  interaction->force->update_min_dist(min_dist);
 
   return;
 }

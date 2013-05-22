@@ -51,6 +51,10 @@ int ForceCoulomb::get_col(int col, int a, int b) {
   return 0;
 }
 
+void ForceCoulomb::update_min_dist(double *min_dist) {
+  return;
+}
+
 int ForceCoulomb::cols() {
   int n = structures->ntypes;
   return (int)n*(n+1)/2.;
@@ -59,6 +63,6 @@ int ForceCoulomb::cols() {
 void ForceCoulomb::read_additional_data(FILE *infile) {
 }
 
-double ForceCoulomb::calc_forces(double *forces) {
+double ForceCoulomb::calc_forces(void) {
   return 0.0;
 }

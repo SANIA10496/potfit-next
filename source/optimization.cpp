@@ -74,7 +74,7 @@ void Optimization::run(void) {
       delete opt;
     }
   } else {
-    interaction->force->calc_forces(NULL);
+    interaction->calc_forces();
   }
   } else {
     io->write("Optimization disabled.\n\n");

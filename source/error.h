@@ -46,6 +46,7 @@ namespace POTFIT_NS {
   private:
     void calc_errors(void);
 
+    double *force_vect;
     double total_sum;
     double force_sum, energy_sum, stress_sum, punish_sum;
     double rms_force, rms_energy, rms_stress;

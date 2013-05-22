@@ -82,7 +82,12 @@ double TableTab3::get_val_max(int n) {
 void TableTab3::set_params(double *val) {
 }
 
-void TableTab3::update_calc_table(void) {
+void TableTab3::update_calc_table(int update) {
+
+  return;
+}
+
+void TableTab3::update_slots(void) {
 
   return;
 }

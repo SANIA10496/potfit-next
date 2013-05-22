@@ -57,11 +57,15 @@ int ForceADP::get_col(int slot, int a, int b) {
   return 0;
 }
 
+void ForceADP::update_min_dist(double *min_dist) {
+  return;
+}
+
 int ForceADP::cols() {
   int n = structures->ntypes;
   return (int)n*(n+1)/2.;
 }
 
-double ForceADP::calc_forces(double *forces) {
+double ForceADP::calc_forces(void) {
   return 0.0;
 }
