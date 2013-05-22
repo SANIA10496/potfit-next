@@ -49,6 +49,7 @@ namespace POTFIT_NS {
     class Memory *memory; 		// Memory management
     class Communication *communication; // Process communication
     class Utils *utils; 		// Utilities
+    class Error *error; 		// Error report
 
     POTFIT(int, char **);
     ~POTFIT();

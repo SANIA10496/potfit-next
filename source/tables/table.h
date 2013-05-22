@@ -35,6 +35,8 @@
 
 #include "../pointers.h"
 
+#include "splines.h"
+
 namespace POTFIT_NS {
 
   class Table : protected Pointers {
@@ -78,6 +80,8 @@ namespace POTFIT_NS {
     int num_free_params; 	// number of invariant parameters
 
     // former calcpot table
+    Splines *splines;
+
     int    len;			// total length of the table
     double step;		// table increment
     double invstep;		// inverse of increment

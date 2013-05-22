@@ -31,6 +31,8 @@
 #ifndef PTF_UTILS_H
 #define PTF_UTILS_H
 
+#include <ctime>
+
 #include "pointers.h"
 #include "types.h"
 
@@ -44,11 +46,17 @@ namespace POTFIT_NS {
     char *tolowercase(char *);
     double vect_dist(vector, vector);
     void quicksort(double *, int, int, double **);
+    void start_timer(void);
+    void end_timer(void);
+    int timediff(void);
 
     char flagfile[255];
   private:
     int partition(double *, int, int, int, double **);
     void swap_population(double *, double *);
+
+    time_t t_begin;
+    time_t t_end;
   };
 
 }

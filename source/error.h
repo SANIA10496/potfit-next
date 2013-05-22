@@ -1,6 +1,6 @@
 /****************************************************************
  *
- * config.h:
+ * error.h:
  *
  ****************************************************************
  *
@@ -28,48 +28,31 @@
  *
  ****************************************************************/
 
-#ifndef PTF_CONFIG_H
-#define PTF_CONFIG_H
+#ifndef PTF_ERROR_H
+#define PTF_ERROR_H
 
-#include <iostream>
-#include <vector>
+#include <cstdio>
 
-#include "atom.h"
-
-#include "../pointers.h"
-#include "../types.h"
+#include "pointers.h"
 
 namespace POTFIT_NS {
 
-  class Config : protected Pointers {
+  class Error : protected Pointers {
   public:
-    Config(class POTFIT *, int);
-    ~Config();
+    Error(class POTFIT *);
+    ~Error();
 
-    void read(FILE *, int *);
-
-    std::vector<Atom *> atoms;
-    int cell_scale[3];
-    int num_atoms;
-    int *num_per_type;
-    int use_forces;
-    int use_stresses;
-    int index;
-    int cnfstart;
-
-    double coh_energy;
-    double conf_weight;
-    double volume;
-
-    sym_tens stress;
-    vector box_x, box_y, box_z;
-
+    void write_report(void);
   private:
-    void calc_neighbors(void);
-    vector vec_prod(vector, vector);
+    void calc_errors(void);
 
+    double total_sum;
+    double force_sum, energy_sum, stress_sum, punish_sum;
+    double rms_force, rms_energy, rms_stress;
+    int total_contrib;
+    int num_forces, num_energies, num_stresses;
+    int fcalls;
   };
-
 }
 
-#endif /* PTF_CONFIG_H */
+#endif /* PTF_ERROR_H */

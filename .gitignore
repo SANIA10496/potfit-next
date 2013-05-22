@@ -18,9 +18,6 @@
 *.swo
 
 # files
-list_forces.h
-list_functions.h
-list_tables.h
-list_neighbors.h
+list_*.h
 version.h
 potfit

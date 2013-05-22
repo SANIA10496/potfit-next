@@ -31,9 +31,44 @@
 #include <mpi.h>
 
 #include "communication.h"
+#include "io.h"
+#include "settings.h"
+#include "structures.h"
 
 using namespace POTFIT_NS;
 
-Communication::Communication(POTFIT *ptf) : Pointers(ptf) {}
+Communication::Communication(POTFIT *ptf) : Pointers(ptf) {
+  return;
+}
 
-Communication::~Communication() {}
+Communication::~Communication() {
+  return;
+}
+
+void Communication::init(void) {
+  if (1 < settings->num_cpus)
+    io->write("Starting up MPI with %d processes.\n",settings->num_cpus);
+
+  return;
+}
+
+void Communication::broadcast_params(void) {
+  return;
+}
+
+void Communication::set_config_per_cpu(void) {
+  if (1 == settings->num_cpus) {
+    structures->firstconf = 0;
+    structures->nconf = structures->total_num_conf;
+  } else {
+    int each = (structures->total_num_conf / settings->num_cpus);
+    int odd = (structures->total_num_conf % settings->num_cpus) - settings->num_cpus;
+
+    structures->firstconf = settings->myid * each;
+    structures->nconf = each;
+    if (settings->myid < odd)
+      structures->nconf++;
+  }
+
+  return;
+}

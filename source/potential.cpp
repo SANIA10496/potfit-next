@@ -223,14 +223,19 @@ void Potential::init_opt_table(void) {
     io->error("Number of free parameters is inconsistent!");
   }
 
-  io->write("Opt_Table:\n");
-  for (int i=0;i<num_free_params;i++) {
-    io->write("%d: %f\n",i,opt->values[i]);
-  }
+//  io->write("Opt_Table:\n");
+//  for (int i=0;i<num_free_params;i++) {
+//    io->write("%d: %f\n",i,opt->values[i]);
+//  }
 
   return;
 }
 
 void Potential::update_potentials(void) {
+  for (int i=0;i<num_pots;i++) {
+    if (invar_pot[i] == 0)
+      pots[i]->update_calc_table();
+  }
+
   return;
 }

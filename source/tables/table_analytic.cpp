@@ -31,6 +31,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "splines.h"
 #include "table_analytic.h"
 
 #include "../io.h"
@@ -321,9 +322,10 @@ void TableAnalytic::init_calc_table(void) {
     table[i] = smooth_pot ? fval * cutoff(xcoord[i], end, h) : fval;
   }
 
-  for (int i=0; i<num_params; i++) {
+  for (int i=0; i<num_params; i++)
     stored_values[i] = values[i];
-  }
+
+  splines->spline_ed(step, table, len, 10e30, 0, d2tab);
 
   return;
 }
@@ -345,6 +347,8 @@ void TableAnalytic::update_calc_table(void) {
     function->calc(xcoord[i], values , &fval);
     table[i] = smooth_pot ? fval * cutoff(xcoord[i], end, h) : fval;
   }
+
+  splines->spline_ed(step, table, len, 10e30, 0, d2tab);
 
   return;
 }

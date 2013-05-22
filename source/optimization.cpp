@@ -30,6 +30,7 @@
 
 #include <cstdlib>
 
+#include "interaction.h"
 #include "io.h"
 #include "optimization.h"
 #include "potential.h"
@@ -52,6 +53,7 @@ Optimization::~Optimization() {
 
 void Optimization::run(void) {
 
+  if (1 == settings->opt) {
   io->write("Starting optimization with the following parameters:\n");
   if (settings->eweight != 0.0)
     io->write(" - Global energy weight %f\n",settings->eweight);
@@ -59,16 +61,23 @@ void Optimization::run(void) {
     io->write(" - Global stress weight %f\n",settings->sweight);
   io->write(" - %d free parameters\n\n",potential->num_free_params);
 
-  for (int i=0;i<num_algs;i++) {
-    io->write("Starting %d. optimization\n",i+1);
-    opt = init_algorithm(algorithms[i].c_str());
-    if (NULL == opt)
-      io->error("Could not find algorithm \"%s\"",algorithms[i].c_str());
-    opt->init(params[i]);
-    io->write(" type: %s\t parameters: %f %f %f\n\n",algorithms[i].c_str(),params[i][0],params[i][1],params[i][2]);
-    opt->run();
-    io->write("Finished %d. optimization\n\n",i+1);
-    delete opt;
+  if (0 == settings->myid) {
+    for (int i=0; i<num_algs; i++) {
+      io->write("Starting %d. optimization\n",i+1);
+      opt = init_algorithm(algorithms[i].c_str());
+      if (NULL == opt)
+        io->error("Could not find algorithm \"%s\"",algorithms[i].c_str());
+      opt->init(params[i]);
+      io->write(" type: %s\t parameters: %f %f %f\n\n",algorithms[i].c_str(),params[i][0],params[i][1],params[i][2]);
+      opt->run();
+      io->write("Finished %d. optimization\n\n",i+1);
+      delete opt;
+    }
+  } else {
+    interaction->force->calc_forces(NULL);
+  }
+  } else {
+    io->write("Optimization disabled.\n\n");
   }
 
   return;
@@ -85,7 +94,7 @@ void Optimization::add_algorithm(void) {
   params.push_back(new double[3]);
 
   // read params
-  for (int i=0;i<3;i++) {
+  for (int i=0; i<3; i++) {
     str = strtok(NULL, " \t\r\n");
     if (str != NULL)
       params[num_algs][i] = atof(str);

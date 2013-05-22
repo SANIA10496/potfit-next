@@ -40,13 +40,8 @@ namespace POTFIT_NS {
     Output(class POTFIT *);
     ~Output();
 
-    void write_distfile();
-    void write_endpot();
-    void write_imdpot();
-    void write_lammpspot();
-    void write_plotfile();
-    void write_plotpointfile();
-    void write_tempfile();
+    void write_output(void);
+    void write_tempfile(void);
 
     char distfile[255];
     char endpot[255];
@@ -68,6 +63,13 @@ namespace POTFIT_NS {
 
     double plotmin;
   private:
+    void write_distfile(void);
+    void write_endpot(void);
+    void write_imdpot(void);
+    void write_lammpspot(void);
+    void write_output_files(void);
+    void write_plotfile(void);
+    void write_plotpointfile(void);
   };
 
 }

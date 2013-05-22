@@ -105,3 +105,19 @@ void Utils::swap_population(double *a, double *b) {
 
   return;
 }
+
+void Utils::start_timer(void) {
+  time(&t_begin);
+
+  return;
+}
+
+void Utils::end_timer(void) {
+  time(&t_end);
+
+  return;
+}
+
+int Utils::timediff(void) {
+  return (int)difftime(t_end, t_begin);
+}

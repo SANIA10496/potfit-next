@@ -50,11 +50,13 @@ namespace POTFIT_NS {
     void print_mindist(void);
 
     int ntypes; 			// number of atom types
-    int num_atoms; 			// total number of atoms
-    int num_conf; 			// total number of configurations
+    int total_num_atoms;		// total number of atoms
+    int total_num_conf; 		// total number of configurations
     std::vector<int> num_per_type; 	// total number of atoms per type
     int using_forces; 			// total number of configs using forces
     int using_stresses;			// total number of configs using stress
+    int firstconf; 			// number of first configuration (for MPI)
+    int nconf; 				// number of configurations (for MPI)
 
     double *min_dist; 			// minimal distances for all interactions
 

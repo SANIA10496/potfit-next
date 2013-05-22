@@ -52,7 +52,17 @@ namespace POTFIT_NS {
 
     virtual int cols(void) = 0;
 
-    double *force_vect;
+    void calc_pointers(void);
+
+    double *force_vect; 	// all deviations
+    int energy_p; 		// pointer for energies
+    int stress_p; 		// pointer for stresses
+    int dummy_p; 		// pointer to dummy constraints
+    int limit_p; 		// pointer to limiting constraints
+    int punish_par_p; 		// pointer to parameter punishments
+    int punish_pot_p; 		// pointer to potential punishments
+
+    int fcalls;
   private:
   };
 

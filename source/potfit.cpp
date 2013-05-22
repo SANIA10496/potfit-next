@@ -41,6 +41,7 @@
 #include "potential.h"
 #include "communication.h"
 #include "utils.h"
+#include "error.h"
 
 using namespace POTFIT_NS;
 
@@ -56,6 +57,7 @@ POTFIT::POTFIT(int argc, char **argv) {
   communication = new Communication(this);
   utils = new Utils(this);
   input = new Input(this, argc, argv);
+  error = new Error(this);
 }
 
 POTFIT::~POTFIT() {
@@ -70,14 +72,29 @@ POTFIT::~POTFIT() {
   delete potential;
   delete communication;
   delete utils;
+  delete error;
 }
 
 void POTFIT::run() {
+  // print header before IO is established
   io->print_header();
+
+  // set up MPI
+  communication->init();
+
+  // read all input files
   input->read_parameter_file();
   input->read_potential_file();
   input->read_config_file();
+
+  // perform optimization
+  utils->start_timer();
   optimization->run();
-  io->write("Calculating error reports ...\n");
-  io->write("Cleaning up ...\n");
+  utils->end_timer();
+
+  // write potentials to disk
+  output->write_output();
+
+  // write error report
+  error->write_report();
 }

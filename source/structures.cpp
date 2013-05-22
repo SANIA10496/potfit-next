@@ -31,6 +31,8 @@
 #include <cstring>
 #include <cstdlib>
 
+#include "communication.h"
+#include "interaction.h"
 #include "io.h"
 #include "potential.h"
 #include "structures.h"
@@ -39,8 +41,8 @@ using namespace POTFIT_NS;
 
 Structures::Structures(POTFIT *ptf) : Pointers(ptf) {
   ntypes = 0;
-  num_atoms = 0;
-  num_conf = 0;
+  total_num_atoms = 0;
+  total_num_conf = 0;
 
   using_forces = 0;
   using_stresses = 0;
@@ -81,13 +83,16 @@ void Structures::init(void) {
 
 void Structures::read_config(FILE *infile) {
   do {
-    config.push_back(new Config(ptf, num_conf));
-    config[num_conf]->read(infile, &line);
-    num_atoms += config[num_conf]->num_atoms;
+    config.push_back(new Config(ptf, total_num_conf));
+    config[total_num_conf]->read(infile, &line);
+    total_num_atoms += config[total_num_conf]->num_atoms;
     for (int i=0;i<ntypes;i++)
-      num_per_type[i] += config[num_conf]->num_per_type[i];
-    num_conf++;
+      num_per_type[i] += config[total_num_conf]->num_per_type[i];
+    total_num_conf++;
   } while (!feof(infile));
+
+  communication->set_config_per_cpu();
+  interaction->force->calc_pointers();
 
   return;
 }

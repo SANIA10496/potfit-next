@@ -70,6 +70,9 @@ Config::Config(POTFIT *ptf, int idx) : Pointers(ptf) {
   box_z.x = box_z.y = box_z.z = 0.0;
 
   index = idx;
+  cnfstart = 0;
+  for (int i=0;i<idx;i++)
+    cnfstart += structures->config[i]->num_atoms;
 
   return;
 }

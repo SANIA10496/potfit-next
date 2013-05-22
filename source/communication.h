@@ -40,8 +40,9 @@ namespace POTFIT_NS {
     Communication(class POTFIT *);
     ~Communication();
 
-  private:
-
+    void init(void);
+    void broadcast_params(void);
+    void set_config_per_cpu(void);
   };
 
 }

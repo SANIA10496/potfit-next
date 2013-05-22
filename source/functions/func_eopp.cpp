@@ -52,7 +52,8 @@ void FuncEOPP::calc(double r, double *p, double *f) {
   y[0] = p[1];
   y[1] = p[3];
 
-//  power_m(2, power, x, y);
+  power[0] = pow(x[0], y[0]);
+  power[1] = pow(x[1], y[1]);
 
   *f = p[0] / power[0] + (p[2] / power[1]) * cos(p[4] * r + p[5]);
 }

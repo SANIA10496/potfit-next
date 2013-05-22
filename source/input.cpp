@@ -503,12 +503,12 @@ void Input::read_config_file() {
   io->write("done\n\n");
 
   io->write("Read %d configurations (%d with forces, %d with stresses)\n",
-            structures->num_conf, structures->using_forces, structures->using_stresses);
-  io->write("with a total of %d atoms (", structures->num_atoms);
+            structures->total_num_conf, structures->using_forces, structures->using_stresses);
+  io->write("with a total of %d atoms (", structures->total_num_atoms);
   for (int i=0; i<structures->ntypes; i++) {
     io->write("%d %s [%.2f%]",
               structures->num_per_type[i], potential->elements[i],
-              100. * structures->num_per_type[i]/structures->num_atoms);
+              100. * structures->num_per_type[i]/structures->total_num_atoms);
     if (i != (structures->ntypes - 1))
       io->write(", ");
   }

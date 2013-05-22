@@ -28,8 +28,9 @@
  *
  ****************************************************************/
 
-#include <mpi.h>
+#include <cstring>
 
+#include "io.h"
 #include "output.h"
 
 using namespace POTFIT_NS;
@@ -61,6 +62,52 @@ Output::~Output() {
   return;
 }
 
+void Output::write_output(void) {
+  write_endpot();
+
+  if (1 == enable_imd_pot)
+    write_imdpot();
+
+  if (1 == enable_plot_file)
+    write_plotfile();
+
+  if (1 == enable_lammps_pot)
+    write_lammpspot();
+
+  if (1 == enable_output_files)
+    write_output_files();
+
+  return;
+}
+
 void Output::write_tempfile(void) {
+  return;
+}
+
+void Output::write_endpot(void) {
+  io->write("Final potential written to file\t\t\t%s\n",endpot);
+  return;
+}
+
+void Output::write_imdpot(void) {
+  io->write("IMD potential written to file\t\t\t%s\n",imdpot);
+  return;
+}
+
+void Output::write_plotfile(void) {
+  io->write("Potential plotting data written to file\t\t%s\n",plotfile);
+  return;
+}
+
+void Output::write_lammpspot(void) {
+  io->write("Potential in LAMMPS format written to\t\t%s\n",plotfile);
+  return;
+}
+
+void Output::write_output_files(void) {
+  io->write("Output\t\t\t\t\t\t%s\n",output_prefix);
+  io->write("Output\t\t\t\t\t\t%s\n",output_prefix);
+  io->write("Output\t\t\t\t\t\t%s\n",output_prefix);
+  io->write("Output\t\t\t\t\t\t%s\n",output_prefix);
   return;
 }
