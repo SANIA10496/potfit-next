@@ -43,12 +43,18 @@ IO::IO(POTFIT *ptf) : Pointers(ptf) {
   init_done = 0;
   screen = 0;
   write_logfile = 0;
-  logfile = NULL;
+
+  new_write.init("", &logfile);
+  new_warning.init("Warning", &logfile);
+  new_error.init("Error", &logfile);
+  new_debug.init("Debug", &logfile);
+
+  return;
 }
 
 IO::~IO() {
-  if (write_logfile && screen)
-    fclose(logfile);
+
+  return;
 }
 
 void IO::print_header() {
@@ -89,11 +95,11 @@ void IO::write(const char *msg, ...) {
     vfprintf(stdout, msg, ap);
     va_end(ap);
     // write to log file if enabled
-    if (write_logfile) {
-      va_start(ap, msg);
-      vfprintf(logfile, msg, ap);
-      va_end(ap);
-    }
+//    if (write_logfile) {
+//      va_start(ap, msg);
+//      vfprintf(logfile, msg, ap);
+//      va_end(ap);
+//    }
   }
 }
 
@@ -102,9 +108,9 @@ void IO::write_log(const char *msg, ...) {
 
   if (screen) {
     va_start(ap, msg);
-    if (write_logfile)
-      vfprintf(logfile, msg, ap);
-    va_end(ap);
+//    if (write_logfile)
+//      vfprintf(logfile, msg, ap);
+//    va_end(ap);
   }
 
   return;
@@ -146,12 +152,12 @@ void IO::warning(const char *msg, ...) {
     va_end(ap);
     std::cerr << "\n";
     fflush(stderr);
-    if (write_logfile) {
-      write_log("\n--> WARNING <--\n");
-      va_start(ap, msg);
-      vfprintf(logfile, msg, ap);
-      va_end(ap);
-    }
+//    if (write_logfile) {
+//      write_log("\n--> WARNING <--\n");
+//      va_start(ap, msg);
+//      vfprintf(logfile, msg, ap);
+//      va_end(ap);
+//    }
   }
 }
 
@@ -173,13 +179,13 @@ void IO::error(const char *msg, ...) {
     va_end(ap);
     fflush(stderr);
     std::cerr << std::endl << std::endl;
-    if (write_logfile) {
-      write_log("\n--> ERROR <--\n");
-      va_start(ap, msg);
-      vfprintf(logfile, msg, ap);
-      va_end(ap);
-      write_log("\n\n");
-    }
+//    if (write_logfile) {
+//      write_log("\n--> ERROR <--\n");
+//      va_start(ap, msg);
+//      vfprintf(logfile, msg, ap);
+//      va_end(ap);
+//      write_log("\n\n");
+//    }
   }
   close_logfile();
   MPI::Finalize();
@@ -188,16 +194,18 @@ void IO::error(const char *msg, ...) {
 
 void IO::set_logfile(const char *filename) {
   if (write_logfile && screen) {
-    logfile = fopen(filename, "w");
-    if (logfile == NULL)
-      error("Could not open logfile '%s'\n",filename);
-    write_log("This is potfit-next %s compiled on %s.\n\n",POTFIT_VERSION,POTFIT_DATE);
-    write_log("Reading parameter file \"%s\" ... ",input->param_file);
+    logfile.open(filename);
+    logfile << "This is potfit-next " << POTFIT_VERSION << " compiled on " << POTFIT_DATE << ".\n\n";
+    logfile << "Reading parameter file \"" << input->param_file.c_str() << "\" ... ";
+    new_write.init_done(screen);
+    new_warning.init_done(screen);
+    new_error.init_done(screen);
+    new_debug.init_done(screen);
   }
 }
 
 void IO::close_logfile() {
   if (write_logfile && screen) {
-    fclose(logfile);
+    logfile.close();
   }
 }

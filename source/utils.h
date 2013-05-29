@@ -32,6 +32,7 @@
 #define PTF_UTILS_H
 
 #include <ctime>
+#include <string>
 
 #include "pointers.h"
 #include "types.h"
@@ -50,7 +51,7 @@ namespace POTFIT_NS {
     void end_timer(void);
     int timediff(void);
 
-    char flagfile[255];
+    std::string flagfile;
   private:
     int partition(double *, int, int, int, double **);
     void swap_population(double *, double *);

@@ -31,7 +31,8 @@
 #ifndef PTF_OPTIMIZATION_H
 #define PTF_OPTIMIZATION_H
 
-//#include <string>
+#include <iostream>
+#include <string>
 #include <vector>
 
 #include "pointers.h"
@@ -46,7 +47,7 @@ namespace POTFIT_NS {
 
     void run(void);
 
-    void add_algorithm(void);
+    void add_algorithm(std::ifstream &);
     BaseOpt *init_algorithm(const char *);
 
     std::vector<std::string> algorithms;

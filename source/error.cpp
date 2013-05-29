@@ -28,6 +28,8 @@
  *
  ****************************************************************/
 
+#include <cmath>
+
 #include "error.h"
 #include "interaction.h"
 #include "io.h"
@@ -69,20 +71,22 @@ void Error::write_report(void) {
   io->write("\t%d contributions ",total_contrib);
   io->write("(%d forces, %d energies, %d stresses)\n", num_forces, num_energies, num_stresses);
 
-  io->write("sum of force-errors  = %e\t(%7.3f%% - av: %f)\n", force_sum, force_sum / total_sum * 100.,
-	force_sum / structures->total_num_atoms);
+  io->write("sum of force-errors  = %e\t(%7.3f%% - avg: %f)\n", force_sum, force_sum / total_sum * 100.,
+	force_sum / structures->get_num_total_atoms());
   io->write("sum of energy-errors = %e\t(%7.3f%%)\n", energy_sum, energy_sum / total_sum * 100.);
   io->write("sum of stress-errors = %e\t(%7.3f%%)\n", stress_sum, stress_sum / total_sum * 100.);
   io->write("sum of punishments   = %e\t(%7.3f%%)\n", punish_sum, punish_sum / total_sum * 100.);
 
-  if (0 == punish_sum) {
+  if (0 != punish_sum && 1 == settings->opt ) {
     io->warning("This sum contains punishments! Check your results.\n");
+  } else {
+    io->write("\n");
   }
 
   io->write("rms-errors:\n");
-  io->write("force\t%e\t(%f meV/A)\n", rms_force, rms_force * 1000.);
-  io->write("energy\t%e\t(%f meV)\n", rms_energy, rms_energy * 1000.);
-  io->write("stress\t%e\t(%f MPa)\n", rms_stress, rms_stress / 160.2 * 1000.);
+  io->write("force\t%e\t(%10.3f meV/A)\n", rms_force, rms_force * 1000.);
+  io->write("energy\t%e\t(%10.3f meV)\n", rms_energy, rms_energy * 1000.);
+  io->write("stress\t%e\t(%10.3f MPa)\n", rms_stress, rms_stress / 160.2 * 1000.);
 
   if (1 == settings->opt) {
     io->write("\nRuntime: %d hours, %d minutes and %d seconds.\n",
@@ -94,9 +98,47 @@ void Error::write_report(void) {
 }
 
 void Error::calc_errors(void) {
-  interaction->calc_forces();
-//  for (int i=0;i<3*structures->total_num_atoms;i++)
-//    printf("force_vect[%d] = %f\n",i,interaction->force->force_vect[i]);
+  double temp = 0.0;
+  int i, j, count = 0;
+
+  // calculate forces with current potential
+  total_sum = interaction->calc_forces();
+
+  num_forces = 3 * structures->get_num_contrib_atoms();
+  num_energies = structures->get_num_contrib_energies();
+  num_stresses = structures->get_num_contrib_stresses();
+  total_contrib = num_forces + num_energies + num_stresses;
+
+  // calculate errors
+  for (i=0;i<structures->get_num_total_configs();i++) {
+    for (j=0;j<3 * structures->config[i]->num_atoms;j++) {
+      force_sum += structures->config[i]->conf_weight * square(interaction->force->force_vect[count++]);
+    }
+    energy_sum += structures->config[i]->conf_weight * settings->eweight *
+	    square(interaction->force->force_vect[interaction->force->energy_p + i]);
+    if (1 == structures->config[i]->use_stresses) {
+      for (j=0;j<6;j++) {
+        stress_sum += structures->config[i]->conf_weight * settings->sweight *
+		square(interaction->force->force_vect[interaction->force->stress_p + 6 * i + j]);
+      }
+    }
+  }
+
+  // calculate rms errors
+  for (i=0;i<structures->get_num_total_configs();i++) {
+    for (j=0;j<structures->config[i]->num_atoms;j++) {
+      rms_force += square(interaction->force->force_vect[count++]);
+    }
+    rms_energy += square(interaction->force->force_vect[interaction->force->energy_p + i]);
+    if (1 == structures->config[i]->use_stresses) {
+      for (j=0;j<6;j++) {
+        rms_stress += square(interaction->force->force_vect[interaction->force->stress_p + 6 * i + j]);
+      }
+    }
+  }
+  rms_force = sqrt(rms_force / (3. * structures->get_num_contrib_atoms()));
+  rms_energy = sqrt(rms_energy / structures->get_num_total_configs());
+  rms_stress = sqrt(rms_stress / ( 6. * structures->get_num_total_configs()));
 
   return;
 }

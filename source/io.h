@@ -32,9 +32,10 @@
 #define PTF_IO_H
 
 #include <cstdio>
-#include <iostream>
+#include <fstream>
 
 #include "pointers.h"
+#include "io/pstream.h"
 
 namespace POTFIT_NS {
 
@@ -50,6 +51,12 @@ namespace POTFIT_NS {
     void print_version();
     void print_help();
 
+    PStream new_write;
+    PStream new_warning;
+    PStream new_error;
+    PStream new_debug;
+
+    // DEPRECATED !!!!
     // standard output
     void write(const char *, ...);
     void write_log(const char *, ...);
@@ -72,7 +79,7 @@ namespace POTFIT_NS {
     int write_logfile;
 
   private:
-    FILE *logfile;
+    std::ofstream logfile;
   };
 
 }

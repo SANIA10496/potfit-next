@@ -233,7 +233,7 @@ void OptEvo::run(void) {
       if (force < min) {
         for (j = 0; j < D; j++)
           best[j] = trial[j];
-        if (output->tempfile != '\0') {
+        if (output->tempfile.compare('\0')) {
           for (j = 0; j < ndim; j++)
             potential->opt->values[j] = trial[j];
           output->write_tempfile();
@@ -274,13 +274,13 @@ void OptEvo::run(void) {
     count++;
 
     /* End optimization if break flagfile exists */
-    if (utils->flagfile != '\0') {
-      ff = fopen(utils->flagfile, "r");
+    if (utils->flagfile.compare('\0')) {
+      ff = fopen(utils->flagfile.c_str(), "r");
       if (NULL != ff) {
         io->write("\nEvolutionary algorithm terminated ");
-        io->write("in presence of break flagfile \"%s\"!\n\n", utils->flagfile);
+        io->write("in presence of break flagfile \"%s\"!\n\n", utils->flagfile.c_str());
         fclose(ff);
-        remove(utils->flagfile);
+        remove(utils->flagfile.c_str());
         break;
       }
     }

@@ -54,10 +54,10 @@ Force::~Force() {
 }
 
 void Force::calc_pointers(void) {
-  energy_p = 3 * structures->total_num_atoms;
-  stress_p = energy_p + structures->total_num_conf;
-  limit_p = stress_p + 6 * structures->total_num_conf;
-  dummy_p = limit_p + structures->total_num_conf;
+  energy_p = 3 * structures->get_num_total_atoms();
+  stress_p = energy_p + structures->get_num_total_configs();
+  limit_p = stress_p + 6 * structures->get_num_total_configs();
+  dummy_p = limit_p + structures->get_num_total_configs();
   //  TODO
 //  punish_par_p = dummy_p + 2 * ntypes;
 //  punish_pot_p = punish_par_p + apot_table.total_par - apot_table.invar_pots;

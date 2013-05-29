@@ -184,13 +184,13 @@ double ForcePair::calc_forces(void) {
       for (i = 0; i < 6; i++)
         force_vect[stress_p + 6 * h + i] = 0.;
 
-      //      TODO
+      //      TODO: chemical potentials
 //      force_vect[energy_p + h] += chemical_potential(ntypes, na_type[h], xi_opt + cp_start);
 
       // first loop over atoms: reset forces, densities
       for (i = 0; i < conf->num_atoms; i++) {
         atom = conf->atoms[i];
-        if (uf) {
+        if (uf && 1 == atom->contrib) {
           k = 3 * (conf->cnfstart + i);
           force_vect[k + 0] = -atom->force.x;
           force_vect[k + 1] = -atom->force.y;
@@ -201,7 +201,6 @@ double ForcePair::calc_forces(void) {
           force_vect[k + 1] = 0.;
           force_vect[k + 2] = 0.;
         }
-//        printf("force atom %d: %f %f %f\n",i,force_vect[k],force_vect[k+1],force_vect[k+2]);
       }
       // end first loop
 
@@ -230,9 +229,9 @@ double ForcePair::calc_forces(void) {
               phi_val *= 0.5;
               phi_grad *= 0.5;
             }
-	    printf("begin: %f\n",pot->begin);
-	    printf("atom %d neigh %d (dist %f) - phi: %f %f\n",i,j,neigh->r,phi_val,phi_grad);
-	    printf("slot %d shift %f step %f\n",neigh->slot[0],neigh->shift[0],neigh->step[0]);
+//            printf("begin: %f\n",pot->begin);
+//            printf("atom %d neigh %d (dist %f) - phi: %f %f\n",i,j,neigh->r,phi_val,phi_grad);
+//            printf("slot %d shift %f step %f\n",neigh->slot[0],neigh->shift[0],neigh->step[0]);
             // not double force: cohesive energy
             force_vect[energy_p + h] += phi_val;
 
@@ -240,14 +239,16 @@ double ForcePair::calc_forces(void) {
               tmp_force.x = neigh->dist.x * phi_grad;
               tmp_force.y = neigh->dist.y * phi_grad;
               tmp_force.z = neigh->dist.z * phi_grad;
-              force_vect[k] += tmp_force.x;
-              force_vect[k + 1] += tmp_force.y;
-              force_vect[k + 2] += tmp_force.z;
-              // actio = reactio
-              l = 3 * neigh->nr;
-              force_vect[l] -= tmp_force.x;
-              force_vect[l + 1] -= tmp_force.y;
-              force_vect[l + 2] -= tmp_force.z;
+	      if (1 == atom->contrib) {
+                force_vect[k] += tmp_force.x;
+                force_vect[k + 1] += tmp_force.y;
+                force_vect[k + 2] += tmp_force.z;
+                // actio = reactio
+                l = conf->cnfstart + 3 * neigh->nr;
+                force_vect[l] -= tmp_force.x;
+                force_vect[l + 1] -= tmp_force.y;
+                force_vect[l + 2] -= tmp_force.z;
+	      }
               // also calculate pair stresses
               if (us) {
                 tmp_force.x *= neigh->r;

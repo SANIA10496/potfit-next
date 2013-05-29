@@ -28,7 +28,6 @@
  *
  ****************************************************************/
 
-#include <mpi.h>
 #include <cstdlib>
 
 #include "force.h"
@@ -47,11 +46,6 @@
 using namespace POTFIT_NS;
 
 Input::Input(POTFIT *ptf, int argc, char **argv) : Pointers(ptf) {
-  strcpy(param_file,"\0");
-  strcpy(config_file,"\0");
-  strcpy(maxchfile,"\0");
-  strcpy(startpot,"\0");
-
   curline = 0;
   enable_maxch_file = 0;
 
@@ -79,7 +73,7 @@ Input::Input(POTFIT *ptf, int argc, char **argv) : Pointers(ptf) {
   if (version == 1)
     io->print_version();
 
-  strcpy(param_file,argv[1]);
+  param_file.assign(argv[1]);
 
   return;
 }
@@ -90,221 +84,202 @@ Input::~Input() {
 
 void Input::read_parameter_file() {
   char  buffer[1024];
-  char *token, *res;
-  FILE *params;
-
   int seed = 0;
-  curline = 0;
+  std::string temp;
 
-  io->write("Reading parameter file \"%s\" ... ",param_file);
-  params = fopen(param_file, "r");
-  if (NULL == params)
-    io->error("Could not open parameter file \"%s\".\n",param_file);
+  io->write("Reading parameter file \"%s\" ... ",param_file.c_str());
 
-  do {
-    res = fgets(buffer, 1024, params);
-    if (NULL == res)
-      break;			/* probably EOF reached */
-    curline++;
-    token = strtok(buffer, " \t\r\n");
-    if (NULL == token)
-      continue;			/* skip blank lines */
-    if (token[0] == '#')
-      continue;			/* skip comments */
+  if (infile.is_open())
+    io->error("File is already open?\n");
 
-    /* number of atom types */
-    if (strcasecmp(token, "ntypes") == 0) {
-      get_param("ntypes", &structures->ntypes, PARAM_INT, 1, 1);
+  try {
+    infile.open(param_file.c_str(), std::ios::in);
+  } catch (std::ifstream::failure e) {
+    io->error("Could not open parameter file \"%s\".\n",param_file.c_str());
+  }
+
+  while (infile.good()) {
+    infile >> temp;
+
+    if (temp[0] == '#') {
+      infile.getline(buffer, 1024);
+      continue;
     }
-    /* file with start potential */
-    else if (strcasecmp(token, "startpot") == 0) {
-      get_param("startpot", input->startpot, PARAM_STR, 1, 255);
+
+    // number of atom types
+    if (temp.compare("ntypes") == 0) {
+      get_param_int("ntypes", structures->ntypes);
     }
-    /* file for end potential */
-    else if (strcasecmp(token, "endpot") == 0) {
-      get_param("endpot", output->endpot, PARAM_STR, 1, 255);
+    // file with start potential
+    else if (temp.compare("startpot") == 0) {
+      get_param_str("startpot", input->startpot);
     }
-    /* prefix for all output files */
-    else if (strcasecmp(token, "output_prefix") == 0) {
-      get_param("output_prefix", output->output_prefix, PARAM_STR, 1, 255);
-      if (strcmp(output->output_prefix, "") != 0)
+    // file for end potential
+    else if (temp.compare("endpot") == 0) {
+      get_param_str("endpot", output->endpot);
+    }
+    // prefix for all output files
+    else if (temp.compare("output_prefix") == 0) {
+      get_param_str("output_prefix", output->output_prefix);
+      if (output->output_prefix.compare("") != 0)
         output->enable_output_files = 1;
     }
-    /* file for IMD potential */
-    else if (strcasecmp(token, "imdpot") == 0) {
-      get_param("imdpot", output->imdpot, PARAM_STR, 1, 255);
+    // file for IMD potential
+    else if (temp.compare("imdpot") == 0) {
+      get_param_str("imdpot", output->imdpot);
       output->enable_imd_pot = 1;
     }
-    /* file for plotting */
-    else if (strcasecmp(token, "plotfile") == 0) {
-      get_param("plotfile", output->plotfile, PARAM_STR, 1, 255);
+    // file for plotting
+    else if (temp.compare("plotfile") == 0) {
+      get_param_str("plotfile", output->plotfile);
       output->enable_plot_file = 1;
     }
-    /* file for maximal change */
-    else if (strcasecmp(token, "maxchfile") == 0) {
-      get_param("maxchfile", input->maxchfile, PARAM_STR, 1, 255);
+    // file for maximal change */
+    else if (temp.compare("maxchfile") == 0) {
+      get_param_str("maxchfile", input->maxchfile);
       input->enable_maxch_file = 1;
     }
-    /* file for pair distribution */
-    else if (strcasecmp(token, "distfile") == 0) {
-      get_param("distfile", output->distfile, PARAM_STR, 1, 255);
+    // file for pair distribution
+    else if (temp.compare("distfile") == 0) {
+      get_param_str("distfile", output->distfile);
       output->enable_distfile = 1;
     }
-    /* number of steps in IMD potential */
-    else if (strcasecmp(token, "imdpotsteps") == 0) {
-      get_param("imdpotsteps", &output->imdpotsteps, PARAM_INT, 1, 1);
+    // number of steps in IMD potential
+    else if (temp.compare("imdpotsteps") == 0) {
+      get_param_int("imdpotsteps", output->imdpotsteps);
     }
-    /* minimum for plotfile */
-    else if (strcasecmp(token, "plotmin") == 0) {
-      get_param("plotmin", &output->plotmin, PARAM_DOUBLE, 1, 1);
+    // minimum for plotfile
+    else if (temp.compare("plotmin") == 0) {
+      get_param_dbl("plotmin", output->plotmin);
     }
-    /* exclude chemical potential from energy calculations */
-    else if (strcasecmp(token, "enable_cp") == 0) {
-      get_param("enable_cp", &potential->enable_cp, PARAM_INT, 1, 1);
+    // exclude chemical potential from energy calculations
+    else if (temp.compare("enable_cp") == 0) {
+      get_param_int("enable_cp", potential->enable_cp);
     }
-    /* how far should the imd pot be extended */
-    else if (strcasecmp(token, "extend") == 0) {
-      get_param("extend", &settings->extend, PARAM_DOUBLE, 1, 1);
+    // how far should the imd pot be extended
+    else if (temp.compare("extend") == 0) {
+      get_param_dbl("extend", settings->extend);
     }
-    /* file with atom configuration */
-    else if (strcasecmp(token, "config") == 0) {
-      get_param("config", input->config_file, PARAM_STR, 1, 255);
+    // file with atom configuration
+    else if (temp.compare("config") == 0) {
+      get_param_str("config", input->config_file);
     }
-    /* Optimization flag */
-    else if (strcasecmp(token, "opt") == 0) {
-      get_param("opt", &settings->opt, PARAM_INT, 1, 1);
+    // Optimization flag
+    else if (temp.compare("opt") == 0) {
+      get_param_int("opt", settings->opt);
     }
-    /* break flagfile */
-    else if (strcasecmp(token, "flagfile") == 0) {
-      get_param("flagfile", utils->flagfile, PARAM_STR, 1, 255);
+    // break flagfile
+    else if (temp.compare("flagfile") == 0) {
+      get_param_str("flagfile", utils->flagfile);
     }
-    /* write radial pair distribution ? */
-    else if (strcasecmp(token, "write_pair") == 0) {
-      get_param("write_pair", &output->enable_pair_dist, PARAM_INT, 1, 1);
+    // write radial pair distribution
+    else if (temp.compare("write_pair") == 0) {
+      get_param_int("write_pair", output->enable_pair_dist);
     }
-    /* plotpoint file */
-    else if (strcasecmp(token, "plotpointfile") == 0) {
-      get_param("plotpointfile", output->plotpointfile, PARAM_STR, 1, 255);
+    // plotpoint file
+    else if (temp.compare("plotpointfile") == 0) {
+      get_param_str("plotpointfile", output->plotpointfile);
     }
-    /* temporary potential file */
-    else if (strcasecmp(token, "tempfile") == 0) {
-      get_param("tempfile", output->tempfile, PARAM_STR, 1, 255);
+    // temporary potential file
+    else if (temp.compare("tempfile") == 0) {
+      get_param_str("tempfile", output->tempfile);
     }
-    /* seed for RNG */
-    else if (strcasecmp(token, "seed") == 0) {
-      get_param("seed", &seed, PARAM_INT, 1, 1);
+    // seed for RNG
+    else if (temp.compare("seed") == 0) {
+      get_param_int("seed", seed);
       random->set_seed(seed);
     }
-    /* Scaling Constant for APOT Punishment */
-    else if (strcasecmp(token, "apot_punish") == 0) {
-      get_param("apot_punish", &settings->apot_punish_value, PARAM_DOUBLE, 1, 1);
+    // Scaling Constant for APOT Punishment
+    else if (temp.compare("apot_punish") == 0) {
+      get_param_dbl("apot_punish", settings->apot_punish_value);
     }
-    /* Energy Weight */
-    else if (strcasecmp(token, "eng_weight") == 0) {
-      get_param("eng_weight", &settings->eweight, PARAM_DOUBLE, 1, 1);
+    // Energy Weight
+    else if (temp.compare("eng_weight") == 0) {
+      get_param_dbl("eng_weight", settings->eweight);
     }
-    /* Energy Weight */
-    else if (strcasecmp(token, "stress_weight") == 0) {
-      get_param("stress_weight", &settings->sweight, PARAM_DOUBLE, 1, 1);
+    // Energy Weight
+    else if (temp.compare("stress_weight") == 0) {
+      get_param_dbl("stress_weight", settings->sweight);
     }
-    /* write final potential in lammps format */
-    else if (strcasecmp(token, "write_lammps") == 0) {
-      get_param("write_lammps", &output->enable_lammps_pot, PARAM_INT, 1, 1);
+    // write final potential in lammps format
+    else if (temp.compare("write_lammps") == 0) {
+      get_param_int("write_lammps", output->enable_lammps_pot);
     }
-    /* cutoff-radius for long-range interactions */
-    else if (strcasecmp(token, "dp_cut") == 0) {
-      get_param("dp_cut", &settings->dp_cut, PARAM_DOUBLE, 1, 1);
+    // cutoff-radius for long-range interactions
+    else if (temp.compare("dp_cut") == 0) {
+      get_param_dbl("dp_cut", settings->dp_cut);
     }
-    /* dipole iteration precision */
-    else if (strcasecmp(token, "dp_tol") == 0) {
-      get_param("dp_tol", &settings->dp_tol, PARAM_DOUBLE, 1, 1);
+    // dipole iteration precision
+    else if (temp.compare("dp_tol") == 0) {
+      get_param_dbl("dp_tol", settings->dp_tol);
     }
     // mixing parameter for damping dipole iteration loop
-    else if (strcasecmp(token, "dp_mix") == 0) {
-      get_param("dp_mix", &settings->dp_mix, PARAM_DOUBLE, 1, 1);
+    else if (temp.compare("dp_mix") == 0) {
+      get_param_dbl("dp_mix", settings->dp_mix);
     }
     // log file
-    else if (strcasecmp(token, "write_log") == 0) {
-      get_param("write_log", &io->write_logfile, PARAM_INT, 1, 1);
+    else if (temp.compare("write_log") == 0) {
+      get_param_int("write_log", io->write_logfile);
     }
     // interaction type
-    else if (strcasecmp(token, "interaction") == 0) {
-      get_param("interaction", interaction->type, PARAM_STR, 1, 255);
+    else if (temp.compare("interaction") == 0) {
+      get_param_str("interaction", interaction->type);
     }
     // optimization algorithm
-    else if (strcasecmp(token, "opt_alg") == 0) {
-      optimization->add_algorithm();
+    else if (temp.compare("opt_alg") == 0) {
+      optimization->add_algorithm(infile);
     }
-    // unknown tag
+    // if tag could not be identified
     else {
-      fprintf(stderr, "Unknown tag <%s> ignored!\n", token);
-      fflush(stderr);
+      std::cerr << "Unknown tag " << temp << " ignored!" << std::endl;
     }
-  } while (!feof(params));
+
+  // end of while loop
+  }
+
+  infile.close();
 
   io->set_logfile("potfit.log");
-  io->write("done\n");
-  fclose(params);
+  io->new_write << "done." << std::endl;
   check_params();
   interaction->init();
 
   return;
 }
 
-int Input::get_param(const char *param_name, void *param, param_t ptype, int pnum_min, int pnum_max)
-{
-  char *str;
-  int   i;
-  int   numread;
+void Input::get_param_dbl(const std::string &name, double &dest) {
+  std::string temp;
 
-  numread = 0;
-  switch (ptype) {
-  case PARAM_STR:
-    str = strtok(NULL, " \t\r\n");
-    if (str == NULL)
-      io->error("Parameter for %s missing in line %d\nstring expected!", param_name, curline);
-    else
-      strncpy((char *)param, str, pnum_max);
-    numread++;
-    break;
-  case PARAM_INT:
-    for (i = 0; i < pnum_min; i++) {
-      str = strtok(NULL, " \t\r\n");
-      if (str == NULL)
-        io->error("Parameter for %s missing in line %d!\nInteger vector of length %u expected!",
-                  param_name, curline, (unsigned)pnum_min);
-      else
-        ((int *)param)[i] = atoi(str);
-      numread++;
-    }
-    for (i = pnum_min; i < pnum_max; i++) {
-      if ((str = strtok(NULL, " \t\r\n")) != NULL) {
-        ((int *)param)[i] = atoi(str);
-        numread++;
-      } else
-        break;
-    }
-    break;
-  case PARAM_DOUBLE:
-    for (i = 0; i < pnum_min; i++) {
-      str = strtok(NULL, " \t\r\n");
-      if (str == NULL)
-        io->error("Parameter for %s missing in line %d!\nDouble vector of length %u expected!",
-                  param_name, curline, (unsigned)pnum_min);
-      else
-        ((double *)param)[i] = atof(str);
-      numread++;
-    }
-    for (i = pnum_min; i < pnum_max; i++) {
-      if ((str = strtok(NULL, " \t\r\n")) != NULL) {
-        ((double *)param)[i] = atof(str);
-        numread++;
-      } else
-        break;
-    }
-    break;
-  }
-  return numread;
+  if (!infile.is_open())
+    io->error("File is not open?\n");
+
+  infile >> temp;
+
+  dest = atof(temp.c_str());
+
+  return;
+}
+
+void Input::get_param_int(const std::string &name, int &dest) {
+  std::string temp;
+
+  if (!infile.is_open())
+    io->error("File is not open?\n");
+
+  infile >> temp;
+
+  dest = atoi(temp.c_str());
+
+  return;
+}
+
+void Input::get_param_str(const std::string &name, std::string &dest) {
+  if (!infile.is_open())
+    io->error("File is not open?\n");
+
+  infile >> dest;
+
+  return;
 }
 
 /****************************************************************
@@ -317,47 +292,47 @@ void Input::check_params()
 {
   if (structures->ntypes <= 0)
     io->error("Missing parameter or invalid value in %s : ntypes is \"%d\"",
-              param_file, structures->ntypes);
+              param_file.c_str(), structures->ntypes);
 
-  if (strcmp(startpot, "\0") == 0)
+  if (strcmp(startpot.c_str(), "\0") == 0)
     io->error("Missing parameter or invalid value in %s : startpot is \"%s\"",
-              param_file, startpot);
+              param_file.c_str(), startpot.c_str());
 
-  if (strcmp(output->endpot, "\0") == 0) {
-    io->warning("endpot is missing in %s, setting it to %s_end", param_file, startpot);
-    sprintf(output->endpot, "%s_end", startpot);
+  if (strcmp(output->endpot.c_str(), "\0") == 0) {
+    io->warning("endpot is missing in %s, setting it to %s_end", param_file.c_str(), startpot.c_str());
+    output->endpot = startpot + "_end";
   }
 
-  if (strcmp(interaction->type, "\0") == 0)
-    io->error("Error in %s - 'interaction' keyword is missing!", param_file);
+  if (strcmp(interaction->type.c_str(), "\0") == 0)
+    io->error("Error in %s - 'interaction' keyword is missing!", param_file.c_str());
 
-  if (strcmp(config_file, "\0") == 0)
+  if (strcmp(config_file.c_str(), "\0") == 0)
     io->error("Missing parameter or invalid value in %s: config is \"%s\"",
-              param_file, config_file);
+              param_file.c_str(), config_file.c_str());
 
-  if (strcmp(output->tempfile, "\0") == 0)
+  if (strcmp(output->tempfile.c_str(), "\0") == 0)
     io->error("Missing parameter or invalid value in %s: tempfile is \"%s\"",
-              param_file, output->tempfile);
+              param_file.c_str(), output->tempfile.c_str());
 
   if (settings->eweight < 0)
     io->error("Missing parameter or invalid value in %s: eng_weight is \"%f\"",
-              param_file, settings->eweight);
+              param_file.c_str(), settings->eweight);
 
   if (settings->sweight < 0)
     io->error("Missing parameter or invalid value in %s: stress_weight is \"%f\"",
-              param_file, settings->sweight);
+              param_file.c_str(), settings->sweight);
 
   if (output->enable_imd_pot && output->imdpotsteps <= 0)
     io->error("Missing parameter or invalid value in %s: imdpotsteps is \"%d\"",
-              param_file, output->imdpotsteps);
+              param_file.c_str(), output->imdpotsteps);
 
   if (output->plotmin < 0)
     io->error("Missing parameter or invalid value in %s: plotmin is \"%f\"",
-              param_file, output->plotmin);
+              param_file.c_str(), output->plotmin);
 
   if (potential->enable_cp != 0 && potential->enable_cp != 1)
     io->error("Missing parameter or invalid value in %s: enable_cp is \"%d\"",
-              param_file, potential->enable_cp);
+              param_file.c_str(), potential->enable_cp);
 
   return;
 }
@@ -370,36 +345,36 @@ void Input::read_potential_file() {
   fpos_t after_header;
 
   // open file
-  io->write("Starting to read potential file \"%s\":\n",startpot);
-  infile = fopen(startpot, "r");
+  io->write("Starting to read potential file \"%s\":\n",startpot.c_str());
+  infile = fopen(startpot.c_str(), "r");
   if (NULL == infile)
-    io->error("Could not open file \"%s\"\n", startpot);
+    io->error("Could not open file \"%s\"\n", startpot.c_str());
 
   // read the header
   do {
     // read one line
     res = fgets(buffer, 1024, infile);
     if (NULL == res)
-      io->error("Unexpected end of file in >%s<", startpot);
+      io->error("Unexpected end of file in >%s<", startpot.c_str());
     // check if it is a header line
     if (buffer[0] != '#')
-      io->error("Header corrupt in file >%s<", startpot);
+      io->error("Header corrupt in file >%s<", startpot.c_str());
 
     // see if it is the format line
     if (buffer[1] == 'F') {
       // format complete?
       if (2 != sscanf((const char *)(buffer + 2), "%d %d", &format, &size))
-        io->error("Corrupt format header line in file %s", startpot);
+        io->error("Corrupt format header line in file %s", startpot.c_str());
 
       if (size != interaction->force->cols()) {
-        sprintf(buffer, "Wrong number of data columns in file \"%s\",\n", startpot);
+        sprintf(buffer, "Wrong number of data columns in file \"%s\",\n", startpot.c_str());
         io->error("%sshould be %d for %s, but are %d.", buffer,
-                  interaction->force->cols(), interaction->type, size);
+                  interaction->force->cols(), interaction->type.c_str(), size);
       }
       have_format = 1;
       potential->init(size);
     } else if (!have_format && buffer[1] != '#') {
-      io->error("Format line missing or not first line in potential file.", startpot);
+      io->error("Format line missing or not first line in potential file.", startpot.c_str());
     }
 
     // read the C line
@@ -427,10 +402,11 @@ void Input::read_potential_file() {
       // remove newline at the end of buffer
       if ((str = strchr(buffer + 3, '\n')) != NULL)
         *str = '\0';
-      if (strcmp(utils->tolowercase(buffer + 3), utils->tolowercase(interaction->type)) != 0) {
-        io->error("The potential types in your parameter and potential file do not match!\n");
-      }
-      io->write("- Using %d %s potentials to calculate forces\n", size, interaction->type);
+      //      TODO port to C++
+//      if (strcmp(utils->tolowercase(buffer + 3), utils->tolowercase(interaction->type.c_str())) != 0) {
+//        io->error("The potential types in your parameter and potential file do not match!\n");
+//      }
+      io->write("- Using %d %s potentials to calculate forces\n", size, interaction->type.c_str());
       have_type = 1;
     }
 
@@ -449,7 +425,7 @@ void Input::read_potential_file() {
           }
         }
       } else
-        io->error("#I needs to be specified after the #F and #T lines in the potential file \"%s\"", startpot);
+        io->error("#I needs to be specified after the #F and #T lines in the potential file \"%s\"", startpot.c_str());
     }
 
     // stop after last header line
@@ -461,7 +437,7 @@ void Input::read_potential_file() {
 
   /* do we have a format in the header? */
   if (!have_format)
-    io->error("Format not specified in header of file \"%s\"", startpot);
+    io->error("Format not specified in header of file \"%s\"", startpot.c_str());
 
   if (!have_elements)
     io->error("The elements are not specified in the potential file (#C tag is missing).");
@@ -479,7 +455,7 @@ void Input::read_potential_file() {
 
   potential->global_params->check_usage();
 
-  io->write("Reading potential file \"%s\" ... done\n", startpot);
+  io->write("Reading potential file \"%s\" ... done\n", startpot.c_str());
 
   fclose(infile);
 
@@ -490,10 +466,10 @@ void Input::read_config_file() {
   FILE *infile;
 
   // open file
-  io->write("Reading config file \"%s\" ... ", config_file);
-  infile = fopen(config_file, "r");
+  io->write("Reading config file \"%s\" ... ", config_file.c_str());
+  infile = fopen(config_file.c_str(), "r");
   if (NULL == infile)
-    io->error("Could not open file \"s\"\n", config_file);
+    io->error("Could not open file \"s\"\n", config_file.c_str());
 
   structures->init();
   structures->read_config(infile);
@@ -503,12 +479,12 @@ void Input::read_config_file() {
   io->write("done\n\n");
 
   io->write("Read %d configurations (%d with forces, %d with stresses)\n",
-            structures->total_num_conf, structures->using_forces, structures->using_stresses);
-  io->write("with a total of %d atoms (", structures->total_num_atoms);
+            structures->get_num_total_configs(), structures->using_forces, structures->using_stresses);
+  io->write("with a total of %d atoms (", structures->get_num_total_atoms());
   for (int i=0; i<structures->ntypes; i++) {
     io->write("%d %s [%.2f%]",
               structures->num_per_type[i], potential->elements[i],
-              100. * structures->num_per_type[i]/structures->total_num_atoms);
+              100. * structures->num_per_type[i]/structures->get_num_total_atoms());
     if (i != (structures->ntypes - 1))
       io->write(", ");
   }

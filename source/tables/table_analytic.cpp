@@ -362,7 +362,7 @@ void TableAnalytic::update_slots(void) {
   Neighbor *neigh = NULL;
   Table *pot = NULL;
 
-  for (int i = 0; i < structures->total_num_conf; i++) {
+  for (int i = 0; i < structures->get_num_total_configs(); i++) {
     conf = structures->config[i];
     for (int j = 0; j < conf->num_atoms; j++) {
       atom = conf->atoms[j];

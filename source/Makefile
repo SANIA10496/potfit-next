@@ -247,7 +247,7 @@ debug: TARGET = debug
 debug: git potfit
 #potfit: CFLAGS += ${OPT_FLAGS}
 
-SUBDIRS = config forces functions opt random tables
+SUBDIRS = config forces functions io opt random tables
 CLEANDIRS = $(SUBDIRS:%=clean-%)
 
 .PHONY: subdirs ${SUBDIRS}
@@ -265,6 +265,8 @@ FORCE_SOURCES = $(shell ls forces/*.cpp)
 FORCE_OBJECTS = $(subst .cpp,.o,${FORCE_SOURCES})
 FUNCTION_SOURCES = $(shell ls functions/*.cpp)
 FUNCTION_OBJECTS = $(subst .cpp,.o,${FUNCTION_SOURCES})
+IO_SOURCES = $(shell ls io/*.cpp)
+IO_OBJECTS = $(subst .cpp,.o,${IO_SOURCES})
 OPT_SOURCES = $(shell ls opt/*.cpp)
 OPT_OBJECTS = $(subst .cpp,.o,${OPT_SOURCES})
 RANDOM_SOURCES = $(shell ls random/*.c)
@@ -280,7 +282,7 @@ git:
 
 # potfit is the default target
 potfit: subdirs ${OBJECTS}
-	${CXX} ${LIBS} ${LFLAGS_${PARALLEL}} -o $@ ${OBJECTS} ${FORCE_OBJECTS} ${RANDOM_OBJECTS} ${TABLE_OBJECTS} ${FUNCTION_OBJECTS} ${CONFIG_OBJECTS} ${OPT_OBJECTS}
+	${CXX} ${LIBS} ${LFLAGS_${PARALLEL}} -o $@ ${OBJECTS} ${FORCE_OBJECTS} ${RANDOM_OBJECTS} ${TABLE_OBJECTS} ${FUNCTION_OBJECTS} ${CONFIG_OBJECTS} ${OPT_OBJECTS} ${IO_OBJECTS}
 
 strip:
 	${STRIP} --strip-unneeded -R .comment potfit

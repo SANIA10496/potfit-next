@@ -47,11 +47,16 @@ namespace POTFIT_NS {
     void init(void);
 
     void read_config(FILE *);
+
     void print_mindist(void);
 
+    int get_num_contrib_atoms(void);
+    int get_num_contrib_energies(void);
+    int get_num_contrib_stresses(void);
+    int get_num_total_atoms(void);
+    int get_num_total_configs(void);
+
     int ntypes; 			// number of atom types
-    int total_num_atoms;		// total number of atoms
-    int total_num_conf; 		// total number of configurations
     std::vector<int> num_per_type; 	// total number of atoms per type
     int using_forces; 			// total number of configs using forces
     int using_stresses;			// total number of configs using stress
@@ -63,6 +68,8 @@ namespace POTFIT_NS {
     std::vector<Config *> config; 	// configurations
   private:
     int line;
+    int total_num_conf; 		// total number of configurations
+    int total_num_atoms;		// total number of atoms
   };
 
 }

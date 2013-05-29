@@ -38,10 +38,12 @@
 using namespace POTFIT_NS;
 
 Utils::Utils(POTFIT *ptf) : Pointers(ptf) {
-  strcpy(flagfile, "\0");
+  return;
 }
 
-Utils::~Utils() {}
+Utils::~Utils() {
+  return;
+}
 
 char *Utils::tolowercase(char *str) {
   int differ = 'A'-'a';

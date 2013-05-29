@@ -32,6 +32,7 @@
 #define PTF_INTERACTION_H
 
 #include <cstdio>
+#include <string>
 
 #include "pointers.h"
 #include "force.h"
@@ -46,12 +47,12 @@ namespace POTFIT_NS {
     void init(void);
     double calc_forces(void);
 
-    char type[255];
+    std::string type;
 
     Force *force;
 
   private:
-    class Force *init_force(const char *);
+    class Force *init_force(const std::string &);
   };
 
 }

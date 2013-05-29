@@ -174,7 +174,7 @@ void OptSimann::run(void) {
               for (n = 0; n < ndim; n++)
                 xopt[n] = xi2[n];
               Fopt = F2;
-              if (output->tempfile != '\0') {
+              if (output->tempfile.compare('\0')) {
                 potential->update_potentials(0);
                 output->write_tempfile();
               }
@@ -200,17 +200,17 @@ void OptSimann::run(void) {
       io->write("%3d\t%f\t%3d\t%f\t%f\n", k, T, m + 1, F, Fopt);
 
       /* End annealing if break flagfile exists */
-      if (utils->flagfile != '\0') {
-        ff = fopen(utils->flagfile, "r");
+      if (utils->flagfile.compare('\0')) {
+        ff = fopen(utils->flagfile.c_str(), "r");
         if (NULL != ff) {
-          io->write("Annealing terminated in presence of break flagfile \"%s\"!\n", utils->flagfile);
+          io->write("Annealing terminated in presence of break flagfile \"%s\"!\n", utils->flagfile.c_str());
           io->write("Temperature was %f, returning optimum configuration\n", T);
           for (n = 0; n < ndim; n++)
             xi[n] = xopt[n];
           F = Fopt;
           k = KMAX + 1;
           fclose(ff);
-          remove(utils->flagfile);
+          remove(utils->flagfile.c_str());
           break;
         }
       }
@@ -251,7 +251,7 @@ void OptSimann::run(void) {
   }
 
   F = Fopt;
-  if (output->tempfile != '\0') {
+  if (output->tempfile.compare('\0')) {
     potential->update_potentials(0);
     output->write_tempfile();
   }

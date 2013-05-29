@@ -31,7 +31,10 @@
 #ifndef PTF_INPUT_H
 #define PTF_INPUT_H
 
+#include <mpi.h>
+#include <fstream>
 #include <iostream>
+#include <string>
 
 #include "pointers.h"
 #include "types.h"
@@ -49,18 +52,22 @@ namespace POTFIT_NS {
     void read_config_file();
 
   private:
-    int get_param(const char *, void *, param_t, int, int);
-    void check_params();
+    void get_param_dbl(const std::string &, double &);
+    void get_param_int(const std::string &, int &);
+    void get_param_str(const std::string &, std::string &);
 
-    char param_file[255]; 	// parameter file
-    char config_file[255];
-    char maxchfile[255];
-    char startpot[255];
+    void check_params();
 
     int curline;
     int enable_maxch_file;
-  };
 
+    std::ifstream infile;
+
+    std::string param_file; 	// parameter file
+    std::string config_file;
+    std::string maxchfile;
+    std::string startpot;
+  };
 }
 
 #endif /* PTF_INPUT_H */

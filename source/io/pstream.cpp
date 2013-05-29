@@ -1,6 +1,6 @@
 /****************************************************************
  *
- * communication.cpp:
+ * pstream.cpp:
  *
  ****************************************************************
  *
@@ -28,47 +28,71 @@
  *
  ****************************************************************/
 
-#include <mpi.h>
-
-#include "communication.h"
-#include "io.h"
-#include "settings.h"
-#include "structures.h"
+#include "pstream.h"
 
 using namespace POTFIT_NS;
 
-Communication::Communication(POTFIT *ptf) : Pointers(ptf) {
-  return;
-}
-
-Communication::~Communication() {
-  return;
-}
-
-void Communication::init(void) {
-  if (1 < settings->num_cpus)
-    io->write("Starting up MPI with %d processes.\n",settings->num_cpus);
+PStream::PStream() {
+  screen = 0;
+  write_prefix = 0;
+  write_logfile = 0;
 
   return;
 }
 
-void Communication::broadcast_params(void) {
+PStream::~PStream() {
   return;
 }
 
-void Communication::set_config_per_cpu(void) {
-  if (1 == settings->num_cpus) {
-    structures->firstconf = 0;
-    structures->nconf = structures->get_num_total_configs();
-  } else {
-    int each = (structures->get_num_total_configs() / settings->num_cpus);
-    int odd = (structures->get_num_total_configs() % settings->num_cpus) - settings->num_cpus;
+void PStream::init(const std::string &pref, std::ofstream *log) {
+  prefix.assign(pref);
+  write_prefix = 1;
 
-    structures->firstconf = settings->myid * each;
-    structures->nconf = each;
-    if (settings->myid < odd)
-      structures->nconf++;
-  }
+  output = log;
 
   return;
 }
+
+void PStream::init_done(int &scr) {
+  screen = scr;
+  write_logfile = 1;
+
+  return;
+}
+
+template <typename T>
+std::ofstream& PStream::operator<<(const T& x) {
+  (*output) << x;
+  std::cout << x;
+
+  return (*this);
+}
+
+
+//std::ofstream& PStream::operator<<(StandardEndLine manip) {
+//  std::cout << manip;
+
+//  return *this;
+//}
+
+//std::ofstream& PStream::operator<<(const std::string &text) {
+//  (*output) << text;
+//  std::cout << text;
+
+//  return (*this);
+//}
+
+//std::ofstream& PStream::operator<<(const char *text) {
+//  (*output) << text;
+//  std::cout << text;
+
+//  return (*this);
+//}
+
+//std::ostream& PStream::operator<<(std::ostream&(*f)(std::ostream&)) {
+//  (*output) << f;
+//  std::cout << f;
+
+//  return (*this);
+//}
+

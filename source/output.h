@@ -31,6 +31,8 @@
 #ifndef PTF_OUTPUT_H
 #define PTF_OUTPUT_H
 
+#include <string>
+
 #include "pointers.h"
 
 namespace POTFIT_NS {
@@ -43,14 +45,14 @@ namespace POTFIT_NS {
     void write_output(void);
     void write_tempfile(void);
 
-    char distfile[255];
-    char endpot[255];
-    char imdpot[255];
-    char lammpspot[255];
-    char output_prefix[255];
-    char plotfile[255];
-    char plotpointfile[255];
-    char tempfile[255];
+    std::string distfile;
+    std::string endpot;
+    std::string imdpot;
+    std::string lammpspot;
+    std::string output_prefix;
+    std::string plotfile;
+    std::string plotpointfile;
+    std::string tempfile;
 
     int imdpotsteps;
     int enable_distfile;
@@ -70,6 +72,11 @@ namespace POTFIT_NS {
     void write_output_files(void);
     void write_plotfile(void);
     void write_plotpointfile(void);
+
+    void write_output_file_forces(void);
+    void write_output_file_energies(void);
+    void write_output_file_stresses(void);
+    void write_output_file_punishments(void);
   };
 
 }

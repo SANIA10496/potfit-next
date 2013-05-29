@@ -83,23 +83,18 @@ void Optimization::run(void) {
   return;
 }
 
-void Optimization::add_algorithm(void) {
-  char *str;
+void Optimization::add_algorithm(std::ifstream &infile) {
+  std::string temp;
 
   // read algorithm name
-  str = strtok(NULL, " \t\r\n");
-  if (str == NULL)
-    io->error("Algorithm name is missing!");
-  algorithms.push_back(str);
+  infile >> temp;
+  algorithms.push_back(temp);
   params.push_back(new double[3]);
 
   // read params
   for (int i=0; i<3; i++) {
-    str = strtok(NULL, " \t\r\n");
-    if (str != NULL)
-      params[num_algs][i] = atof(str);
-    else
-      params[num_algs][i] = 0;
+    infile >> temp;
+    params[num_algs][i] = atof(temp.c_str());
   }
   num_algs++;
 

@@ -38,7 +38,6 @@ using namespace POTFIT_NS;
 
 Interaction::Interaction(POTFIT *ptf) : Pointers(ptf)
 {
-  strcpy(type,"\0");
   force = NULL;
 
   return;
@@ -46,7 +45,8 @@ Interaction::Interaction(POTFIT *ptf) : Pointers(ptf)
 
 Interaction::~Interaction()
 {
-  if (force) delete force;
+  if (force)
+    delete force;
 
   return;
 }
@@ -62,13 +62,13 @@ double Interaction::calc_forces(void) {
   return force->calc_forces();
 }
 
-Force *Interaction::init_force(const char *force_type)
+Force *Interaction::init_force(const std::string &force_type)
 {
-  if (strcmp(force_type,"none") == 0)
+  if (force_type.compare("none") == 0)
     return NULL;
 #define FORCE_TYPE
 #define ForceType(key,Class) \
-  else if (strcmp(force_type,#key) == 0) \
+  else if (force_type.compare(#key) == 0) \
     return new Class(ptf);
 #include "forces/list_forces.h"
 #undef FORCE_TYPE

@@ -120,3 +120,41 @@ void Structures::print_mindist(void) {
 
   return;
 }
+
+int Structures::get_num_contrib_atoms(void) {
+  int count = 0;
+
+  for (int i=0;i<total_num_conf;i++) {
+    if (1 == config[i]->use_forces) {
+      for (int j=0;j<config[i]->num_atoms;j++) {
+        if (1 == config[i]->atoms[j]->contrib)
+          count++;
+      }
+    }
+  }
+
+  return count;
+}
+
+int Structures::get_num_contrib_energies(void) {
+  return total_num_conf;
+}
+
+int Structures::get_num_contrib_stresses(void) {
+  int count = 0;
+
+  for (int i=0;i<total_num_conf;i++) {
+    if (1 == config[i]->use_stresses)
+      count++;
+  }
+
+  return 6 * count;
+}
+
+int Structures::get_num_total_atoms(void) {
+  return total_num_atoms;
+}
+
+int Structures::get_num_total_configs(void) {
+  return total_num_conf;
+}
