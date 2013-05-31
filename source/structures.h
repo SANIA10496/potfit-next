@@ -56,7 +56,9 @@ namespace POTFIT_NS {
     int get_num_total_atoms(void);
     int get_num_total_configs(void);
 
-    int ntypes; 			// number of atom types
+    void set_ntypes(int);
+    int get_ntypes(void);
+
     std::vector<int> num_per_type; 	// total number of atoms per type
     int using_forces; 			// total number of configs using forces
     int using_stresses;			// total number of configs using stress
@@ -67,6 +69,7 @@ namespace POTFIT_NS {
 
     std::vector<Config *> config; 	// configurations
   private:
+    int ntypes; 			// number of atom types
     int line;
     int total_num_conf; 		// total number of configurations
     int total_num_atoms;		// total number of atoms

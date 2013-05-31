@@ -51,13 +51,17 @@ namespace POTFIT_NS {
     void end_timer(void);
     int timediff(void);
 
-    std::string flagfile;
+    void set_flagfile(std::string);
+    int check_for_flagfile(void);
+
   private:
     int partition(double *, int, int, int, double **);
     void swap_population(double *, double *);
 
     time_t t_begin;
     time_t t_end;
+
+    std::string flagfile;
   };
 
 }

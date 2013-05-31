@@ -81,16 +81,15 @@ void ChempotTable::add_value(int i, const char *name, double val, double min, do
     min = max;
     max = temp;
   } else if ((val < min) || (val > max)) {
-    if (settings->opt) {
+    if (settings->get_opt()) {
       if (val < min)
         val = min;
       if (val > max)
         val = max;
-      sprintf(msg, "Starting value for %s is ", name, i + 1);
-      sprintf(msg, "%soutside of specified adjustment range.\n",msg);
-      io->warning("%sResetting it to %f.\n", msg, i + 1, val);
+      io->warning << "Starting value for " << name << " is outside of specified adjustment range." << std::endl;
+      io->warning << "Resetting it to " << val << "." << std::endl;
       if (val == 0)
-        io->warning("New value is 0 ! Please be careful about this.\n");
+        io->warning << "New value is 0 ! Please be careful about this." << std::endl;
     }
   }
   strcpy(param_name[i],name);

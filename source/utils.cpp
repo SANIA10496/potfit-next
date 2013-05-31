@@ -123,3 +123,13 @@ void Utils::end_timer(void) {
 int Utils::timediff(void) {
   return (int)difftime(t_end, t_begin);
 }
+
+void Utils::set_flagfile(std::string str) {
+  flagfile = str;
+
+  return;
+}
+
+int Utils::check_for_flagfile(void) {
+  return 0;
+}

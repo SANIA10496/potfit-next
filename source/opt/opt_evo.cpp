@@ -31,6 +31,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <limits>
+#include <iomanip>
 
 #include "opt_evo.h"
 
@@ -110,7 +111,7 @@ void OptEvo::run(void) {
   // 1: max. number of steps
   // 2: not used
   if (params[0] <= 0.) {
-    io->write("Skipping evo algorithm with error margin of %f\n",params[0]);
+    io->write << "Skipping evo algorithm with error margin of " << params[0] << "." << std::endl;
     return;
   }
   evo_threshold = params[0];
@@ -126,21 +127,24 @@ void OptEvo::run(void) {
   x2 = new double*[NP];
   best = new double[NP];
   cost = new double[NP];
-  if (x1 == NULL || x2 == NULL || trial == NULL || cost == NULL || best == NULL)
-    io->error("Could not allocate memory for population vector!\n");
+  if (x1 == NULL || x2 == NULL || trial == NULL || cost == NULL || best == NULL) {
+    io->error << "Could not allocate memory for population vector!" << std::endl;
+    io->exit(EXIT_FAILURE);
+  }
   for (i = 0; i < NP; i++) {
     x1[i] = new double[D];
     x2[i] = new double[D];
-    if (x1[i] == NULL || x2[i] == NULL)
-      io->error("Could not allocate memory for population vector!\n");
+    if (x1[i] == NULL || x2[i] == NULL) {
+      io->error << "Could not allocate memory for population vector!" << std::endl;
+      io->exit(EXIT_FAILURE);
+    }
     for (j = 0; j < D; j++) {
       x1[i][j] = 0;
       x2[i][j] = 0;
     }
   }
 
-  io->write("Initializing population ... ");
-  fflush(stdout);
+  io->write << "Initializing population ... ";
 
   init_population(x1, xi, cost);
   for (i = 0; i < NP; i++) {
@@ -154,13 +158,15 @@ void OptEvo::run(void) {
   }
   for (i = 0; i < NP; i++)
     avg += cost[i];
-  io->write("done\n");
+  io->write << "done" << std::endl;
 
   crit = max - min;
 
-  io->write("Loops\t\tOptimum\t\tAverage error sum\t\tMax-Min\n");
-  io->write("%5d\t\t%15f\t%20f\t\t%.2e\n", count, min, avg / (NP), crit);
-  fflush(stdout);
+  io->write << "Loops\t\tOptimum\t\tAverage error sum\t\tMax-Min" << std::endl;
+  io->write << std::setw(5) << count << "\t";
+  io->write << std::setw(15) << min << "\t";
+  io->write << std::setw(20) << avg / NP << "\t";
+  io->write << std::scientific << crit << std::endl;
 
   /* main differential evolution loop */
   while (crit >= evo_threshold && min >= evo_threshold && count < maxsteps) {
@@ -233,7 +239,7 @@ void OptEvo::run(void) {
       if (force < min) {
         for (j = 0; j < D; j++)
           best[j] = trial[j];
-        if (output->tempfile.compare('\0')) {
+        if (!output->get_tempfile().empty()) {
           for (j = 0; j < ndim; j++)
             potential->opt->values[j] = trial[j];
           output->write_tempfile();
@@ -274,15 +280,10 @@ void OptEvo::run(void) {
     count++;
 
     /* End optimization if break flagfile exists */
-    if (utils->flagfile.compare('\0')) {
-      ff = fopen(utils->flagfile.c_str(), "r");
-      if (NULL != ff) {
-        io->write("\nEvolutionary algorithm terminated ");
-        io->write("in presence of break flagfile \"%s\"!\n\n", utils->flagfile.c_str());
-        fclose(ff);
-        remove(utils->flagfile.c_str());
-        break;
-      }
+    if (utils->check_for_flagfile() == 1) {
+      io->write << std::endl << "Evolutionary algorithm terminated ";
+      io->write << "in presence of flagfile!" << std::endl << std::endl;
+      break;
     }
 
     crit = max - min;
@@ -358,8 +359,9 @@ void OptEvo::opposite_check(double **P, double *costP, int init) {
   /* allocate memory if not done yet */
   if (tot_P == NULL) {
     tot_P = new double*[2*NP];
-    if (tot_P == NULL)
-      io->error("Could not allocate memory for opposition vector!\n");
+    if (tot_P == NULL) {
+      io->error << "Could not allocate memory for opposition vector!" << std::endl;
+    }
     for (i = 0; i < 2 * NP; i++) {
       tot_P[i] = new double[D];
       for (j = 0; j < D; j++)

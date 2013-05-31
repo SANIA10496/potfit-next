@@ -56,9 +56,11 @@ namespace POTFIT_NS {
 
     void init_opt_table(void);
 
+    void set_enable_cp(int);
+    int get_enable_cp(void);
+
     std::vector<char *> elements;
 
-    int enable_cp; 		// chemical potential (only for pair)
     int num_globals; 		// global potentials
 
     int num_pots; 		// total number of potentials
@@ -82,6 +84,9 @@ namespace POTFIT_NS {
     OptTable 		*opt; 			// optimization table
     GlobalsTable 	*global_params; 	// table for global parameters (apot)
     ChempotTable 	*chem_pot; 		// table for chemical potentials (pair)
+  private:
+    int enable_cp; 		// chemical potential (only for pair)
+
   };
 
 }

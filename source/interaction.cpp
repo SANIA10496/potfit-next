@@ -74,3 +74,13 @@ Force *Interaction::init_force(const std::string &force_type)
 #undef FORCE_TYPE
   return NULL;
 }
+
+void Interaction::set_type(std::string str) {
+  type = str;
+
+  return;
+}
+
+std::string Interaction::get_type(void) {
+  return type;
+}

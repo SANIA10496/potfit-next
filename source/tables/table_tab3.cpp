@@ -92,7 +92,7 @@ void TableTab3::update_slots(void) {
   return;
 }
 
-void TableTab3::write_potential(FILE *outfile) {
+void TableTab3::write_potential(std::ofstream &outfile) {
 }
 
 void TableTab3::write_plot(FILE *outfile) {

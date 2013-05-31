@@ -34,69 +34,73 @@
 #include <fstream>
 #include <iostream>
 #include <ostream>
+#include <sstream>
+#include <string>
 
 #include "../pointers.h"
 
 namespace POTFIT_NS {
 
-  class PStream : public std::ofstream {
+  class PStream: public std::ostream {
+
   public:
-    PStream();
+    PStream(const char *, std::ostream &, std::ofstream *, PStream *);
     ~PStream();
 
-    void init(const std::string &, std::ofstream *);
     void init_done(int &);
 
-    template <typename T>
-    std::ofstream& operator<<(const T&);
-
-    // function that takes a custom stream, and returns it
-//    typedef std::ofstream& (*MyStreamManipulator)(std::ofstream&);
-
-    // take in a function with the custom signature
-//    std::ofstream& operator<<(MyStreamManipulator manip);
-
-    // define the custom endl for this stream.
-    // note how it matches the `MyStreamManipulator`
-    // function signature
-//    static std::ofstream& endl(std::ofstream& stream);
-
-    // this is the type of std::cout
-//    typedef std::basic_ostream<char, std::char_traits<char> > CoutType;
-
-    // this is the function signature of std::endl
-//    typedef CoutType& (*StandardEndLine)(CoutType&);
-
-    // define an operator<< to take in std::endl
-//    std::ofstream& operator<<(StandardEndLine manip);
-
-//    std::ofstream& operator<<(const char *);
-//    std::ostream& operator<<(std::ostream&(*f)(std::ostream&));
-
-//    std::ofstream& operator<<(bool val);
-//    std::ofstream& operator<<(short val);
-//    std::ofstream& operator<<(unsigned short val);
-//    std::ofstream& operator<<(int val);
-//    std::ofstream& operator<<(unsigned int val);
-//    std::ofstream& operator<<(long val);
-//    std::ofstream& operator<<(unsigned long val);
-//    std::ofstream& operator<<(float val);
-//    std::ofstream& operator<<(double val);
-//    std::ofstream& operator<<(long double val);
-//    std::ofstream& operator<<(void* val);
-
-//    std::ostream& operator<<(streambuf* sb);
-
-//    std::ostream& operator<<(ostream& (*pf)(ostream&));
-//    std::ostream& operator<<(ios& (*pf)(ios&));
-//    std::ostream& operator<<(ios_base& (*pf)(ios_base&));
   private:
-    int screen;
-    int write_prefix;
-    int write_logfile;
+    // Write a stream buffer that prefixes each line
+    class PStreamBuf: public std::stringbuf
+    {
+    public:
+      PStreamBuf(std::ostream& ostr, std::ofstream& lstr, PStream *ps, const char *pref) :
+        screen(0),
+        write_logfile(0),
+        prefix(pref),
+        pstream(ps),
+        output(ostr),
+        logfile(lstr)
+      {}
 
-    std::ofstream *output;
-    std::string prefix;
+      // When we sync the stream with the output.
+      // 1) Output prefix then the buffer
+      // 2) Reset the buffer
+      // 3) flush the actual output stream we are using.
+      virtual int sync ( )
+      {
+        if (1 == screen) {
+          if (!prefix.empty()) {
+            output << "[" << prefix << "] " << str();
+	    if (1 == write_logfile)
+              logfile << "[" << prefix << "] " << str();
+            str("");
+          } else {
+            output << str();
+	    if (1 == write_logfile)
+              logfile << str();
+            str("");
+          }
+          output.flush();
+          logfile.flush();
+          return 0;
+        } else
+          return 0;
+      }
+
+      void init_done(int &);
+
+    private:
+      int screen;
+      int write_logfile;
+      std::string prefix;
+
+      PStream *pstream;
+      std::ostream& output;
+      std::ofstream& logfile;
+    };
+
+    PStreamBuf outbuff;
   };
 }
 

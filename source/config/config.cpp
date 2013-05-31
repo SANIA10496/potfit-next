@@ -114,17 +114,18 @@ void Config::read(FILE *infile, int *line) {
   res = fgets(buffer, 1024, infile);
   (*line)++;
   if (NULL == res)
-    io->error("Unexpected end of config file on line %d.", *line);
+    io->error << "Unexpected end of config file on line " << *line << std::endl;
+    io->exit(-1);
   h_eng = h_stress = h_boxx = h_boxy = h_boxz = 0;
   if (res[1] == 'N') {
     if (sscanf(res + 3, "%d %d", &num_atoms, &use_forces) < 2)
-      io->error("Error in atom number specification on line %d\n", *line);
+      io->error << "Error in atom number specification on line " << *line << std::endl;
   } else {
-    io->error("Error - number of atoms missing on line %d\n", *line);
+    io->error << "Error - number of atoms missing on line " << *line << std::endl;
   }
 
-  num_per_type = new int[structures->ntypes];
-  for (int i=0; i<structures->ntypes; i++)
+  num_per_type = new int[structures->get_ntypes()];
+  for (int i=0; i<structures->get_ntypes(); i++)
     num_per_type[i] = 0;
 
   do {
@@ -137,58 +138,58 @@ void Config::read(FILE *infile, int *line) {
       if (sscanf(res + 3, "%lf %lf %lf\n", &box_x.x, &box_x.y, &box_x.z) == 3)
         h_boxx++;
       else
-        io->error("Error in box vector x, line %d\n", *line);
+        io->error << "Error in box vector x, line " << *line << std::endl;
     } else if (res[1] == 'Y') {
       if (sscanf(res + 3, "%lf %lf %lf\n", &box_y.x, &box_y.y, &box_y.z) == 3)
         h_boxy++;
       else
-        io->error("Error in box vector y, line %d\n", line);
+        io->error << "Error in box vector y, line " << *line << std::endl;
     } else if (res[1] == 'Z') {
       if (sscanf(res + 3, "%lf %lf %lf\n", &box_z.x, &box_z.y, &box_z.z) == 3)
         h_boxz++;
       else
-        io->error("Error in box vector z, line %d\n", line);
+        io->error << "Error in box vector z, line " << *line << std::endl;
       // read the box of contributing particles
     } else if (strncmp(res + 1, "B_O", 3) == 0) {
       if (1 == have_contrib_box) {
-        io->error("There can only be one box of contributing atoms!\n");
+        io->error << "There can only be one box of contributing atoms!" << std::endl;
       }
       if (sscanf(res + 5, "%lf %lf %lf\n", &cbox_o.x, &cbox_o.y, &cbox_o.z) == 3) {
         have_contrib_box = 1;
         have_contrib++;
       } else
-        io->error("Error in box of contributing atoms, line %d\n", line);
+        io->error << "Error in box of contributing atoms, line " << *line << std::endl;
     } else if (strncmp(res + 1, "B_A", 3) == 0) {
       if (sscanf(res + 5, "%lf %lf %lf\n", &cbox_a.x, &cbox_a.y, &cbox_a.z) == 3) {
         have_contrib++;
       } else
-        io->error("Error in box of contributing atoms, line %d\n", line);
+        io->error << "Error in box of contributing atoms, line " << *line << std::endl;
     } else if (strncmp(res + 1, "B_B", 3) == 0) {
       if (sscanf(res + 5, "%lf %lf %lf\n", &cbox_b.x, &cbox_b.y, &cbox_b.z) == 3) {
         have_contrib++;
       } else
-        io->error("Error in box of contributing atoms, line %d\n", line);
+        io->error << "Error in box of contributing atoms, line " << *line << std::endl;
     } else if (strncmp(res + 1, "B_C", 3) == 0) {
       if (sscanf(res + 5, "%lf %lf %lf\n", &cbox_c.x, &cbox_c.y, &cbox_c.z) == 3) {
         have_contrib++;
       } else
-        io->error("Error in box of contributing atoms, line %d\n", line);
+        io->error << "Error in box of contributing atoms, line " << *line << std::endl;
     } else if (strncmp(res + 1, "B_S", 3) == 0) {
       if (sscanf(res + 5, "%lf %lf %lf %lf\n", &temp_vect.x, &temp_vect.y, &temp_vect.z, &temp) == 4) {
         num_spheres++;
         sphere_centers.push_back(temp_vect);
         sphere_radii.push_back(temp);
       } else {
-        io->error("Error in sphere of contributing atoms, line %d\n", line);
+        io->error << "Error in sphere of contributing atoms, line " << *line << std::endl;
       }
     } else if (res[1] == 'E') {
       if (sscanf(res + 3, "%lf\n", &coh_energy) == 1)
         h_eng++;
       else
-        io->error("Error in energy on line %d\n", line);
+        io->error << "Error in energy on line " << *line << std::endl;
     } else if (res[1] == 'W') {
       if (sscanf(res + 3, "%lf\n", &conf_weight) != 1)
-        io->error("Error in configuration weight on line %d\n", line);
+        io->error << "Error in configuration weight on line " << *line << std::endl;
 
       // read C line and compare to values from potential file
     } else if (res[1] == 'C') {
@@ -197,8 +198,8 @@ void Config::read(FILE *infile, int *line) {
       while (NULL != (ptr = strtok(NULL, " "))) {
         if (strcmp(potential->elements[counter++],ptr) != 0) {
           char temp_char[1024] = "\0";
-          sprintf(temp_char, "Element mismatch in configuration %d on line %d\n", index, *line);
-          io->error("%sExpected >%s< but found >%s<.", temp_char, potential->elements[counter-1], ptr);
+          io->error << "Element mismatch in configuration " << index << " on line " << *line << std::endl;
+          io->error << "Expected >" << potential->elements[counter-1] << "< but found >" << ptr << "<." << std::endl;
         }
       }
     }
@@ -209,14 +210,14 @@ void Config::read(FILE *infile, int *line) {
                  &stress.yz, &stress.zx) == 6)
         use_stresses = 1;
       else
-        io->error("Error in stress tensor on line %d\n", *line);
+        io->error << "Error in stress tensor on line " << *line << std::endl;
     }
   } while (res[1] != 'F');
 
   if (!(h_eng && h_boxx && h_boxy && h_boxz))
-    io->error("Incomplete box vectors on line %d!", *line);
+    io->error << "Incomplete box vectors on line " << *line << std::endl;
   if (have_contrib_box && have_contrib != 4)
-    io->error("Incomplete box of contributing atoms on line %d!", *line);
+    io->error << "Incomplete box of contributing atoms on line " << *line << std::endl;
 
   if (use_stresses)
     structures->using_stresses++;
@@ -232,7 +233,7 @@ void Config::read(FILE *infile, int *line) {
   // volume
   volume = SPROD(box_x, tbox_x);
   if (0 == volume)
-    io->error("Box edges are parallel\n");
+    io->error << "Box edges are parallel" << std::endl;
 
   // normalization
   tbox_x.x /= volume;
@@ -253,10 +254,12 @@ void Config::read(FILE *infile, int *line) {
     if (7 > fscanf(infile, "%d %lf %lf %lf %lf %lf %lf\n", &(atom->type),
                    &(atom->pos.x), &(atom->pos.y), &(atom->pos.z), &(atom->force.x), &(atom->force.y),
                    &(atom->force.z)))
-      io->error("Corrupt configuration file on line %d\n", *line + 1);
+      io->error << "Corrupt configuration file on line " << (*line + 1) << std::endl;
     (*line)++;
-    if (atom->type >= structures->ntypes || atom->type < 0)
-      io->error("Corrupt configuration file on line %d: Incorrect atom type (%d)\n", *line, atom->type);
+    if (atom->type >= structures->get_ntypes() || atom->type < 0) {
+      io->error << "Corrupt configuration file on line " << *line << ": Incorrect atom type (";
+      io->error << atom->type << ")" << std::endl;
+    }
     atom->absforce = sqrt(square(atom->force.x) + square(atom->force.y) + square(atom->force.z));
     if (have_contrib_box || num_spheres != 0) {
       double n_a = 0.0, n_b = 0, n_c = 0.0, r = 0.0;
@@ -298,7 +301,7 @@ void Config::read(FILE *infile, int *line) {
   if ((ceil(potential->rcut_max * iheight.x) > 30000)
       || (ceil(potential->rcut_max * iheight.y) > 30000)
       || (ceil(potential->rcut_max * iheight.z) > 30000))
-    io->error("Very bizarre small cell size - aborting");
+    io->error << "Very bizarre small cell size - aborting" << std::endl;
 
   cell_scale[0] = (int)ceil(potential->rcut_max * iheight.x);
   cell_scale[1] = (int)ceil(potential->rcut_max * iheight.y);
@@ -351,9 +354,9 @@ void Config::calc_neighbors(void) {
               r = sqrt(SPROD(dd, dd));
               type1 = atom_i->type;
               type2 = atom_j->type;
-              if (r <= potential->rcut[type1 * structures->ntypes + type2]) {
-                if (r <= potential->rmin[type1 * structures->ntypes + type2]) {
-                  io->error("Short distance in configuration %d", index);
+              if (r <= potential->rcut[type1 * structures->get_ntypes() + type2]) {
+                if (r <= potential->rmin[type1 * structures->get_ntypes() + type2]) {
+                  io->error << "Short distance in configuration " << index << std::endl;
                 }
                 atoms[i]->neighs.push_back(new Neighbor_2(ptf));
                 atoms[i]->neighs[atoms[i]->neighs.size()-1]->init(this, i, j, &dd);
@@ -364,7 +367,7 @@ void Config::calc_neighbors(void) {
   } else if (interaction->force->neigh_type() == 3) {
     // TODO
   } else {
-    io->error("Unknown return value of neigh_type from force routine!");
+    io->error << "Unknown return value of neigh_type from force routine!" << std::endl;
   }
 
   //for (int i=0; i<atoms.size(); i++)

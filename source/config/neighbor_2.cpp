@@ -141,7 +141,7 @@ void Neighbor_2::init(Config *conf, int i, int j, vector *dd) {
 }
 
 void Neighbor_2::init(Config *conf, int i, int j, int k,  vector *dd_ij, vector *dd_ik) {
-  io->error("The three-body neighbor function cannot be called for two-body neighbor lists!");
+  io->error << "The three-body neighbor function cannot be called for two-body neighbor lists!" << std::endl;
 
   return;
 }

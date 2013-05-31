@@ -62,7 +62,7 @@ void ForceADP::update_min_dist(double *min_dist) {
 }
 
 int ForceADP::cols() {
-  int n = structures->ntypes;
+  int n = structures->get_ntypes();
   return (int)n*(n+1)/2.;
 }
 

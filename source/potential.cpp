@@ -100,7 +100,7 @@ void Potential::init(int size) {
   invar_pot = new int[interaction->force->cols()];
   for (int i=0; i<interaction->force->cols(); i++)
     invar_pot[i] = 0;
-  for (int i = 0; i < structures->ntypes; ++i) {
+  for (int i = 0; i < structures->get_ntypes(); ++i) {
     elements.push_back(new char[11]);
     sprintf(elements[i],"%d",i);
   }
@@ -122,8 +122,10 @@ void Potential::read_globals(FILE *infile) {
 
   // check for global keyword
   if (strcmp(buffer, "globals") == 0) {
-    if (2 > fscanf(infile, "%s %d", buffer, &num_globals))
-      io->error("Global parameters are missing in the potential file.");
+    if (2 > fscanf(infile, "%s %d", buffer, &num_globals)) {
+      io->error << "Global parameters are missing in the potential file." << std::endl;
+      io->exit(EXIT_FAILURE);
+    }
 
     global_params = new GlobalsTable(ptf, num_globals);
 
@@ -132,8 +134,9 @@ void Potential::read_globals(FILE *infile) {
       ret_val = fscanf(infile, "%s %lf %lf %lf", name, &val, &min, &max);
       if (4 > ret_val)
         if (strcmp(name, "type") == 0) {
-          sprintf(buffer, "Not enough global parameters!\n");
-          io->error("%sYou specified %d parameter(s), but needed are %d.\nAborting", buffer, j, num_globals);
+          io->error << "Not enough global parameters!" << std::endl;
+          io->error << "You specified " << j << " parameter(s), but needed are " << num_globals << "." << std::endl;
+	  io->exit(EXIT_FAILURE);
         }
       global_params->add_param(j, name, val, min, max);
     }
@@ -141,7 +144,7 @@ void Potential::read_globals(FILE *infile) {
     global_params = new GlobalsTable(ptf, 0);
   }
 
-  io->write("- Read %d global parameters\n", num_globals);
+  io->write << "- Read " << num_globals << " global parameters" << std::endl;
 
   num_params += global_params->get_number_params();
 
@@ -162,10 +165,14 @@ void Potential::read_potentials(FILE *infile) {
     } while (strcmp(buffer, "type") != 0 && !feof(infile));
     fsetpos(infile, &filepos);
     // read type
-    if (2 > fscanf(infile, "%s %s", buffer, name))
-      io->error("Premature end of potential file!");
-    if (strcmp(buffer, "type") != 0)
-      io->error("Unknown keyword in potential file, expected \"type\" but found \"%s\".", buffer);
+    if (2 > fscanf(infile, "%s %s", buffer, name)) {
+      io->error << "Premature end of potential file!" << std::endl;
+      io->exit(EXIT_FAILURE);
+    }
+    if (strcmp(buffer, "type") != 0) {
+      io->error << "Unknown keyword in potential file, expected \"type\" but found \"" << buffer << "\"." << std::endl;
+      io->exit(EXIT_FAILURE);
+    }
     if (strcmp(buffer, "table3") == 0) {
       pots[i] = new TableTab3(ptf);
     } else if (strcmp(buffer, "table4") == 0) {
@@ -180,20 +187,20 @@ void Potential::read_potentials(FILE *infile) {
       num_free_params += pots[i]->get_number_free_params();
     rcut_max = MAX(rcut_max, pots[i]->get_cutoff());
   }
-  rcut = new double[square(structures->ntypes)];
-  rmin = new double[square(structures->ntypes)];
+  rcut = new double[square(structures->get_ntypes())];
+  rmin = new double[square(structures->get_ntypes())];
 
   // TODO: this only works for pair interactions
-  for (int i=0; i<structures->ntypes; i++) {
-    for (int j=0; j<structures->ntypes; j++) {
-      int k = (i <= j) ? i * structures->ntypes + j - ((i * (i + 1)) / 2)
-              : j * structures->ntypes + i - ((j * (j + 1)) / 2);
-      rcut[i*structures->ntypes+j] = pots[k]->get_cutoff();
-      rmin[i*structures->ntypes+j] = pots[k]->get_rmin();
+  for (int i=0; i<structures->get_ntypes(); i++) {
+    for (int j=0; j<structures->get_ntypes(); j++) {
+      int k = (i <= j) ? i * structures->get_ntypes() + j - ((i * (i + 1)) / 2)
+              : j * structures->get_ntypes() + i - ((j * (j + 1)) / 2);
+      rcut[i*structures->get_ntypes()+j] = pots[k]->get_cutoff();
+      rmin[i*structures->get_ntypes()+j] = pots[k]->get_rmin();
     }
   }
 
-  io->write("- Sucessfully read %d potentials\n", num_pots);
+  io->write << "- Sucessfully read " << num_pots << " potentials" << std::endl;
 
   opt = new OptTable(ptf, num_free_params);
   init_opt_table();
@@ -220,7 +227,8 @@ void Potential::init_opt_table(void) {
   }
 
   if (count != num_free_params) {
-    io->error("Number of free parameters is inconsistent!");
+    io->error << "Number of free parameters is inconsistent!" << std::endl;
+    io->exit(EXIT_FAILURE);
   }
 
   return;
@@ -233,4 +241,14 @@ void Potential::update_potentials(int update) {
   }
 
   return;
+}
+
+void Potential::set_enable_cp(int i) {
+  enable_cp = i;
+
+  return;
+}
+
+int Potential::get_enable_cp(void) {
+  return enable_cp;
 }

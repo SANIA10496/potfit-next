@@ -52,9 +52,9 @@ namespace POTFIT_NS {
     void read_config_file();
 
   private:
-    void get_param_dbl(const std::string &, double &);
-    void get_param_int(const std::string &, int &);
-    void get_param_str(const std::string &, std::string &);
+    double get_param_dbl(const std::string &);
+    int get_param_int(const std::string &);
+    std::string get_param_str(const std::string &);
 
     void check_params();
 

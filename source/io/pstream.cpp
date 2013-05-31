@@ -32,67 +32,21 @@
 
 using namespace POTFIT_NS;
 
-PStream::PStream() {
-  screen = 0;
-  write_prefix = 0;
-  write_logfile = 0;
+PStream::PStream(const char *pref, std::ostream &str, std::ofstream *log, PStream *ps):
+  std::ostream(&outbuff),
+  outbuff(str, *log, ps, pref)
+{}
 
-  return;
-}
-
-PStream::~PStream() {
-  return;
-}
-
-void PStream::init(const std::string &pref, std::ofstream *log) {
-  prefix.assign(pref);
-  write_prefix = 1;
-
-  output = log;
-
-  return;
-}
+PStream::~PStream() {}
 
 void PStream::init_done(int &scr) {
-  screen = scr;
-  write_logfile = 1;
+  outbuff.init_done(scr);
 
   return;
 }
 
-template <typename T>
-std::ofstream& PStream::operator<<(const T& x) {
-  (*output) << x;
-  std::cout << x;
+void PStream::PStreamBuf::init_done(int &scr) {
+  screen = scr;
 
-  return (*this);
+  return;
 }
-
-
-//std::ofstream& PStream::operator<<(StandardEndLine manip) {
-//  std::cout << manip;
-
-//  return *this;
-//}
-
-//std::ofstream& PStream::operator<<(const std::string &text) {
-//  (*output) << text;
-//  std::cout << text;
-
-//  return (*this);
-//}
-
-//std::ofstream& PStream::operator<<(const char *text) {
-//  (*output) << text;
-//  std::cout << text;
-
-//  return (*this);
-//}
-
-//std::ostream& PStream::operator<<(std::ostream&(*f)(std::ostream&)) {
-//  (*output) << f;
-//  std::cout << f;
-
-//  return (*this);
-//}
-

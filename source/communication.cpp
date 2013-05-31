@@ -46,8 +46,8 @@ Communication::~Communication() {
 }
 
 void Communication::init(void) {
-  if (1 < settings->num_cpus)
-    io->write("Starting up MPI with %d processes.\n",settings->num_cpus);
+  if (1 < settings->get_num_cpus())
+    io->write << "Starting up MPI with " << settings->get_num_cpus() << " processes." << std::endl;
 
   return;
 }
@@ -57,16 +57,16 @@ void Communication::broadcast_params(void) {
 }
 
 void Communication::set_config_per_cpu(void) {
-  if (1 == settings->num_cpus) {
+  if (1 == settings->get_num_cpus()) {
     structures->firstconf = 0;
     structures->nconf = structures->get_num_total_configs();
   } else {
-    int each = (structures->get_num_total_configs() / settings->num_cpus);
-    int odd = (structures->get_num_total_configs() % settings->num_cpus) - settings->num_cpus;
+    int each = (structures->get_num_total_configs() / settings->get_num_cpus());
+    int odd = (structures->get_num_total_configs() % settings->get_num_cpus()) - settings->get_num_cpus();
 
-    structures->firstconf = settings->myid * each;
+    structures->firstconf = settings->get_myid() * each;
     structures->nconf = each;
-    if (settings->myid < odd)
+    if (settings->get_myid() < odd)
       structures->nconf++;
   }
 

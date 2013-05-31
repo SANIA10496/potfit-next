@@ -30,6 +30,7 @@
 
 #include <cstring>
 #include <cstdlib>
+#include <iomanip>
 
 #include "communication.h"
 #include "interaction.h"
@@ -67,7 +68,8 @@ Structures::~Structures() {
 
 void Structures::init(void) {
   if (ntypes == 0) {
-    io->error("ntypes is 0!\n");
+    io->error << "ntypes is 0!" << std::endl;
+    io->exit(EXIT_FAILURE);
   }
 
   min_dist = new double[ntypes*ntypes];
@@ -100,21 +102,21 @@ void Structures::read_config(FILE *infile) {
 void Structures::print_mindist(void) {
   int i, j, k;
 
-  io->write("Minimal Distances Matrix:\n");
-  io->write("Atom\t");
+  io->write << "Minimal Distances Matrix:" << std::endl;
+  io->write << "Atom\t";
   for (i = 0; i < ntypes; i++)
-    io->write("%8s\t", potential->elements[i]);
-  io->write("\n");
+    io->write << std::setw(8) << potential->elements[i] << "\t";
+  io->write << std::endl;
   for (i = 0; i < ntypes; i++) {
-    io->write("%s\t", potential->elements[i]);
+    io->write << potential->elements[i] << "\t";
     for (j = 0; j < ntypes; j++) {
       k = (i <= j) ? i * ntypes + j - ((i * (i + 1)) / 2) : j * ntypes + i - ((j * (j + 1)) / 2);
-      io->write("%f\t", min_dist[k]);
+      io->write << min_dist[k] << "\t";
 
     }
-    io->write("\n");
+    io->write << std::endl;
   }
-  io->write("\n");
+  io->write << std::endl;
 
   interaction->force->update_min_dist(min_dist);
 
@@ -157,4 +159,19 @@ int Structures::get_num_total_atoms(void) {
 
 int Structures::get_num_total_configs(void) {
   return total_num_conf;
+}
+
+void Structures::set_ntypes(int n) {
+  if (ntypes < 1) {
+    io->error << "ntypes cannot be smaller than 1!" << std::endl;
+    io->exit(EXIT_FAILURE);
+  } else {
+    ntypes = n;
+  }
+
+  return;
+}
+
+int Structures::get_ntypes(void) {
+  return ntypes;
 }

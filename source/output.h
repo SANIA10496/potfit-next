@@ -36,7 +36,6 @@
 #include "pointers.h"
 
 namespace POTFIT_NS {
-
   class Output : protected Pointers {
   public:
     Output(class POTFIT *);
@@ -45,25 +44,38 @@ namespace POTFIT_NS {
     void write_output(void);
     void write_tempfile(void);
 
-    std::string distfile;
-    std::string endpot;
-    std::string imdpot;
-    std::string lammpspot;
-    std::string output_prefix;
-    std::string plotfile;
-    std::string plotpointfile;
-    std::string tempfile;
+    void set_endpot(std::string);
+    std::string get_endpot(void);
 
-    int imdpotsteps;
-    int enable_distfile;
-    int enable_output_files;
-    int enable_imd_pot;
-    int enable_lammps_pot;
-    int enable_plot_file;
-    int enable_pair_dist;
-    int enable_log;
+    void set_output_prefix(std::string);
+    std::string get_output_prefix(void);
 
-    double plotmin;
+    void set_imdpot(std::string);
+    std::string get_imdpot(void);
+
+    void set_plotfile(std::string);
+    std::string get_plotfile(void);
+
+    void set_distfile(std::string);
+    std::string get_distfile(void);
+
+    void set_imdpotsteps(int);
+    int get_imdpotsteps(void);
+
+    void set_plotmin(double);
+    double get_plotmin(void);
+
+    void set_tempfile(std::string);
+    std::string get_tempfile(void);
+
+    void set_enable_pairdist(int);
+    int get_enable_pairdist(void);
+
+    void set_plotpointfile(std::string);
+    std::string get_plotpointfile(void);
+
+    void set_lammps_pot(int);
+
   private:
     void write_distfile(void);
     void write_endpot(void);
@@ -77,8 +89,27 @@ namespace POTFIT_NS {
     void write_output_file_energies(void);
     void write_output_file_stresses(void);
     void write_output_file_punishments(void);
-  };
 
+    double plotmin;
+
+    int imdpotsteps;
+    int enable_distfile;
+    int enable_output_files;
+    int enable_imd_pot;
+    int enable_lammps_pot;
+    int enable_plotfile;
+    int enable_pairdist;
+    int enable_log;
+
+    std::string distfile;
+    std::string endpot;
+    std::string imdpot;
+    std::string lammpspot;
+    std::string output_prefix;
+    std::string plotfile;
+    std::string plotpointfile;
+    std::string tempfile;
+  };
 }
 
 #endif /* PTF_OUTPUT_H */

@@ -63,24 +63,26 @@ int ForcePair::neigh_type(void) {
 int ForcePair::get_col(int slot, int a, int b) {
   int col;
 
-  if (slot != 0)
-    io->error("Pair potentials only use 1 slot.");
+  if (slot != 0) {
+    io->error << "Pair potentials only use 1 slot." << std::endl;
+    io->exit(EXIT_FAILURE);
+  }
 
-  col = (a <= b) ? a * structures->ntypes + b - ((a * (a + 1)) / 2)
-        : b * structures->ntypes + a - ((b * (b + 1)) / 2);
+  col = (a <= b) ? a * structures->get_ntypes() + b - ((a * (a + 1)) / 2)
+        : b * structures->get_ntypes() + a - ((b * (b + 1)) / 2);
 
   return col;
 }
 
 int ForcePair::cols() {
-  int n = structures->ntypes;
+  int n = structures->get_ntypes();
 
   return (int)n*(n+1)/2.;
 }
 
 void ForcePair::update_min_dist(double *min_dist) {
   int k = 0;
-  int n = structures->ntypes;
+  int n = structures->get_ntypes();
 
   for (int i=0;i<n;i++)
     for (int j=0;j<n;j++) {
@@ -106,21 +108,23 @@ void ForcePair::read_additional_data(FILE *infile) {
   double val, min, max;
   int ret_val;
 
-  if (potential->enable_cp) {
+  if (potential->get_enable_cp() == 1) {
 
     // search for chempot keyword
     do {
       fscanf(infile, "%s", buffer);
     } while (strcmp(buffer, "chempot") != 0 && !feof(infile));
 
-    potential->chem_pot = new ChempotTable(ptf, structures->ntypes);
+    potential->chem_pot = new ChempotTable(ptf, structures->get_ntypes());
 
     // loop over all atom types
-    for (int j = 0; j < structures->ntypes; j++) {
+    for (int j = 0; j < structures->get_ntypes(); j++) {
 
       // read one line
-      if (4 > fscanf(infile, "%s %lf %lf %lf", buffer, &val, &min, &max))
-        io->error("Could not read chemical potential for atomtype %d.", j + 1);
+      if (4 > fscanf(infile, "%s %lf %lf %lf", buffer, &val, &min, &max)) {
+        io->error << "Could not read chemical potential for atomtype " << j + 1 << "." << std::endl;
+        io->exit(EXIT_FAILURE);
+      }
 
       // split cp and _#
       token = strchr(buffer, '_');
@@ -129,12 +133,13 @@ void ForcePair::read_additional_data(FILE *infile) {
         name[strlen(buffer) - strlen(token)] = '\0';
       }
       if (strcmp("cp", name) != 0) {
-        io->write("Found \"%s\" instead of \"cp\"\n", name);
-        io->error("No chemical potentials found in potential file.\n");
+        io->error << "Found \"" << name << "\" instead of \"cp\"" << std::endl;
+        io->error << "No chemical potentials found in potential file." << std::endl;
+	io->exit(EXIT_FAILURE);
       }
       potential->chem_pot->add_value(j, buffer, val, min, max);
     }
-    io->write("- Enabled chemical potentials for %d elements\n",structures->ntypes);
+    io->write << "- Enabled chemical potentials for " << structures->get_ntypes() << " elements." << std::endl;
   }
 
   return;
@@ -287,7 +292,7 @@ double ForcePair::calc_forces(void) {
 #ifdef COMPAT
       tmpsum += conf_weight[h] * dsquare(eweight * forces[energy_p + h]);
 #else
-      tmpsum += conf->conf_weight * settings->eweight * square(force_vect[energy_p + h]);
+      tmpsum += conf->conf_weight * settings->get_eweight() * square(force_vect[energy_p + h]);
 #endif /* COMPAT */
       /* stress contributions */
       if (uf && us) {
@@ -299,7 +304,7 @@ double ForcePair::calc_forces(void) {
 #ifdef COMPAT
             conf_weight[h] * dsquare(sweight * forces[stress_p + 6 * h + i]);
 #else
-            conf->conf_weight * settings->sweight * square(force_vect[stress_p + 6 * h + i]);
+            conf->conf_weight * settings->get_sweight() * square(force_vect[stress_p + 6 * h + i]);
 #endif /* COMPAT */
         }
       }
@@ -344,7 +349,7 @@ double ForcePair::calc_forces(void) {
 //#endif /* MPI */
 
     // root process exits this function now
-    if (settings->myid == 0) {
+    if (settings->get_myid() == 0) {
       fcalls++;			// Increase function call counter
       if (std::isnan(sum)) {
 #ifdef DEBUG

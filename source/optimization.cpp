@@ -53,31 +53,34 @@ Optimization::~Optimization() {
 
 void Optimization::run(void) {
 
-  if (1 == settings->opt) {
-  io->write("Starting optimization with the following parameters:\n");
-  if (settings->eweight != 0.0)
-    io->write(" - Global energy weight %f\n",settings->eweight);
-  if (settings->sweight != 0.0)
-    io->write(" - Global stress weight %f\n",settings->sweight);
-  io->write(" - %d free parameters\n\n",potential->num_free_params);
+  if (1 == settings->get_opt()) {
+  io->write << "Starting optimization with the following parameters:" << std::endl;
+  if (settings->get_eweight() != 0.0)
+    io->write << " - Global energy weight " << settings->get_eweight() << std::endl;
+  if (settings->get_sweight() != 0.0)
+    io->write << " - Global stress weight "<< settings->get_sweight() << std::endl;
+  io->write << " - " << potential->num_free_params << " free parameters" << std::endl << std::endl;
 
-  if (0 == settings->myid) {
+  if (0 == settings->get_myid()) {
     for (int i=0; i<num_algs; i++) {
-      io->write("Starting %d. optimization\n",i+1);
+      io->write << "Starting " << i + 1 << ". optimization" << std::endl;
       opt = init_algorithm(algorithms[i].c_str());
-      if (NULL == opt)
-        io->error("Could not find algorithm \"%s\"",algorithms[i].c_str());
+      if (NULL == opt) {
+        io->error << "Could not find algorithm \"" << algorithms[i] << "\"." << std::endl;
+	io->exit(EXIT_FAILURE);
+      }
       opt->init(params[i]);
-      io->write(" type: %s\t parameters: %f %f %f\n\n",algorithms[i].c_str(),params[i][0],params[i][1],params[i][2]);
+      io->write << " type: " << algorithms[i] << "\t parameters: " << params[i][0];
+      io->write << ", " << params[i][1] << ", " << params[i][2] << std::endl;
       opt->run();
-      io->write("Finished %d. optimization\n\n",i+1);
+      io->write << "Finished " << i + 1 << ". optimization" << std::endl << std::endl;
       delete opt;
     }
   } else {
     interaction->calc_forces();
   }
   } else {
-    io->write("Optimization disabled.\n\n");
+    io->write << "Optimization disabled." << std::endl << std::endl;
   }
 
   return;

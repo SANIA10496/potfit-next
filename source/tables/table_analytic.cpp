@@ -129,8 +129,10 @@ void TableAnalytic::init(const char *fname, int index) {
     function = new Class();
 #include "../functions/list_functions.h"
 #undef FUNCTION_TYPE
-    if (!function)
-      io->error("Could not create an analytic potential of type \"%s\".\n",fname);
+    if (!function) {
+      io->error << "Could not create an analytic potential of type \"" << fname << "\"." << std::endl;
+      io->exit(EXIT_FAILURE);
+    }
 
     num_params = function->num_params();
 
@@ -155,8 +157,10 @@ void TableAnalytic::init(const char *fname, int index) {
     }
 
     return;
-  } else
-    io->error("This potential is already initialized.\n");
+  } else {
+    io->error << "This potential is already initialized." << std::endl;
+    io->exit(EXIT_FAILURE);
+  }
 
   return;
 }
@@ -166,14 +170,20 @@ void TableAnalytic::read_potential(FILE *infile) {
   int i, j, ret_val;
   fpos_t filepos;
 
-  if (!init_done)
-    io->error("Please initialize the potential before reading any potentials.\n");
+  if (!init_done) {
+    io->error << "Please initialize the potential before reading any potentials." << std::endl;
+    io->exit(EXIT_FAILURE);
+  }
 
   // read cutoff
-  if (2 > fscanf(infile, "%s %lf", buffer, &end))
-    io->error("Could not read cutoff for potential #%d in potential file.\n", pot_number);
-  if (strcmp(buffer, "cutoff") != 0)
-    io->error("No cutoff found for the %d. potential.\n", pot_number);
+  if (2 > fscanf(infile, "%s %lf", buffer, &end)) {
+    io->error << "Could not read cutoff for potential #" << pot_number << " in potential file." << std::endl;
+    io->exit(EXIT_FAILURE);
+  }
+  if (strcmp(buffer, "cutoff") != 0) {
+    io->error << "No cutoff found for the " << pot_number << ". potential." << std::endl;
+    io->exit(EXIT_FAILURE);
+  }
   // set very small begin, needed for EAM embedding function
   begin = .0001;
 
@@ -194,8 +204,10 @@ void TableAnalytic::read_potential(FILE *infile) {
   num_free_params = num_params;
   for (i = 0; i < num_params; i++) {
     param_name[i] = new char[30];
-    if (NULL == param_name[i])
-      io->error("Error in allocating memory for parameter name");
+    if (NULL == param_name[i]) {
+      io->error << "Error in allocating memory for parameter name" << std::endl;
+      io->exit(EXIT_FAILURE);
+    }
     strcpy(param_name[i], "\0");
     fgetpos(infile, &filepos);
     ret_val = fscanf(infile, "%s %lf %lf %lf", buffer, &values[i], &val_min[i], &val_max[i]);
@@ -203,12 +215,16 @@ void TableAnalytic::read_potential(FILE *infile) {
 
     // if last char of name is "!" we have a global parameter
     if (strrchr(param_name[i], '!') != NULL) {
-      if (potential->num_globals == 0)
-        io->error("You need to define a global parameter before using it!");
+      if (potential->num_globals == 0) {
+        io->error  << "You need to define a global parameter before using it!" << std::endl;
+	io->exit(EXIT_FAILURE);
+      }
       param_name[i][strlen(param_name[i]) - 1] = '\0';
       j = potential->global_params->get_index(param_name[i]);
-      if (j<0)
-        io->error("Could not find global parameter %s!", param_name[i]);
+      if (j<0) {
+        io->error << "Could not find global parameter " << param_name[i] << "!" << std::endl;
+	io->exit(EXIT_FAILURE);
+      }
       sprintf(param_name[i], "%s!", param_name[i]);
 
       // register global parameter
@@ -228,7 +244,7 @@ void TableAnalytic::read_potential(FILE *infile) {
       if (4 > ret_val) {
         if (smooth_pot && i == function->num_params()) {
           if (strcmp(param_name[i], "type") == 0 || feof(infile)) {
-            io->warning("No cutoff parameter given for potential #%d: adding one parameter.", pot_number + 1);
+            io->warning << "No cutoff parameter given for potential #" << pot_number + 1 << ": adding one parameter." << std::endl;
             strcpy(param_name[i], "h");
             values[i] = 1;
             val_min[i] = 0.5;
@@ -237,9 +253,11 @@ void TableAnalytic::read_potential(FILE *infile) {
           }
         } else {
           if (strcmp(param_name[i], "type") == 0) {
-            io->error("Not enough parameters for potential #%d (%s) in potential file.", pot_number + 1, name);
+            io->error << "Not enough parameters for potential #" << pot_number + 1 << " (" << name << ") in potential file." << std::endl;
+	    io->exit(EXIT_FAILURE);
           }
-          io->error("Could not read parameter #%d of potential #%d in potential file.", i + 1, pot_number + 1);
+          io->error << "Could not read parameter #" << i + 1 << " of potential #" << pot_number + 1 << " in potential file." << std::endl;
+	  io->exit(EXIT_FAILURE);
         }
       }
 
@@ -254,16 +272,16 @@ void TableAnalytic::read_potential(FILE *infile) {
         val_max[i] = temp;
       } else if ((values[i] < val_min[i]) || (values[i] > val_max[i])) {
         // Only print warning if we are optimizing */
-        if (settings->opt) {
+        if (settings->get_opt()) {
           if (values[i] < val_min[i])
             values[i] = val_min[i];
           if (values[i] > val_max[i])
             values[i] = val_max[i];
-          sprintf(msg, "Starting value for parameter %s #%d is ", param_name[i], pot_number + 1);
-          sprintf(msg, "%soutside of specified adjustment range.\n",msg);
-          io->warning("%sResetting it to %f.", msg, values[i]);
+          io->warning << "Starting value for parameter " << param_name[i] << " of potential #" << pot_number + 1 << " is " << std::endl;
+          io->warning << "outside of specified adjustment range." << std::endl;
+          io->warning << "Resetting it to " << values[i] << "." << std::endl;
           if (values[i] == 0)
-            io->warning("New value is 0 ! Please be careful about this.");
+            io->warning << "New value is 0 ! Please be careful about this." << std::endl;
         }
       }
     }
@@ -385,21 +403,21 @@ void TableAnalytic::update_slots(void) {
   return;
 }
 
-void TableAnalytic::write_potential(FILE *outfile) {
-  io->writef(outfile, "\n");
-  io->writef(outfile, "type %s",name);
+void TableAnalytic::write_potential(std::ofstream &outfile) {
+  outfile << std::endl;
+  outfile << "type " << name;
   if (smooth_pot) {
-    io->writef(outfile, "_sc\n");
+    outfile << "_sc" << std::endl;
   } else {
-    io->writef(outfile, "\n");
+    outfile << std::endl;
   }
-  io->writef(outfile, "cutoff %f\n",end);
-  io->writef(outfile, "# r_min 1.2.3\n");
+  outfile << "cutoff " << end << std::endl;
+  outfile << "# r_min " << 12.3 << std::endl;
   for (int i=0; i<num_params; i++) {
     if (param_name[i][strlen(param_name[i]) - 1] != '!') {
-      io->writef(outfile, "%s %f %f %f\n",param_name[i],values[i],val_min[i],val_max[i]);
+      outfile << param_name[i] << "\t" << values[i] << "\t" << val_min[i] << "\t" << val_max[i] << std::endl;
     } else {
-      io->writef(outfile, "%s\n",param_name[i]);
+      outfile << param_name[i] << std::endl;
     }
   }
 

@@ -37,19 +37,18 @@
 
 using namespace POTFIT_NS;
 
-Output::Output(POTFIT *ptf) : Pointers(ptf) {
-  imdpotsteps = 1000;
-  enable_distfile = 0;
-  enable_output_files = 0;
-  enable_imd_pot = 0;
-  enable_lammps_pot = 0;
-  enable_plot_file = 0;
-  enable_log = 0;
+Output::Output(POTFIT *ptf) :
+  Pointers(ptf),
+  imdpotsteps(1000),
+  enable_distfile(0),
+  enable_output_files(0),
+  enable_imd_pot(0),
+  enable_lammps_pot(0),
+  enable_plotfile(0),
+  enable_log(0),
+  plotmin(0.1)
+{}
 
-  plotmin = 0.1;
-
-  return;
-}
 
 Output::~Output() {
   return;
@@ -61,7 +60,7 @@ void Output::write_output(void) {
   if (1 == enable_imd_pot)
     write_imdpot();
 
-  if (1 == enable_plot_file)
+  if (1 == enable_plotfile)
     write_plotfile();
 
   if (1 == enable_lammps_pot)
@@ -78,22 +77,22 @@ void Output::write_tempfile(void) {
 }
 
 void Output::write_endpot(void) {
-  io->write("Final potential written to file\t\t\t%s\n",endpot.c_str());
+  io->write << "Final potential written to file\t\t\t" << endpot << std::endl;
   return;
 }
 
 void Output::write_imdpot(void) {
-  io->write("IMD potential written to file\t\t\t%s\n",imdpot.c_str());
+  io->write << "IMD potential written to file\t\t\t" << imdpot << std::endl;
   return;
 }
 
 void Output::write_plotfile(void) {
-  io->write("Potential plotting data written to file\t\t%s\n",plotfile.c_str());
+  io->write << "Potential plotting data written to file\t\t" << plotfile << std::endl;
   return;
 }
 
 void Output::write_lammpspot(void) {
-  io->write("Potential in LAMMPS format written to\t\t%s\n",plotfile.c_str());
+  io->write << "Potential in LAMMPS format written to\t\t" << plotfile << std::endl;
   return;
 }
 
@@ -102,11 +101,11 @@ void Output::write_output_files(void) {
   write_output_file_forces();
 
   // only write energy output file if eweight != 0
-  if (0 != settings->eweight)
+  if (0 != settings->get_eweight())
     write_output_file_energies();
 
   // only write energy output file if sweight != 0
-  if (0 != settings->sweight)
+  if (0 != settings->get_sweight())
     write_output_file_stresses();
 
   // always write punishments file
@@ -127,22 +126,133 @@ void Output::write_output_file_forces(void) {
 
 
   output.close();
-  io->write("Force data written to\t\t\t\t%s.force\n",output_prefix.c_str());
+  io->write << "Force data written to\t\t\t\t" << output_prefix << ".force" << std::endl;
 
   return;
 }
 
 void Output::write_output_file_energies(void) {
-  io->write("Energy data written to\t\t\t\t%s.energy\n",output_prefix.c_str());
+  io->write << "Energy data written to\t\t\t\t" << output_prefix << ".energy" << std::endl;
   return;
 }
 
 void Output::write_output_file_stresses(void) {
-  io->write("Stress data written to\t\t\t\t%s.stress\n",output_prefix.c_str());
+  io->write << "Stress data written to\t\t\t\t" << output_prefix << ".stress" << std::endl;
   return;
 }
 
 void Output::write_output_file_punishments(void) {
-  io->write("Punishments written to\t\t\t\t%s.punish\n",output_prefix.c_str());
+  io->write << "Punishments written to\t\t\t\t" << output_prefix << ".punish" << std::endl;
+  return;
+}
+
+void Output::set_endpot(std::string str) {
+  endpot = str;
+
+  return;
+}
+
+std::string Output::get_endpot(void) {
+  return endpot;
+}
+
+void Output::set_output_prefix(std::string str) {
+  output_prefix = str;
+  if (!output_prefix.empty())
+    enable_output_files = 1;
+
+  return;
+}
+
+std::string Output::get_output_prefix(void) {
+  return output_prefix;
+}
+
+void Output::set_imdpot(std::string str) {
+  imdpot = str;
+  enable_imd_pot = 1;
+
+  return;
+}
+
+std::string Output::get_imdpot(void) {
+  return imdpot;
+}
+
+void Output::set_plotfile(std::string str) {
+  plotfile = str;
+  enable_plotfile = 1;
+
+  return;
+}
+
+std::string Output::get_plotfile(void) {
+  return plotfile;
+}
+
+void Output::set_distfile(std::string str) {
+  distfile = str;
+  enable_distfile = 1;
+
+  return;
+}
+
+std::string Output::get_distfile(void) {
+  return distfile;
+}
+
+void Output::set_imdpotsteps(int n) {
+  imdpotsteps = n;
+
+  return;
+}
+
+int Output::get_imdpotsteps(void) {
+  return imdpotsteps;
+}
+
+void Output::set_plotmin(double x) {
+  plotmin = x;
+
+  return;
+}
+
+double Output::get_plotmin(void) {
+  return plotmin;
+}
+
+void Output::set_tempfile(std::string str) {
+  tempfile = str;
+
+  return;
+}
+
+std::string Output::get_tempfile(void) {
+  return tempfile;
+}
+
+void Output::set_enable_pairdist(int i) {
+  enable_pairdist = i;
+
+  return;
+}
+
+int Output::get_enable_pairdist(void) {
+  return enable_pairdist;
+}
+
+void Output::set_plotpointfile(std::string str) {
+  plotpointfile = str;
+
+  return;
+}
+
+std::string Output::get_plotpointfile(void) {
+  return plotpointfile;
+}
+
+void Output::set_lammps_pot(int i) {
+  enable_lammps_pot = i;
+
   return;
 }

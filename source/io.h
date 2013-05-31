@@ -33,6 +33,7 @@
 
 #include <cstdio>
 #include <fstream>
+#include <iostream>
 
 #include "pointers.h"
 #include "io/pstream.h"
@@ -47,38 +48,32 @@ namespace POTFIT_NS {
     // output for standard runs
     void print_header();
 
-    // output for flags
+    // output for command line flags
     void print_version();
     void print_help();
 
-    PStream new_write;
-    PStream new_warning;
-    PStream new_error;
-    PStream new_debug;
+    // custom streams for output
+    PStream write;
+    PStream warning;
+    PStream error;
+    PStream debug;
 
-    // DEPRECATED !!!!
-    // standard output
-    void write(const char *, ...);
-    void write_log(const char *, ...);
-
-    // debug
-    void write_debug(const char *, ...);
-
-    // output to files
-    void writef(FILE *, const char *, ...);
-
-    // misc. stuff
-    void warning(const char *, ...);
-    void error(const char *, ...);
-
+    // initialize logfile and pass pointer to streams
     void set_logfile(const char *);
     void close_logfile();
 
+    void set_write_logfile(int);
+    int get_write_logfile(void);
+
+    void exit(int);
+
+    void set_screen(const int);
+
+  private:
     int screen;
     int init_done;
     int write_logfile;
 
-  private:
     std::ofstream logfile;
   };
 

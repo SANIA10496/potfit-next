@@ -44,12 +44,16 @@ GlobalsTable::GlobalsTable(POTFIT *ptf, int num) : Pointers(ptf) {
   num_free_globals = num;
 
   param_name = (char **)malloc(num_globals * sizeof(char *));
-  if (NULL == param_name)
-    io->error("Could not allocate memory for potential name\n");
+  if (NULL == param_name) {
+    io->error << "Could not allocate memory for potential name" << std::endl;
+    io->exit(EXIT_FAILURE);
+  }
   for (int i=0; i<num_globals; i++) {
     param_name[i] = (char *)malloc(20 * sizeof(char));
-    if (NULL == param_name[i])
-      io->error("Could not allocate memory for parameter names\n");
+    if (NULL == param_name[i]) {
+      io->error << "Could not allocate memory for parameter names" << std::endl;
+      io->exit(EXIT_FAILURE);
+    }
     strcpy(param_name[i],"\0");
   }
 
@@ -87,8 +91,9 @@ void GlobalsTable::add_param(int index, const char *name, double val, double min
   // check for duplicate names
   for (int k = 0; k < index; k++) {
     if (strcmp(name, param_name[k]) == 0) {
-      sprintf(msg, "Found duplicate global parameter name!\n");
-      io->error("%sParameter #%d (%s) is the same as #%d (%s)\n", msg, index + 1, name, k + 1, param_name[k]);
+      io->error << "Found duplicate global parameter name!" << std::endl;
+      io->error << "Parameter #" << index + 1 << " (" << name << ") is the same as #" << k + 1 << " (" << param_name[k] << ")." << std::endl;
+      io->exit(EXIT_FAILURE);
     }
   }
 
@@ -102,16 +107,16 @@ void GlobalsTable::add_param(int index, const char *name, double val, double min
     max = temp;
   } else if ((val < min) || (val > max)) {
     /* Only print warning if we are optimizing */
-    if (settings->opt) {
+    if (settings->get_opt()) {
       if (val < min)
         val = min;
       if (val > max)
         val = max;
-      sprintf(msg, "Starting value for global parameter %s (#%d) is\n", name, index + 1);
-      sprintf(msg, "%soutside of specified adjustment range.\n",msg);
-      io->warning("%sResetting it to %f.\n", msg, index + 1, val);
+      io->warning << "Starting value for global parameter " << name << " (#" << index + 1 << ") is" << std::endl;
+      io->warning << "outside of specified adjustment range." << std::endl;
+      io->warning << "Resetting it to " << val << "." << std::endl;
       if (val == 0)
-        io->warning("New value is 0 ! Please be careful about this.\n");
+        io->warning << "New value is 0 ! Please be careful about this." << std::endl;
     }
   }
 

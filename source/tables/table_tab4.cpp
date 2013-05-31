@@ -87,7 +87,7 @@ void TableTab4::update_slots(void) {
   return;
 }
 
-void TableTab4::write_potential(FILE *outfile) {
+void TableTab4::write_potential(std::ofstream &outfile) {
 }
 
 void TableTab4::write_plot(FILE *outfile) {

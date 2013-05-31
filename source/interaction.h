@@ -47,12 +47,15 @@ namespace POTFIT_NS {
     void init(void);
     double calc_forces(void);
 
-    std::string type;
+    void set_type(std::string);
+    std::string get_type(void);
 
     Force *force;
 
   private:
     class Force *init_force(const std::string &);
+
+    std::string type;
   };
 
 }

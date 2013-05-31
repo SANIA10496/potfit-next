@@ -56,7 +56,7 @@ void ForceCoulomb::update_min_dist(double *min_dist) {
 }
 
 int ForceCoulomb::cols() {
-  int n = structures->ntypes;
+  int n = structures->get_ntypes();
   return (int)n*(n+1)/2.;
 }
 

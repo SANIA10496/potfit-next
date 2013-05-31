@@ -30,6 +30,7 @@
 
 #include <cmath>
 #include <cstdlib>
+#include <iomanip>
 
 #include "opt_simann.h"
 
@@ -93,7 +94,8 @@ void OptSimann::run(void) {
   } else if (params[0] > 0) {
     T = params[0];
   } else {
-    io->error("The starting temperature for Simulated Annealing cannot be 0!");
+    io->error << "The starting temperature for Simulated Annealing cannot be 0!" << std::endl;
+    io->exit(EXIT_FAILURE);
   }
 
   if (T == 0. && auto_T != 1)
@@ -122,7 +124,7 @@ void OptSimann::run(void) {
     double dF = 0.;
     double chi = .8;
 
-    io->write("Determining optimal starting temperature T ...\n");
+    io->write << "Determining optimal starting temperature T ..." << std::endl;
     for (int e = 0; e < u; e++) {
       for (n = 0; n < ndim; n++)
         xi2[n] = xi[n];
@@ -136,20 +138,27 @@ void OptSimann::run(void) {
         dF += (F2 - F);
       }
     }
-    io->write("Did %d steps, %d were accepted\n", u, m1);
+    io->write << "Did " << u << " steps, " << m1 << " were accepted" << std::endl;
     u -= m1;
     dF /= u;
 
     T = dF / log(u / (u * chi + (1 - chi) * m1));
-    if (isnan(T) || isinf(T))
-      io->error("Simann failed because T was %f, please set it manually.", T);
+    if (isnan(T) || isinf(T)) {
+      io->error << "Simann failed because T was " << T << ", please set it manually." << std::endl;
+      io->exit(EXIT_FAILURE);
+    }
     if (T < 0)
       T = -T;
-    io->write("Setting T=%f\n\n", T);
+    io->write << "Setting T=" << T << std::endl << std::endl;
   }
 
-  io->write("  k\tT        \t  m\tF          \tFopt\n");
-  io->write("%3d\t%f\t%3d\t%f\t%f\n", 0, T, 0, F, Fopt);
+  io->write << "  k\tT\tm\tF\t\tFopt" << std::endl;
+  io->write << std::setw(3) << 0 << "\t";
+  io->write << std::setw(8) << T << "\t";
+  io->write << std::setw(3) << 0 << "\t";
+  io->write << std::setw(8) << F << "\t";
+  io->write << std::setw(8) << Fopt << std::endl;
+
   for (n = 0; n <= NEPS; n++)
     Fvar[n] = F;
 
@@ -174,7 +183,7 @@ void OptSimann::run(void) {
               for (n = 0; n < ndim; n++)
                 xopt[n] = xi2[n];
               Fopt = F2;
-              if (output->tempfile.compare('\0')) {
+              if (!output->get_tempfile().empty()) {
                 potential->update_potentials(0);
                 output->write_tempfile();
               }
@@ -197,22 +206,21 @@ void OptSimann::run(void) {
         naccept[n] = 0;
       }
 
-      io->write("%3d\t%f\t%3d\t%f\t%f\n", k, T, m + 1, F, Fopt);
+      io->write << std::setw(3) << k << "\t";
+      io->write << std::setw(8) << T << "\t";
+      io->write << std::setw(3) << m + 1 << "\t";
+      io->write << std::setw(8) << F << "\t";
+      io->write << std::setw(8) << Fopt << std::endl;
 
       /* End annealing if break flagfile exists */
-      if (utils->flagfile.compare('\0')) {
-        ff = fopen(utils->flagfile.c_str(), "r");
-        if (NULL != ff) {
-          io->write("Annealing terminated in presence of break flagfile \"%s\"!\n", utils->flagfile.c_str());
-          io->write("Temperature was %f, returning optimum configuration\n", T);
-          for (n = 0; n < ndim; n++)
-            xi[n] = xopt[n];
-          F = Fopt;
-          k = KMAX + 1;
-          fclose(ff);
-          remove(utils->flagfile.c_str());
-          break;
-        }
+      if (utils->check_for_flagfile() == 1) {
+        io->write << "Annealing terminated in presence of break flagfile !" << std::endl;
+        io->write << "Temperature was " << T << ", returning optimum configuration" << std::endl;
+        for (n = 0; n < ndim; n++)
+          xi[n] = xopt[n];
+        F = Fopt;
+        k = KMAX + 1;
+        break;
       }
 
 // TODO: rescaling
@@ -251,7 +259,7 @@ void OptSimann::run(void) {
   }
 
   F = Fopt;
-  if (output->tempfile.compare('\0')) {
+  if (!output->get_tempfile().empty()) {
     potential->update_potentials(0);
     output->write_tempfile();
   }
@@ -292,7 +300,7 @@ void OptSimann::randomize_parameter(int n, double *xi, double *v)
     } while (!done);
     xi[n] = temp;
 
-  // tabulated potentials - change neighbors as well
+    // tabulated potentials - change neighbors as well
   } else if (potential->pots[idxpot]->format == 3 || potential->pots[idxpot]->format == 4) {
     double width = fabs(random->normdist());
     double height = random->normdist() * v[n];

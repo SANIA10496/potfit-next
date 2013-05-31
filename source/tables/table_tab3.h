@@ -57,7 +57,7 @@ namespace POTFIT_NS {
     void update_calc_table(int);
     void update_slots(void);
 
-    void write_potential(FILE *);
+    void write_potential(std::ofstream &);
     void write_plot(FILE *);
     void write_plotpoint(FILE *);
 

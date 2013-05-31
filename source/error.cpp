@@ -29,6 +29,7 @@
  ****************************************************************/
 
 #include <cmath>
+#include <iomanip>
 
 #include "error.h"
 #include "interaction.h"
@@ -66,32 +67,44 @@ Error::~Error() {
 void Error::write_report(void) {
   calc_errors();
 
-  io->write("\n###### error report ######\n");
-  io->write("total error sum %f\n",total_sum);
-  io->write("\t%d contributions ",total_contrib);
-  io->write("(%d forces, %d energies, %d stresses)\n", num_forces, num_energies, num_stresses);
+  io->write << std::endl << "###### error report ######" << std::endl;
+  io->write << "total error sum " << total_sum << std::endl;
+  io->write << "  " << total_contrib << " contributions ";
+  io->write << "(" << num_forces << " forces, " << num_energies << " energies, " << num_stresses << " stresses)" << std::endl;
 
-  io->write("sum of force-errors  = %e\t(%7.3f%% - avg: %f)\n", force_sum, force_sum / total_sum * 100.,
-	force_sum / structures->get_num_total_atoms());
-  io->write("sum of energy-errors = %e\t(%7.3f%%)\n", energy_sum, energy_sum / total_sum * 100.);
-  io->write("sum of stress-errors = %e\t(%7.3f%%)\n", stress_sum, stress_sum / total_sum * 100.);
-  io->write("sum of punishments   = %e\t(%7.3f%%)\n", punish_sum, punish_sum / total_sum * 100.);
+  io->write << "sum of force-errors  = ";
+  io->write << std::scientific << force_sum << "\t(";
+  io->write << std::fixed << std::setw(10) << std::setprecision(4) << force_sum / total_sum * 100.;
+  io->write << force_sum / structures->get_num_total_atoms() << ")" << std::endl;
+  io->write << "sum of energies-errors = ";
+  io->write << std::scientific << energy_sum << "\t(";
+  io->write << std::fixed << std::setw(10) << std::setprecision(4) << energy_sum / total_sum * 100.;
+  io->write << ")" << std::endl;
+  io->write << "sum of stress-errors = ";
+  io->write << std::scientific << stress_sum << "\t(";
+  io->write << std::fixed << std::setw(10) << std::setprecision(4) << stress_sum / total_sum * 100.;
+  io->write << ")" << std::endl;
+  io->write << "sum of punishments = ";
+  io->write << std::scientific << punish_sum << "\t(";
+  io->write << std::fixed << std::setw(10) << std::setprecision(4) << punish_sum / total_sum * 100.;
+  io->write << ")" << std::endl;
 
-  if (0 != punish_sum && 1 == settings->opt ) {
-    io->warning("This sum contains punishments! Check your results.\n");
-  } else {
-    io->write("\n");
-  }
+  if (0 != punish_sum && 1 == settings->get_opt() )
+    io->warning << "This sum contains punishments! Check your results." << std::endl;
 
-  io->write("rms-errors:\n");
-  io->write("force\t%e\t(%10.3f meV/A)\n", rms_force, rms_force * 1000.);
-  io->write("energy\t%e\t(%10.3f meV)\n", rms_energy, rms_energy * 1000.);
-  io->write("stress\t%e\t(%10.3f MPa)\n", rms_stress, rms_stress / 160.2 * 1000.);
+  io->write << std::endl << "rms-errors:" << std::endl;
+  io->write << "force\t" << std::scientific << rms_force;
+  io->write << "\t(" << std::setw(10) << std::setprecision(4) << rms_force * 1000. << " meV/A)" << std::endl;
+  io->write << "energy\t" << std::scientific << rms_energy;
+  io->write << "\t(" << std::setw(10) << std::setprecision(4) << rms_energy * 1000. << " meV/A)" << std::endl;
+  io->write << "stress\t" << std::scientific << rms_stress;
+  io->write << "\t(" << std::setw(10) << std::setprecision(4) << rms_stress / 160.2 * 1000. << " meV/A)" << std::endl;
 
-  if (1 == settings->opt) {
-    io->write("\nRuntime: %d hours, %d minutes and %d seconds.\n",
-	utils->timediff() / 3600, (utils->timediff() % 3600) / 60, utils->timediff() % 60);
-    io->write("%d force calculations, each took %f seconds.\n", fcalls, utils->timediff() / fcalls);
+  if (1 == settings->get_opt()) {
+    io->write << std::endl << "Runtime: " << utils->timediff() / 3600 << " hours, ";
+    io->write << (utils->timediff() % 3600) / 60 << " minutes and ";
+    io->write << utils->timediff() % 60 << " seconds." << std::endl;
+    io->write << fcalls << " force calculations, each took " << utils->timediff() / fcalls << " seconds." << std::endl;
   }
 
   return;
@@ -114,11 +127,11 @@ void Error::calc_errors(void) {
     for (j=0;j<3 * structures->config[i]->num_atoms;j++) {
       force_sum += structures->config[i]->conf_weight * square(interaction->force->force_vect[count++]);
     }
-    energy_sum += structures->config[i]->conf_weight * settings->eweight *
+    energy_sum += structures->config[i]->conf_weight * settings->get_eweight() *
 	    square(interaction->force->force_vect[interaction->force->energy_p + i]);
     if (1 == structures->config[i]->use_stresses) {
       for (j=0;j<6;j++) {
-        stress_sum += structures->config[i]->conf_weight * settings->sweight *
+        stress_sum += structures->config[i]->conf_weight * settings->get_sweight() *
 		square(interaction->force->force_vect[interaction->force->stress_p + 6 * i + j]);
       }
     }

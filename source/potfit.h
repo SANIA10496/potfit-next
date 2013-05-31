@@ -33,6 +33,8 @@
 
 #define POT_STEPS 500
 
+#include <cstdlib>
+
 namespace POTFIT_NS {
 
   class POTFIT {
