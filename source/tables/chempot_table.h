@@ -31,6 +31,8 @@
 #ifndef PTF_CHEMPOT_TABLE_H
 #define PTF_CHEMPOT_TABLE_H
 
+#include <iostream>
+
 #include "../pointers.h"
 
 namespace POTFIT_NS {
@@ -42,6 +44,8 @@ namespace POTFIT_NS {
 
     void add_value(int, const char*, double, double, double);
     void set_value(int, double);
+
+    void write_potential(std::ofstream &);
 
   private:
     int num_params;		// number of chemical potentials

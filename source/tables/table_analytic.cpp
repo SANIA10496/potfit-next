@@ -131,7 +131,7 @@ void TableAnalytic::init(const char *fname, int index) {
 #undef FUNCTION_TYPE
     if (!function) {
       io->error << "Could not create an analytic potential of type \"" << fname << "\"." << std::endl;
-      io->exit(EXIT_FAILURE);
+      io->pexit(EXIT_FAILURE);
     }
 
     num_params = function->num_params();
@@ -159,7 +159,7 @@ void TableAnalytic::init(const char *fname, int index) {
     return;
   } else {
     io->error << "This potential is already initialized." << std::endl;
-    io->exit(EXIT_FAILURE);
+    io->pexit(EXIT_FAILURE);
   }
 
   return;
@@ -172,17 +172,17 @@ void TableAnalytic::read_potential(FILE *infile) {
 
   if (!init_done) {
     io->error << "Please initialize the potential before reading any potentials." << std::endl;
-    io->exit(EXIT_FAILURE);
+    io->pexit(EXIT_FAILURE);
   }
 
   // read cutoff
   if (2 > fscanf(infile, "%s %lf", buffer, &end)) {
     io->error << "Could not read cutoff for potential #" << pot_number << " in potential file." << std::endl;
-    io->exit(EXIT_FAILURE);
+    io->pexit(EXIT_FAILURE);
   }
   if (strcmp(buffer, "cutoff") != 0) {
     io->error << "No cutoff found for the " << pot_number << ". potential." << std::endl;
-    io->exit(EXIT_FAILURE);
+    io->pexit(EXIT_FAILURE);
   }
   // set very small begin, needed for EAM embedding function
   begin = .0001;
@@ -206,7 +206,7 @@ void TableAnalytic::read_potential(FILE *infile) {
     param_name[i] = new char[30];
     if (NULL == param_name[i]) {
       io->error << "Error in allocating memory for parameter name" << std::endl;
-      io->exit(EXIT_FAILURE);
+      io->pexit(EXIT_FAILURE);
     }
     strcpy(param_name[i], "\0");
     fgetpos(infile, &filepos);
@@ -217,13 +217,13 @@ void TableAnalytic::read_potential(FILE *infile) {
     if (strrchr(param_name[i], '!') != NULL) {
       if (potential->num_globals == 0) {
         io->error  << "You need to define a global parameter before using it!" << std::endl;
-	io->exit(EXIT_FAILURE);
+	io->pexit(EXIT_FAILURE);
       }
       param_name[i][strlen(param_name[i]) - 1] = '\0';
       j = potential->global_params->get_index(param_name[i]);
       if (j<0) {
         io->error << "Could not find global parameter " << param_name[i] << "!" << std::endl;
-	io->exit(EXIT_FAILURE);
+	io->pexit(EXIT_FAILURE);
       }
       sprintf(param_name[i], "%s!", param_name[i]);
 
@@ -254,10 +254,10 @@ void TableAnalytic::read_potential(FILE *infile) {
         } else {
           if (strcmp(param_name[i], "type") == 0) {
             io->error << "Not enough parameters for potential #" << pot_number + 1 << " (" << name << ") in potential file." << std::endl;
-	    io->exit(EXIT_FAILURE);
+	    io->pexit(EXIT_FAILURE);
           }
           io->error << "Could not read parameter #" << i + 1 << " of potential #" << pot_number + 1 << " in potential file." << std::endl;
-	  io->exit(EXIT_FAILURE);
+	  io->pexit(EXIT_FAILURE);
         }
       }
 
@@ -344,7 +344,7 @@ void TableAnalytic::init_calc_table(void) {
   for (int i=0; i<num_params; i++)
     stored_values[i] = values[i];
 
-  splines->spline_ed(step, table, len, 10e30, 0, d2tab);
+  splines.spline_ed(step, table, len, 10e30, 0, d2tab);
 
   return;
 }
@@ -367,7 +367,7 @@ void TableAnalytic::update_calc_table(int update) {
     table[i] = smooth_pot ? fval * cutoff(xcoord[i], end, h) : fval;
   }
 
-  splines->spline_ed(step, table, len, 10e30, 0, d2tab);
+  splines.spline_ed(step, table, len, 10e30, 0, d2tab);
   update_slots();
 
   return;

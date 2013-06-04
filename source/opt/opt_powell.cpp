@@ -43,16 +43,13 @@
 
 using namespace POTFIT_NS;
 
-OptPowell::OptPowell(POTFIT *ptf) : BaseOpt(ptf) {
-  return;
-}
+OptPowell::OptPowell(POTFIT *ptf) :
+  BaseOpt(ptf)
+{}
 
-OptPowell::~OptPowell() {
-  return;
-}
+OptPowell::~OptPowell() {}
 
-void OptPowell::init(double *p) {
-  params = p;
+void OptPowell::init(std::vector<std::string> &p) {
 
   return;
 }

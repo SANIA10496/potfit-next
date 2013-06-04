@@ -33,24 +33,21 @@
 
 using namespace POTFIT_NS;
 
-Force::Force(POTFIT *ptf) : Pointers(ptf) {
-  force_vect = NULL;
-  energy_p = 0;
-  stress_p = 0;
-  dummy_p = 0;
-  limit_p = 0;
-  punish_par_p = 0;
-  punish_pot_p = 0;
-
-  fcalls = 0;
-
-  return;
-}
+Force::Force(POTFIT *ptf) :
+  Pointers(ptf),
+  force_vect(NULL),
+  energy_p(0),
+  stress_p(0),
+  dummy_p(0),
+  limit_p(0),
+  punish_par_p(0),
+  punish_pot_p(0),
+  fcalls(0)
+{}
 
 Force::~Force() {
-  delete [] force_vect;
-
-  return;
+  if (NULL != force_vect)
+    delete [] force_vect;
 }
 
 void Force::calc_pointers(void) {
@@ -65,6 +62,16 @@ void Force::calc_pointers(void) {
 //  punish_pot_p = punish_par_p + apot_table.total_par;
 
   force_vect = new double[dummy_p];
+
+  return;
+}
+
+int Force::get_fcalls(void) {
+  return fcalls;
+}
+
+void Force::inc_fcalls(void) {
+  fcalls++;
 
   return;
 }

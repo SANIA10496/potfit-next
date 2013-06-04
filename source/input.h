@@ -35,6 +35,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "pointers.h"
 #include "types.h"
@@ -52,16 +53,14 @@ namespace POTFIT_NS {
     void read_config_file();
 
   private:
-    double get_param_dbl(const std::string &);
-    int get_param_int(const std::string &);
-    std::string get_param_str(const std::string &);
+    double get_param_dbl(const std::string &, const std::string &);
+    int get_param_int(const std::string &, const std::string &);
+    std::string get_param_str(const std::string &, const std::string &);
 
     void check_params();
 
     int curline;
     int enable_maxch_file;
-
-    std::ifstream infile;
 
     std::string param_file; 	// parameter file
     std::string config_file;

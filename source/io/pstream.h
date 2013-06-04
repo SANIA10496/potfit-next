@@ -44,7 +44,7 @@ namespace POTFIT_NS {
   class PStream: public std::ostream {
 
   public:
-    PStream(const char *, std::ostream &, std::ofstream *, PStream *);
+    PStream(const char *, std::ostream &, std::ofstream *);
     ~PStream();
 
     void init_done(int &);
@@ -54,11 +54,9 @@ namespace POTFIT_NS {
     class PStreamBuf: public std::stringbuf
     {
     public:
-      PStreamBuf(std::ostream& ostr, std::ofstream& lstr, PStream *ps, const char *pref) :
+      PStreamBuf(std::ostream& ostr, std::ofstream& lstr, const char *pref) :
         screen(0),
-        write_logfile(0),
         prefix(pref),
-        pstream(ps),
         output(ostr),
         logfile(lstr)
       {}
@@ -72,17 +70,22 @@ namespace POTFIT_NS {
         if (1 == screen) {
           if (!prefix.empty()) {
             output << "[" << prefix << "] " << str();
-	    if (1 == write_logfile)
+            if (logfile.is_open())
               logfile << "[" << prefix << "] " << str();
             str("");
           } else {
             output << str();
-	    if (1 == write_logfile)
+            if (logfile.is_open())
               logfile << str();
             str("");
           }
           output.flush();
           logfile.flush();
+          return 0;
+        } else if (prefix.compare("Error") == 0) {
+          output << "[" << prefix << "] " << str();
+          str("");
+          output.flush();
           return 0;
         } else
           return 0;
@@ -92,10 +95,8 @@ namespace POTFIT_NS {
 
     private:
       int screen;
-      int write_logfile;
       std::string prefix;
 
-      PStream *pstream;
       std::ostream& output;
       std::ofstream& logfile;
     };

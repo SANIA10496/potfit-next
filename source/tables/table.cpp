@@ -34,14 +34,9 @@
 
 using namespace POTFIT_NS;
 
-Table::Table(POTFIT *ptf) : Pointers(ptf) {
-  splines = new Splines(ptf);
+Table::Table(POTFIT *ptf) :
+  Pointers(ptf),
+  splines(ptf)
+{}
 
-  return;
-}
-
-Table::~Table() {
-  delete splines;
-
-  return;
-}
+Table::~Table() {}

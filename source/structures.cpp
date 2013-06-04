@@ -40,23 +40,20 @@
 
 using namespace POTFIT_NS;
 
-Structures::Structures(POTFIT *ptf) : Pointers(ptf) {
-  ntypes = 0;
-  total_num_atoms = 0;
-  total_num_conf = 0;
-
-  using_forces = 0;
-  using_stresses = 0;
-
-  min_dist = NULL;
-
-  line = 0;
-
-  return;
-}
+Structures::Structures(POTFIT *ptf) :
+  Pointers(ptf),
+  using_forces(0),
+  using_stresses(0),
+  min_dist(NULL),
+  ntypes(0),
+  line(0),
+  total_num_conf(0),
+  total_num_atoms(0)
+{}
 
 Structures::~Structures() {
-  delete [] min_dist;
+  if (NULL != min_dist)
+    delete [] min_dist;
 
   for (unsigned i = 0; i < config.size(); ++i)
     delete config[i];
@@ -69,7 +66,7 @@ Structures::~Structures() {
 void Structures::init(void) {
   if (ntypes == 0) {
     io->error << "ntypes is 0!" << std::endl;
-    io->exit(EXIT_FAILURE);
+    io->pexit(EXIT_FAILURE);
   }
 
   min_dist = new double[ntypes*ntypes];
@@ -88,7 +85,7 @@ void Structures::read_config(FILE *infile) {
     config.push_back(new Config(ptf, total_num_conf));
     config[total_num_conf]->read(infile, &line);
     total_num_atoms += config[total_num_conf]->num_atoms;
-    for (int i=0;i<ntypes;i++)
+    for (int i=0; i<ntypes; i++)
       num_per_type[i] += config[total_num_conf]->num_per_type[i];
     total_num_conf++;
   } while (!feof(infile));
@@ -126,9 +123,9 @@ void Structures::print_mindist(void) {
 int Structures::get_num_contrib_atoms(void) {
   int count = 0;
 
-  for (int i=0;i<total_num_conf;i++) {
+  for (int i=0; i<total_num_conf; i++) {
     if (1 == config[i]->use_forces) {
-      for (int j=0;j<config[i]->num_atoms;j++) {
+      for (int j=0; j<config[i]->num_atoms; j++) {
         if (1 == config[i]->atoms[j]->contrib)
           count++;
       }
@@ -145,7 +142,7 @@ int Structures::get_num_contrib_energies(void) {
 int Structures::get_num_contrib_stresses(void) {
   int count = 0;
 
-  for (int i=0;i<total_num_conf;i++) {
+  for (int i=0; i<total_num_conf; i++) {
     if (1 == config[i]->use_stresses)
       count++;
   }
@@ -162,9 +159,9 @@ int Structures::get_num_total_configs(void) {
 }
 
 void Structures::set_ntypes(int n) {
-  if (ntypes < 1) {
+  if (n < 1) {
     io->error << "ntypes cannot be smaller than 1!" << std::endl;
-    io->exit(EXIT_FAILURE);
+    io->pexit(EXIT_FAILURE);
   } else {
     ntypes = n;
   }

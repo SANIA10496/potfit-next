@@ -44,13 +44,11 @@
 
 using namespace POTFIT_NS;
 
-ForcePair::ForcePair(POTFIT *ptf): Force(ptf) {
-  return;
-}
+ForcePair::ForcePair(POTFIT *ptf):
+  Force(ptf)
+{}
 
-ForcePair::~ForcePair() {
-  return;
-}
+ForcePair::~ForcePair() {}
 
 int ForcePair::num_slots(void) {
   return 1;
@@ -65,7 +63,7 @@ int ForcePair::get_col(int slot, int a, int b) {
 
   if (slot != 0) {
     io->error << "Pair potentials only use 1 slot." << std::endl;
-    io->exit(EXIT_FAILURE);
+    io->pexit(EXIT_FAILURE);
   }
 
   col = (a <= b) ? a * structures->get_ntypes() + b - ((a * (a + 1)) / 2)
@@ -123,7 +121,7 @@ void ForcePair::read_additional_data(FILE *infile) {
       // read one line
       if (4 > fscanf(infile, "%s %lf %lf %lf", buffer, &val, &min, &max)) {
         io->error << "Could not read chemical potential for atomtype " << j + 1 << "." << std::endl;
-        io->exit(EXIT_FAILURE);
+        io->pexit(EXIT_FAILURE);
       }
 
       // split cp and _#
@@ -135,7 +133,7 @@ void ForcePair::read_additional_data(FILE *infile) {
       if (strcmp("cp", name) != 0) {
         io->error << "Found \"" << name << "\" instead of \"cp\"" << std::endl;
         io->error << "No chemical potentials found in potential file." << std::endl;
-	io->exit(EXIT_FAILURE);
+	io->pexit(EXIT_FAILURE);
       }
       potential->chem_pot->add_value(j, buffer, val, min, max);
     }
@@ -224,10 +222,10 @@ double ForcePair::calc_forces(void) {
           if (neigh->r < pot->end) {
             // fn value and grad are calculated in the same step
             if (uf)
-              phi_val = pot->splines->splint_comb_dir(pot->table, pot->d2tab, neigh->slot[0],
+              phi_val = pot->splines.splint_comb_dir(pot->table, pot->d2tab, neigh->slot[0],
 			      neigh->shift[0], neigh->step[0], &phi_grad);
             else
-              phi_val = pot->splines->splint_dir(pot->table, pot->d2tab, neigh->slot[0],
+              phi_val = pot->splines.splint_dir(pot->table, pot->d2tab, neigh->slot[0],
 			      neigh->shift[0], neigh->step[0]);
             // avoid double counting if atom is interacting with a copy of itself
             if (self) {
@@ -350,7 +348,7 @@ double ForcePair::calc_forces(void) {
 
     // root process exits this function now
     if (settings->get_myid() == 0) {
-      fcalls++;			// Increase function call counter
+      inc_fcalls();			// Increase function call counter
       if (std::isnan(sum)) {
 #ifdef DEBUG
 	io->write("\n--> Force is nan! <--\n\n");

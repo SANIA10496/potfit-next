@@ -39,20 +39,22 @@
 
 using namespace POTFIT_NS;
 
-GlobalsTable::GlobalsTable(POTFIT *ptf, int num) : Pointers(ptf) {
-  num_globals = num;
-  num_free_globals = num;
+GlobalsTable::GlobalsTable(POTFIT *ptf, int num) :
+  Pointers(ptf),
+  num_globals(num),
+  num_free_globals(num)
+{
 
   param_name = (char **)malloc(num_globals * sizeof(char *));
   if (NULL == param_name) {
     io->error << "Could not allocate memory for potential name" << std::endl;
-    io->exit(EXIT_FAILURE);
+    io->pexit(EXIT_FAILURE);
   }
   for (int i=0; i<num_globals; i++) {
     param_name[i] = (char *)malloc(20 * sizeof(char));
     if (NULL == param_name[i]) {
       io->error << "Could not allocate memory for parameter names" << std::endl;
-      io->exit(EXIT_FAILURE);
+      io->pexit(EXIT_FAILURE);
     }
     strcpy(param_name[i],"\0");
   }
@@ -92,8 +94,9 @@ void GlobalsTable::add_param(int index, const char *name, double val, double min
   for (int k = 0; k < index; k++) {
     if (strcmp(name, param_name[k]) == 0) {
       io->error << "Found duplicate global parameter name!" << std::endl;
-      io->error << "Parameter #" << index + 1 << " (" << name << ") is the same as #" << k + 1 << " (" << param_name[k] << ")." << std::endl;
-      io->exit(EXIT_FAILURE);
+      io->error << "Parameter #" << index + 1 << " (" << name << ") is the same as #" << k + 1;
+      io->error << " (" << param_name[k] << ")." << std::endl;
+      io->pexit(EXIT_FAILURE);
     }
   }
 
@@ -177,3 +180,10 @@ void GlobalsTable::get_value(int index, double *val) {
 void GlobalsTable::get_values(int *number, double *values) {
   *number = num_globals;
 }
+
+void GlobalsTable::write_potential(std::ofstream &outfile) {
+  outfile << std::endl << "Globals_Table" << std::endl;
+
+  return;
+}
+

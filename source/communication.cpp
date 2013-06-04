@@ -37,13 +37,11 @@
 
 using namespace POTFIT_NS;
 
-Communication::Communication(POTFIT *ptf) : Pointers(ptf) {
-  return;
-}
+Communication::Communication(POTFIT *ptf) :
+  Pointers(ptf)
+{}
 
-Communication::~Communication() {
-  return;
-}
+Communication::~Communication() {}
 
 void Communication::init(void) {
   if (1 < settings->get_num_cpus())

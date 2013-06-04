@@ -47,15 +47,16 @@ namespace POTFIT_NS {
 
     void run(void);
 
-    void add_algorithm(std::ifstream &);
-    BaseOpt *init_algorithm(const char *);
+    void add_algorithm(std::vector<std::string> &);
+    BaseOpt *init_algorithm(const std::string &);
 
     std::vector<std::string> algorithms;
-    std::vector<double *> params;
-    int num_algs;
+    std::vector<std::vector<std::string> > params;
 
   private:
     BaseOpt *opt;
+
+    int num_algs;
   };
 }
 

@@ -35,9 +35,10 @@
 
 using namespace POTFIT_NS;
 
-Random::Random(POTFIT *ptf) : Pointers(ptf) {
-  seed = 0;
-}
+Random::Random(POTFIT *ptf) :
+  Pointers(ptf),
+  seed(0)
+{}
 
 Random::~Random() {}
 

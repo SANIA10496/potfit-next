@@ -46,7 +46,7 @@ namespace POTFIT_NS {
 
     char *tolowercase(char *);
     double vect_dist(vector, vector);
-    void quicksort(double *, int, int, double **);
+
     void start_timer(void);
     void end_timer(void);
     int timediff(void);
@@ -55,19 +55,11 @@ namespace POTFIT_NS {
     int check_for_flagfile(void);
 
   private:
-    int partition(double *, int, int, int, double **);
-    void swap_population(double *, double *);
-
     time_t t_begin;
     time_t t_end;
 
     std::string flagfile;
   };
-
 }
-
-template<class T>
-T square(T a) {return a*a;}
-
 
 #endif /* PTF_UTILS_H */

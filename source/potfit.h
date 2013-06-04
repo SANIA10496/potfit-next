@@ -35,6 +35,8 @@
 
 #include <cstdlib>
 
+#include "templates.h"
+
 namespace POTFIT_NS {
 
   class POTFIT {

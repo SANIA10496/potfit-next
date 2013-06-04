@@ -34,14 +34,15 @@
 
 using namespace POTFIT_NS;
 
-Neighbor_3::Neighbor_3(POTFIT *ptf) : Neighbor(ptf) {
-}
+Neighbor_3::Neighbor_3(POTFIT *ptf) :
+  Neighbor(ptf)
+{}
 
 Neighbor_3::~Neighbor_3() {}
 
 void Neighbor_3::init(Config *conf, int i, int j, vector *dd) {
   io->error << "The two-body neighbor function cannot be called for three-body neighbor lists!" << std::endl;
-  io->exit(EXIT_FAILURE);
+  io->pexit(EXIT_FAILURE);
 
   return;
 }

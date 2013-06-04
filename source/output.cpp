@@ -33,26 +33,25 @@
 
 #include "io.h"
 #include "output.h"
+#include "potential.h"
 #include "settings.h"
 
 using namespace POTFIT_NS;
 
 Output::Output(POTFIT *ptf) :
   Pointers(ptf),
+  plotmin(0.1),
   imdpotsteps(1000),
   enable_distfile(0),
   enable_output_files(0),
   enable_imd_pot(0),
   enable_lammps_pot(0),
   enable_plotfile(0),
-  enable_log(0),
-  plotmin(0.1)
+  enable_log(0)
 {}
 
 
-Output::~Output() {
-  return;
-}
+Output::~Output() {}
 
 void Output::write_output(void) {
   write_endpot();
@@ -77,7 +76,23 @@ void Output::write_tempfile(void) {
 }
 
 void Output::write_endpot(void) {
+  std::ofstream outfile;
+
+  outfile.exceptions(std::ofstream::failbit);
+
+  try {
+    outfile.open(endpot.c_str(), std::ofstream::out);
+  } catch (std::ofstream::failure e) {
+    io->error << "Could not open " << endpot << " file for writing." << std::endl;
+    io->pexit(EXIT_FAILURE);
+  }
+
+  potential->write_potentials(outfile);
+
+  outfile.close();
+
   io->write << "Final potential written to file\t\t\t" << endpot << std::endl;
+
   return;
 }
 
@@ -122,27 +137,55 @@ void Output::write_output_file_forces(void) {
   filename.append(".force");
 
   std::ofstream output;
-  output.open ("test.txt", std::ofstream::out | std::ofstream::app);
-
+  output.open (filename.c_str(), std::ofstream::out);
 
   output.close();
-  io->write << "Force data written to\t\t\t\t" << output_prefix << ".force" << std::endl;
+  io->write << "Force data written to\t\t\t\t" << filename << std::endl;
 
   return;
 }
 
 void Output::write_output_file_energies(void) {
-  io->write << "Energy data written to\t\t\t\t" << output_prefix << ".energy" << std::endl;
+  std::string filename(output_prefix);
+  filename.append(".energy");
+
+  std::ofstream output;
+  output.open (filename.c_str(), std::ofstream::out);
+
+  output.close();
+
+  io->write << "Energy data written to\t\t\t\t" << filename << std::endl;
   return;
 }
 
 void Output::write_output_file_stresses(void) {
-  io->write << "Stress data written to\t\t\t\t" << output_prefix << ".stress" << std::endl;
+  std::string component[6];
+  std::string filename(output_prefix);
+  component[0] = "x";
+  component[1] = "y";
+  component[2] = "z";
+  filename.append(".stress");
+
+  std::ofstream output;
+  output.open (filename.c_str(), std::ofstream::out);
+
+  output.close();
+  io->write << "Stress data written to\t\t\t\t" << filename << std::endl;
+
   return;
 }
 
 void Output::write_output_file_punishments(void) {
-  io->write << "Punishments written to\t\t\t\t" << output_prefix << ".punish" << std::endl;
+  std::string filename(output_prefix);
+  filename.append(".punish");
+
+  std::ofstream output;
+  output.open (filename.c_str(), std::ofstream::out);
+
+  output.close();
+
+  io->write << "Punishments written to\t\t\t\t" << filename << std::endl;
+
   return;
 }
 

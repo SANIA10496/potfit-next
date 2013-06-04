@@ -34,22 +34,20 @@
 
 using namespace POTFIT_NS;
 
-Settings::Settings(POTFIT *ptf) : Pointers(ptf) {
-  myid = -1;
-  num_cpus = 0;
-  opt = 1;
-
-  eweight = -1.;
-  sweight = -1.;
-  extend = 0;
-  apot_punish_value = 0;
-  d_eps = 0;
-  dp_cut = 0;
-  dp_tol = 0;
-  dp_mix = 0;
-
-  return;
-}
+Settings::Settings(POTFIT *ptf) :
+  Pointers(ptf),
+  myid(-1),
+  num_cpus(0),
+  opt(1),
+  eweight(-1.0),
+  sweight(-1.0),
+  extend(0),
+  apot_punish_value(0),
+  d_eps(0),
+  dp_cut(0),
+  dp_tol(0),
+  dp_mix(0)
+{}
 
 Settings::~Settings() {
   return;

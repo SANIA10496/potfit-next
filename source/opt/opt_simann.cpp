@@ -53,24 +53,30 @@
 
 using namespace POTFIT_NS;
 
-OptSimann::OptSimann(POTFIT *ptf) : BaseOpt(ptf) {
-  return;
-}
+OptSimann::OptSimann(POTFIT *ptf) :
+  BaseOpt(ptf),
+  auto_T(0),
+  T(-1.0)
+{}
 
-OptSimann::~OptSimann() {
-  return;
-}
+OptSimann::~OptSimann() {}
 
-void OptSimann::init(double *p) {
-  params = p;
+void OptSimann::init(std::vector<std::string> &p) {
+  /* check for automatic temperature */
+  if (atof(p[0].c_str()) < 0) {
+    auto_T = 1;
+  } else if (atof(p[0].c_str()) > 0) {
+    T = atof(p[0].c_str());
+  } else {
+    io->error << "The starting temperature for Simulated Annealing cannot be 0!" << std::endl;
+    io->pexit(EXIT_FAILURE);
+  }
 
   return;
 }
 
 void OptSimann::run(void) {
   int ndim = potential->num_free_params;
-  int   auto_T = 0;
-  double T = -1.;		/* Temperature */
   double *Fvar;			/* backlog of Fn vals */
   double *v;			/* step vector */
   double *xi = potential->opt->values;
@@ -86,17 +92,6 @@ void OptSimann::run(void) {
 //  FILE *outfile;
 //  char *filename = "Dipole.convergency";
 //#endif /* DIPOLE */
-  FILE *ff;			/* exit flagfile */
-
-  /* check for automatic temperature */
-  if (params[0] < 0) {
-    auto_T = 1;
-  } else if (params[0] > 0) {
-    T = params[0];
-  } else {
-    io->error << "The starting temperature for Simulated Annealing cannot be 0!" << std::endl;
-    io->exit(EXIT_FAILURE);
-  }
 
   if (T == 0. && auto_T != 1)
     return;			/* don't anneal if starttemp equal zero */
@@ -145,7 +140,7 @@ void OptSimann::run(void) {
     T = dF / log(u / (u * chi + (1 - chi) * m1));
     if (isnan(T) || isinf(T)) {
       io->error << "Simann failed because T was " << T << ", please set it manually." << std::endl;
-      io->exit(EXIT_FAILURE);
+      io->pexit(EXIT_FAILURE);
     }
     if (T < 0)
       T = -T;

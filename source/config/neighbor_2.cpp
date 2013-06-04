@@ -28,6 +28,7 @@
  *
  ****************************************************************/
 
+#include <algorithm>
 #include <cstdio>
 #include <cmath>
 
@@ -43,10 +44,9 @@
 
 using namespace POTFIT_NS;
 
-Neighbor_2::Neighbor_2(POTFIT *ptf) : Neighbor(ptf) {
-  type = -1;
-  nr = -1;
-  r = 0.0;
+Neighbor_2::Neighbor_2(POTFIT *ptf) :
+  Neighbor(ptf)
+{
   dist.x = 0.0;
   dist.y = 0.0;
   dist.z = 0.0;
@@ -66,19 +66,6 @@ Neighbor_2::Neighbor_2(POTFIT *ptf) : Neighbor(ptf) {
   sqrdist.zx = 0.0;
   sqrdist.xy = 0.0;
   sqrdist.yz = 0.0;
-
-  u_val = 0.0;
-  u_grad = 0.0;
-  w_val = 0.0;
-  w_grad = 0.0;
-
-  // Coulomb
-  r2 = 0.0;
-  fnval_el = 0.0;
-  grad_el = 0.0;
-  ggrad_el = 0.0;
-
-  return;
 }
 
 Neighbor_2::~Neighbor_2() {
@@ -121,7 +108,7 @@ void Neighbor_2::init(Config *conf, int i, int j, vector *dd) {
   conf->atoms[i]->num_neighbors++;
 
   col[0] = interaction->force->get_col(0, type1, type);
-  structures->min_dist[col[0]] = MIN(structures->min_dist[col[0]], r);
+  structures->min_dist[col[0]] = std::min(structures->min_dist[col[0]], r);
 
   // loop over all slots
   for (k=0;k<interaction->force->num_slots();k++) {
@@ -142,6 +129,7 @@ void Neighbor_2::init(Config *conf, int i, int j, vector *dd) {
 
 void Neighbor_2::init(Config *conf, int i, int j, int k,  vector *dd_ij, vector *dd_ik) {
   io->error << "The three-body neighbor function cannot be called for two-body neighbor lists!" << std::endl;
+  io->pexit(EXIT_FAILURE);
 
   return;
 }

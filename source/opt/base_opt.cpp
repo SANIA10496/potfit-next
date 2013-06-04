@@ -34,12 +34,8 @@
 
 using namespace POTFIT_NS;
 
-BaseOpt::BaseOpt(POTFIT *ptf) : Pointers(ptf) {
-  params = NULL;
+BaseOpt::BaseOpt(POTFIT *ptf) :
+  Pointers(ptf)
+{}
 
-  return;
-}
-
-BaseOpt::~BaseOpt() {
-  return;
-}
+BaseOpt::~BaseOpt() {}

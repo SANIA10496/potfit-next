@@ -31,6 +31,9 @@
 #ifndef PTF_BASE_OPT_H
 #define PTF_BASE_OPT_H
 
+#include <string>
+#include <vector>
+
 #include "../pointers.h"
 
 namespace POTFIT_NS {
@@ -40,10 +43,8 @@ namespace POTFIT_NS {
     BaseOpt(class POTFIT *);
     ~BaseOpt();
 
-    virtual void init(double *) = 0;
+    virtual void init(std::vector<std::string> &) = 0;
     virtual void run(void) = 0;
-
-    double *params;
   };
 }
 

@@ -50,6 +50,7 @@ namespace POTFIT_NS {
     double total_sum;
     double force_sum, energy_sum, stress_sum, punish_sum;
     double rms_force, rms_energy, rms_stress;
+
     int total_contrib;
     int num_forces, num_energies, num_stresses;
     int fcalls;

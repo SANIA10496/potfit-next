@@ -30,7 +30,6 @@
 
 #include <cmath>
 #include <cstring>
-#include <cstdio>
 #include <iostream>
 
 #include "config.h"
@@ -45,19 +44,21 @@
 
 using namespace POTFIT_NS;
 
-Config::Config(POTFIT *ptf, int idx) : Pointers(ptf) {
+Config::Config(POTFIT *ptf, int idx) :
+  Pointers(ptf),
+  num_per_type(NULL),
+  num_atoms(0),
+  use_forces(0),
+  use_stresses(0),
+  coh_energy(0.0),
+  conf_weight(0.0),
+  volume(0.0),
+  index(idx),
+  cnfstart(0)
+{
   cell_scale[0] = 0;
   cell_scale[1] = 0;
   cell_scale[2] = 0;
-  num_per_type = NULL;
-  num_atoms = 0;
-  use_forces = 0;
-  use_stresses = 0;
-
-  coh_energy = 0.0;
-  conf_weight = 0.0;
-  volume = 0.0;
-
   stress.xx = 0.0;
   stress.yy = 0.0;
   stress.zz = 0.0;
@@ -69,12 +70,8 @@ Config::Config(POTFIT *ptf, int idx) : Pointers(ptf) {
   box_y.x = box_y.y = box_y.z = 0.0;
   box_z.x = box_z.y = box_z.z = 0.0;
 
-  index = idx;
-  cnfstart = 0;
   for (int i=0;i<idx;i++)
     cnfstart += structures->config[i]->num_atoms;
-
-  return;
 }
 
 Config::~Config() {
@@ -113,15 +110,20 @@ void Config::read(FILE *infile, int *line) {
 
   res = fgets(buffer, 1024, infile);
   (*line)++;
-  if (NULL == res)
+  if (NULL == res) {
+//    io->write << "Test" << std::endl;
     io->error << "Unexpected end of config file on line " << *line << std::endl;
-    io->exit(-1);
+    io->pexit(-1);
+  }
   h_eng = h_stress = h_boxx = h_boxy = h_boxz = 0;
   if (res[1] == 'N') {
-    if (sscanf(res + 3, "%d %d", &num_atoms, &use_forces) < 2)
+    if (sscanf(res + 3, "%d %d", &num_atoms, &use_forces) < 2) {
       io->error << "Error in atom number specification on line " << *line << std::endl;
+      io->pexit(EXIT_FAILURE);
+    }
   } else {
     io->error << "Error - number of atoms missing on line " << *line << std::endl;
+    io->pexit(EXIT_FAILURE);
   }
 
   num_per_type = new int[structures->get_ntypes()];

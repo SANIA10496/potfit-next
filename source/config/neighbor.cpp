@@ -32,10 +32,20 @@
 
 using namespace POTFIT_NS;
 
-Neighbor::Neighbor(POTFIT *ptf) : Pointers(ptf) {
-  return;
-}
+Neighbor::Neighbor(POTFIT *ptf) :
+  Pointers(ptf),
+  type(-1),
+  nr(-1),
+  r(0.0),
+  u_val(0.0),
+  u_grad(0.0),
+  w_val(0.0),
+  w_grad(0.0),
+  // Coulomb
+  r2(0.0),
+  fnval_el(0.0),
+  grad_el(0.0),
+  ggrad_el(0.0)
+{}
 
-Neighbor::~Neighbor() {
-  return;
-}
+Neighbor::~Neighbor() {}

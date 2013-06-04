@@ -28,6 +28,8 @@
  *
  ****************************************************************/
 
+#include <stdexcept>
+
 #include "potfit.h"
 #include "io.h"
 #include "input.h"
@@ -97,4 +99,6 @@ void POTFIT::run() {
 
   // write error report
   error->write_report();
+
+  return;
 }

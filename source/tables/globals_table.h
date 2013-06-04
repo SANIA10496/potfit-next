@@ -57,6 +57,8 @@ namespace POTFIT_NS {
 
     void get_values(int *, double *);
 
+    void write_potential(std::ofstream &);
+
   private:
     int num_globals; 		// number of global parameters
     int num_free_globals; 	// number of free global parameters

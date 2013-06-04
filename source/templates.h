@@ -31,16 +31,12 @@
 #ifndef PTF_TEMPLATES_H
 #define PTF_TEMPLATES_H
 
-#define MIN(A,B) ((A) < (B) ? (A) : (B))
-#define MAX(A,B) ((A) > (B) ? (A) : (B))
-
 #define SPROD(a,b) (((a).x * (b).x) + ((a).y * (b).y) + ((a).z * (b).z))
-#define SWAP(A,B,C) (C)=(A);(A)=(B);(B)=(C);
 
 namespace POTFIT_NS {
 
   template<class T>
-  T square(T a) {
+  inline T square(const T& a) {
     return a*a;
   }
 

@@ -107,3 +107,9 @@ void ChempotTable::add_value(int i, const char *name, double val, double min, do
 void ChempotTable::set_value(int i, double val) {
   values[i] = val;
 }
+
+void ChempotTable::write_potential(std::ofstream &outfile) {
+  outfile << std::endl << "Chempot_Table" << std::endl;
+
+  return;
+}

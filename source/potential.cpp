@@ -28,67 +28,68 @@
  *
  ****************************************************************/
 
+#include <algorithm>
+
 #include "force.h"
 #include "interaction.h"
 #include "io.h"
 #include "memory.h"
 #include "potential.h"
 #include "structures.h"
-#include "templates.h"
 
 #include "tables/table.h"
 #include "tables/list_tables.h"
 
 using namespace POTFIT_NS;
 
-Potential::Potential(POTFIT *ptf) : Pointers(ptf) {
-  enable_cp = 0;
-  num_globals = 0;
-
-  num_pots = 0;
-  num_free_pots = 0;
-
-  num_params = 0;
-  num_free_params = 0;
-
-  invar_pot = NULL;
-
-  idxpot = NULL;
-  idxparam = NULL;
-
-  rcut = NULL;
-  rmin = NULL;
-  rcut_max = 0.0;
-
-  pots = NULL;
-  opt = NULL;
-  global_params = NULL;
-  chem_pot = NULL;
-
-  return;
-}
+Potential::Potential(POTFIT *ptf) :
+  Pointers(ptf),
+  num_globals(0),
+  num_pots(0),
+  num_free_pots(0),
+  num_params(0),
+  num_free_params(0),
+  invar_pot(NULL),
+  idxpot(NULL),
+  idxparam(NULL),
+  rcut(NULL),
+  rmin(NULL),
+  rcut_max(0.0),
+  pots(NULL),
+  opt(NULL),
+  global_params(NULL),
+  chem_pot(NULL),
+  enable_cp(0)
+{}
 
 Potential::~Potential() {
-  delete [] invar_pot;
-  delete [] rcut;
-  delete [] rmin;
-
-  delete [] idxpot;
-  delete [] idxparam;
+  if (NULL!=invar_pot)
+    delete [] invar_pot;
+  if (NULL != rcut)
+    delete [] rcut;
+  if (NULL != rmin)
+    delete [] rmin;
+  if (NULL != idxpot)
+    delete [] idxpot;
+  if (NULL != idxparam)
+    delete [] idxparam;
 
   for (unsigned i = 0; i < elements.size(); ++i)
     delete [] elements[i];
   elements.clear();
 
-  for (int i=0; i<num_pots; i++)
-    delete pots[i];
-  delete [] pots;
-  delete opt;
+  if (NULL != pots) {
+    for (int i=0; i<num_pots; i++)
+      delete pots[i];
+    delete [] pots;
+  }
+  if (NULL != opt)
+    delete opt;
 
-  if (global_params)
+  if (NULL != global_params)
     delete global_params;
 
-  if (chem_pot)
+  if (NULL != chem_pot)
     delete chem_pot;
 
   return;
@@ -124,7 +125,7 @@ void Potential::read_globals(FILE *infile) {
   if (strcmp(buffer, "globals") == 0) {
     if (2 > fscanf(infile, "%s %d", buffer, &num_globals)) {
       io->error << "Global parameters are missing in the potential file." << std::endl;
-      io->exit(EXIT_FAILURE);
+      io->pexit(EXIT_FAILURE);
     }
 
     global_params = new GlobalsTable(ptf, num_globals);
@@ -136,7 +137,7 @@ void Potential::read_globals(FILE *infile) {
         if (strcmp(name, "type") == 0) {
           io->error << "Not enough global parameters!" << std::endl;
           io->error << "You specified " << j << " parameter(s), but needed are " << num_globals << "." << std::endl;
-	  io->exit(EXIT_FAILURE);
+          io->pexit(EXIT_FAILURE);
         }
       global_params->add_param(j, name, val, min, max);
     }
@@ -167,11 +168,11 @@ void Potential::read_potentials(FILE *infile) {
     // read type
     if (2 > fscanf(infile, "%s %s", buffer, name)) {
       io->error << "Premature end of potential file!" << std::endl;
-      io->exit(EXIT_FAILURE);
+      io->pexit(EXIT_FAILURE);
     }
     if (strcmp(buffer, "type") != 0) {
       io->error << "Unknown keyword in potential file, expected \"type\" but found \"" << buffer << "\"." << std::endl;
-      io->exit(EXIT_FAILURE);
+      io->pexit(EXIT_FAILURE);
     }
     if (strcmp(buffer, "table3") == 0) {
       pots[i] = new TableTab3(ptf);
@@ -185,7 +186,7 @@ void Potential::read_potentials(FILE *infile) {
     num_params += pots[i]->get_number_params();
     if (invar_pot[i] == 0)
       num_free_params += pots[i]->get_number_free_params();
-    rcut_max = MAX(rcut_max, pots[i]->get_cutoff());
+    rcut_max = std::max(rcut_max, pots[i]->get_cutoff());
   }
   rcut = new double[square(structures->get_ntypes())];
   rmin = new double[square(structures->get_ntypes())];
@@ -208,19 +209,37 @@ void Potential::read_potentials(FILE *infile) {
   return;
 }
 
+void Potential::write_potentials(std::ofstream &outfile) {
+
+  // write header
+  write_potential_header(outfile);
+
+  // write tables
+  if (global_params->get_number_free_params() > 0)
+    global_params->write_potential(outfile);
+
+  if (NULL != chem_pot)
+    chem_pot->write_potential(outfile);
+
+  for (int i=0;i<num_pots;i++)
+    pots[i]->write_potential(outfile);
+
+  return;
+}
+
 void Potential::init_opt_table(void) {
   int count = 0;
 
   idxpot = new int[num_free_params];
   idxparam = new int[num_free_params];
 
-  for (int i=0; i<num_pots;i++) {
+  for (int i=0; i<num_pots; i++) {
     if (0 == invar_pot[i]) {
       for (int j=0; j<pots[i]->get_number_params(); j++) {
         if (pots[i]->invar_par[j] == 0) {
-	  idxpot[count] = i;
-	  idxparam[count] = j;
-	  opt->values[count++] = pots[i]->values[j];
+          idxpot[count] = i;
+          idxparam[count] = j;
+          opt->values[count++] = pots[i]->values[j];
         }
       }
     }
@@ -228,14 +247,14 @@ void Potential::init_opt_table(void) {
 
   if (count != num_free_params) {
     io->error << "Number of free parameters is inconsistent!" << std::endl;
-    io->exit(EXIT_FAILURE);
+    io->pexit(EXIT_FAILURE);
   }
 
   return;
 }
 
 void Potential::update_potentials(int update) {
-  for (int i=0;i<num_pots;i++) {
+  for (int i=0; i<num_pots; i++) {
     if (0 == invar_pot[i] || update)
       pots[i]->update_calc_table(update);
   }
@@ -251,4 +270,24 @@ void Potential::set_enable_cp(int i) {
 
 int Potential::get_enable_cp(void) {
   return enable_cp;
+}
+
+void Potential::write_potential_header(std::ofstream &outfile) {
+  outfile << "#F 0 " << interaction->force->cols() << std::endl;
+  outfile << "#T " << interaction->get_type() << std::endl;
+  outfile << "#C";
+  for (unsigned int i=0;i<elements.size();i++)
+    outfile << " " << elements[i];
+  outfile << std::endl;
+  outfile << "#I";
+  for (int i=0;i<interaction->force->cols();i++)
+    outfile << " " << invar_pot[i];
+  outfile << std::endl;
+  outfile << "#G";
+  for (int i=0;i<interaction->force->cols();i++)
+    outfile << " " << invar_pot[i];
+  outfile << std::endl;
+  outfile << "#E" << std::endl;
+
+  return;
 }

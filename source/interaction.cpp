@@ -36,23 +36,19 @@
 
 using namespace POTFIT_NS;
 
-Interaction::Interaction(POTFIT *ptf) : Pointers(ptf)
-{
-  force = NULL;
+Interaction::Interaction(POTFIT *ptf) :
+  Pointers(ptf),
+  force(NULL)
+{}
 
-  return;
-}
-
-Interaction::~Interaction()
-{
-  if (force)
+Interaction::~Interaction() {
+  if (NULL != force)
     delete force;
 
   return;
 }
 
-void Interaction::init()
-{
+void Interaction::init() {
   force = init_force(type);
 
   return;

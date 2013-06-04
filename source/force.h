@@ -55,6 +55,9 @@ namespace POTFIT_NS {
 
     void calc_pointers(void);
 
+    int get_fcalls(void);
+    void inc_fcalls(void);
+
     double *force_vect; 	// all deviations
     int energy_p; 		// pointer for energies
     int stress_p; 		// pointer for stresses
@@ -63,8 +66,8 @@ namespace POTFIT_NS {
     int punish_par_p; 		// pointer to parameter punishments
     int punish_pot_p; 		// pointer to potential punishments
 
-    int fcalls;
   private:
+    int fcalls;
   };
 
 }

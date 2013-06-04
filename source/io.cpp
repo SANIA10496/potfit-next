@@ -29,8 +29,6 @@
  ****************************************************************/
 
 #include <mpi.h>
-#include <cstdio>
-#include <cstdlib>
 
 #include "input.h"
 #include "io.h"
@@ -41,19 +39,20 @@ using namespace POTFIT_NS;
 
 IO::IO(POTFIT *ptf) :
   Pointers(ptf),
-  write("", std::cout, &logfile, &write),
-  warning("Warning", std::cout, &logfile, &warning),
-  error("Error", std::cerr, &logfile, &error),
-  debug("Debug", std::cerr, &logfile, &debug),
-  init_done(0),
+  write("", std::cout, &logfile),
+  warning("Warning", std::cout, &logfile),
+  error("Error", std::cerr, &logfile),
+  debug("Debug", std::cerr, &logfile),
   screen(0),
+  init_done(0),
   write_logfile(0)
 {}
 
 IO::~IO() {}
 
 void IO::print_header() {
-  write << "This is potfit-next " << POTFIT_VERSION << " compiled on " << POTFIT_DATE << "." << std::endl << std::endl;
+  write << "This is potfit-next " << POTFIT_VERSION << " compiled on ";
+  write << POTFIT_DATE << "." << std::endl << std::endl;
 
   return;
 }
@@ -68,8 +67,7 @@ void IO::print_version() {
     printf("There is absolutely NO WARRANTY.\n");
     printf("\nContributing authors are listed on <http://potfit.sourceforge.net>.\n");
   }
-  MPI::Finalize();
-  exit(EXIT_SUCCESS);
+  pexit(EXIT_SUCCESS);
 }
 
 void IO::print_help() {
@@ -80,15 +78,12 @@ void IO::print_help() {
     printf("\t-h\tprint this screen\n");
     printf("\t-v\tprint version information\n");
   }
-  MPI::Finalize();
-  exit(EXIT_SUCCESS);
+  pexit(EXIT_SUCCESS);
 }
 
 void IO::set_logfile(const char *filename) {
   if (write_logfile && screen) {
     logfile.open(filename);
-    logfile << "This is potfit-next " << POTFIT_VERSION << " compiled on " << POTFIT_DATE << ".\n\n";
-    logfile << "Reading parameter file \"" << input->param_file.c_str() << "\" ... ";
     write.init_done(screen);
     warning.init_done(screen);
     error.init_done(screen);
@@ -98,12 +93,12 @@ void IO::set_logfile(const char *filename) {
 
 void IO::close_logfile() {
   if (write_logfile && screen) {
-    logfile.close();
+//    logfile.close();
   }
 }
 
-void IO::exit(int status) {
- // broadcast error
+void IO::pexit(int status) {
+  // broadcast error
   if (init_done == 1) {
     // MPI::BCast.force finish
   }
@@ -122,7 +117,8 @@ void IO::set_screen(const int scr) {
 }
 
 void IO::set_write_logfile(int i) {
-  write_logfile = i;
+  if (1 == screen)
+    write_logfile = i;
 
   return;
 }

@@ -28,6 +28,7 @@
  *
  ****************************************************************/
 
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <limits>
@@ -56,12 +57,13 @@
 
 using namespace POTFIT_NS;
 
-OptEvo::OptEvo(POTFIT *ptf) : BaseOpt(ptf) {
-  tot_cost = NULL;
-  tot_P = NULL;
-
-  return;
-}
+OptEvo::OptEvo(POTFIT *ptf) :
+  BaseOpt(ptf),
+  tot_cost(NULL),
+  tot_P(NULL),
+  evo_threshold(1e-6),
+  maxsteps(1e8)
+{}
 
 OptEvo::~OptEvo() {
   int ndim = potential->num_free_params;
@@ -74,23 +76,38 @@ OptEvo::~OptEvo() {
   return;
 }
 
-void OptEvo::init(double *p) {
-  params = p;
+void OptEvo::init(std::vector<std::string> &p) {
+  if (p.size() < 2) {
+    io->error << "The evo algorithm needs at least 2 parameters!" << std::endl;
+    io->pexit(EXIT_FAILURE);
+  }
+
+  // parameters for evo are:
+  // 0: epsilon for error margin
+  // 1: max. number of steps
+  if (atof(p[0].c_str()) <= 0.) {
+    io->write << "Skipping evo algorithm with error margin of " << p[0] << "." << std::endl;
+    return;
+  }
+  evo_threshold = atof(p[0].c_str());
+
+  if (atoi(p[1].c_str()) > 0) {
+    maxsteps = atoi(p[1].c_str());
+  }
 
   return;
 }
 
 void OptEvo::run(void) {
+  int ndim = potential->num_free_params;
+
   int   a, b, c;		/* store randomly picked numbers */
 //  int   d, e; 			/* enable this line for more vectors */
   int   i, j, k;		/* counters */
   int   count = 0;		/* counter for loops */
-  int maxsteps = 1e8;
-  int ndim = potential->num_free_params;
   int   jsteps = 0;
   double avg = 0.;		/* average sum of squares for all configurations */
   double crit = 0.;		/* treshold for stopping criterion */
-  double evo_threshold = 1e-6;
   double force = 0.;		/* holds the current sum of squares */
   double jumprate = JR;
   double min = 1e10;		/* current minimum for all configurations */
@@ -104,20 +121,7 @@ void OptEvo::run(void) {
   double *xi = potential->opt->values;
   double **x1;			/* current population */
   double **x2;			/* next generation */
-  FILE *ff;			/* exit flagfile */
 
-  // parameters for evo are:
-  // 0: epsilon for error margin
-  // 1: max. number of steps
-  // 2: not used
-  if (params[0] <= 0.) {
-    io->write << "Skipping evo algorithm with error margin of " << params[0] << "." << std::endl;
-    return;
-  }
-  evo_threshold = params[0];
-  if (params[1] > 0) {
-    maxsteps = params[1];
-  }
 
   /* vector with new configuration */
   trial = new double[D];
@@ -129,14 +133,14 @@ void OptEvo::run(void) {
   cost = new double[NP];
   if (x1 == NULL || x2 == NULL || trial == NULL || cost == NULL || best == NULL) {
     io->error << "Could not allocate memory for population vector!" << std::endl;
-    io->exit(EXIT_FAILURE);
+    io->pexit(EXIT_FAILURE);
   }
   for (i = 0; i < NP; i++) {
     x1[i] = new double[D];
     x2[i] = new double[D];
     if (x1[i] == NULL || x2[i] == NULL) {
       io->error << "Could not allocate memory for population vector!" << std::endl;
-      io->exit(EXIT_FAILURE);
+      io->pexit(EXIT_FAILURE);
     }
     for (j = 0; j < D; j++) {
       x1[i][j] = 0;
@@ -420,11 +424,51 @@ void OptEvo::opposite_check(double **P, double *costP, int init) {
 
   /* evaluate the NP best individuals from both populations */
   /* sort with quicksort and return NP best indivuals */
-  utils->quicksort(tot_cost, 0, 2 * NP - 1, tot_P);
+  quicksort(tot_cost, 0, 2 * NP - 1, tot_P);
   for (i = 0; i < NP; i++) {
     for (j = 0; j < D; j++)
       P[i][j] = tot_P[i][j];
     costP[i] = tot_cost[i];
+  }
+
+  return;
+}
+
+void OptEvo::quicksort(double *x, int low, int high, double **p) {
+  int newIndex;
+
+  if (low<high) {
+    int index = (low + high) / 2.;
+    newIndex = partition(x, low, high, index, p);
+    quicksort(x, low, newIndex - 1, p);
+    quicksort(x, newIndex + 1, high, p);
+  }
+}
+
+int OptEvo::partition(double *x, int low, int high, int index, double **p) {
+  int   store;
+  double ind_val = x[index];
+
+  std::swap(x[index], x[high]);
+  swap_population(p[index], p[high]);
+
+  store = low;
+
+  for (int i = low; i < high; i++)
+    if (x[i] <= ind_val) {
+      std::swap(x[i], x[store]);
+      swap_population(p[i], p[store]);
+      store++;
+    }
+  std::swap(x[store], x[high]);
+  swap_population(p[store], p[high]);
+
+  return store;
+}
+
+void OptEvo::swap_population(double *a, double *b) {
+  for (int i = 0; i < potential->num_free_params + 2; i++) {
+    std::swap(a[i], b[i]);
   }
 
   return;

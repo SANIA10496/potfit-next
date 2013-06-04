@@ -46,10 +46,13 @@ namespace POTFIT_NS {
     OptSimann(class POTFIT *);
     ~OptSimann();
 
-    void init(double *);
+    void init(std::vector<std::string> &);
     void run(void);
   private:
     void randomize_parameter(int, double *, double *);
+
+    int auto_T;
+    double T;
   };
 }
 

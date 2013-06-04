@@ -31,10 +31,10 @@
 #ifndef PTF_TYPES_H
 #define PTF_TYPES_H
 
-typedef enum Param_T { PARAM_STR, PARAM_INT, PARAM_DOUBLE } param_t;
+//typedef enum Param_T { PARAM_STR, PARAM_INT, PARAM_DOUBLE } param_t;
 
 // function pointer for analytic potential evaluation
-typedef void (*fvalue_pointer) (double, double *, double *);
+//typedef void (*fvalue_pointer) (double, double *, double *);
 
 typedef struct {
   double x;

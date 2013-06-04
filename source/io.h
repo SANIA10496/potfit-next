@@ -31,7 +31,6 @@
 #ifndef PTF_IO_H
 #define PTF_IO_H
 
-#include <cstdio>
 #include <fstream>
 #include <iostream>
 
@@ -65,7 +64,7 @@ namespace POTFIT_NS {
     void set_write_logfile(int);
     int get_write_logfile(void);
 
-    void exit(int);
+    void pexit(int);
 
     void set_screen(const int);
 

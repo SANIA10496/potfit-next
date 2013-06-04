@@ -40,76 +40,75 @@
 
 using namespace POTFIT_NS;
 
-Optimization::Optimization(POTFIT *ptf) : Pointers(ptf) {
-  num_algs = 0;
-  opt = NULL;
+Optimization::Optimization(POTFIT *ptf) :
+  Pointers(ptf),
+  opt(NULL),
+  num_algs(0)
+{}
 
-  return;
-}
-
-Optimization::~Optimization() {
-  return;
-}
+Optimization::~Optimization() {}
 
 void Optimization::run(void) {
 
   if (1 == settings->get_opt()) {
-  io->write << "Starting optimization with the following parameters:" << std::endl;
-  if (settings->get_eweight() != 0.0)
-    io->write << " - Global energy weight " << settings->get_eweight() << std::endl;
-  if (settings->get_sweight() != 0.0)
-    io->write << " - Global stress weight "<< settings->get_sweight() << std::endl;
-  io->write << " - " << potential->num_free_params << " free parameters" << std::endl << std::endl;
+    io->write << "Starting optimization with the following parameters:" << std::endl;
+    if (settings->get_eweight() != 0.0)
+      io->write << " - Global energy weight " << settings->get_eweight() << std::endl;
+    if (settings->get_sweight() != 0.0)
+      io->write << " - Global stress weight "<< settings->get_sweight() << std::endl;
+    io->write << " - " << potential->num_free_params << " free parameters" << std::endl << std::endl;
 
-  if (0 == settings->get_myid()) {
-    for (int i=0; i<num_algs; i++) {
-      io->write << "Starting " << i + 1 << ". optimization" << std::endl;
-      opt = init_algorithm(algorithms[i].c_str());
-      if (NULL == opt) {
-        io->error << "Could not find algorithm \"" << algorithms[i] << "\"." << std::endl;
-	io->exit(EXIT_FAILURE);
+    if (0 == settings->get_myid()) {
+      for (int i=0; i<num_algs; i++) {
+        io->write << "Starting " << i + 1 << ". optimization algorithm:" << std::endl;
+        opt = init_algorithm(algorithms[i]);
+        if (NULL == opt) {
+          io->error << "Could not find optimization algorithm \"" << algorithms[i] << "\"." << std::endl;
+          io->pexit(EXIT_FAILURE);
+        }
+        opt->init(params[i]);
+        io->write << " Type " << algorithms[i] << " - parameters: ";
+        for (unsigned int j=0; j<params[i].size(); j++) {
+          io->write << params[i][j];
+          if (j < params[i].size()-1)
+            io->write << ", ";
+        }
+        io->write << std::endl << std::endl;
+        opt->run();
+        io->write << std::endl << "Finished " << i + 1 << ". optimization algorithm." << std::endl << std::endl;
+        delete opt;
       }
-      opt->init(params[i]);
-      io->write << " type: " << algorithms[i] << "\t parameters: " << params[i][0];
-      io->write << ", " << params[i][1] << ", " << params[i][2] << std::endl;
-      opt->run();
-      io->write << "Finished " << i + 1 << ". optimization" << std::endl << std::endl;
-      delete opt;
+    } else {
+      interaction->calc_forces();
     }
   } else {
-    interaction->calc_forces();
-  }
-  } else {
-    io->write << "Optimization disabled." << std::endl << std::endl;
+    io->write << "Optimization has been disabled in the parameter file." << std::endl << std::endl;
   }
 
   return;
 }
 
-void Optimization::add_algorithm(std::ifstream &infile) {
-  std::string temp;
+void Optimization::add_algorithm(std::vector<std::string> &tokens) {
+  std::vector<std::string> temp;
 
-  // read algorithm name
-  infile >> temp;
-  algorithms.push_back(temp);
-  params.push_back(new double[3]);
+  algorithms.push_back(tokens[1]);
 
-  // read params
-  for (int i=0; i<3; i++) {
-    infile >> temp;
-    params[num_algs][i] = atof(temp.c_str());
+  for (unsigned int i=2; i<tokens.size(); i++) {
+    temp.push_back(tokens[i]);
   }
   num_algs++;
 
+  params.push_back(temp);
+
   return;
 }
 
-BaseOpt *Optimization::init_algorithm(const char *algo_type) {
-  if (strcmp(algo_type,"none") == 0)
+BaseOpt *Optimization::init_algorithm(const std::string &algo) {
+  if (algo.compare("none") == 0 or algo.empty())
     return NULL;
 #define OPTALG_TYPE
 #define OptAlgType(key,Class) \
-  else if (strcmp(algo_type,#key) == 0) \
+  else if (algo.compare(#key) == 0) \
     return new Class(ptf);
 #include "opt/list_opt.h"
 #undef OPTALG_TYPE

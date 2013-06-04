@@ -81,7 +81,7 @@ namespace POTFIT_NS {
     int num_free_params; 	// number of invariant parameters
 
     // former calcpot table
-    Splines *splines;
+    Splines splines;
 
     int    len;			// total length of the table
     double step;		// table increment

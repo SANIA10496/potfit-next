@@ -32,9 +32,9 @@
 
 using namespace POTFIT_NS;
 
-PStream::PStream(const char *pref, std::ostream &str, std::ofstream *log, PStream *ps):
+PStream::PStream(const char *pref, std::ostream &str, std::ofstream *log):
   std::ostream(&outbuff),
-  outbuff(str, *log, ps, pref)
+  outbuff(str, *log, pref)
 {}
 
 PStream::~PStream() {}

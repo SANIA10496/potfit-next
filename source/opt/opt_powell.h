@@ -46,7 +46,7 @@ namespace POTFIT_NS {
     OptPowell(class POTFIT *);
     ~OptPowell();
 
-    void init(double *);
+    void init(std::vector<std::string> &);
     void run(void);
   private:
   };

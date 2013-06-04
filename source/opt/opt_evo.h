@@ -46,7 +46,7 @@ namespace POTFIT_NS {
     OptEvo(class POTFIT *);
     ~OptEvo();
 
-    void init(double *);
+    void init(std::vector<std::string> &);
     void run(void);
   private:
     void init_population(double **, double *, double *);
@@ -55,6 +55,14 @@ namespace POTFIT_NS {
     // arrays for opposite check
     double *tot_cost;	// cost of two populations
     double **tot_P;	// two populations
+
+    // sorting algorithms
+    void quicksort(double *, int, int, double **);
+    int partition(double *, int, int, int, double **);
+    void swap_population(double *, double *);
+
+    double evo_threshold;
+    int maxsteps;
   };
 }
 

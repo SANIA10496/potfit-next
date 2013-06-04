@@ -1,6 +1,6 @@
 /****************************************************************
  *
- * force_pair.h
+ * vector_3d.h
  *
  ****************************************************************
  *
@@ -28,38 +28,22 @@
  *
  ****************************************************************/
 
-#ifdef FORCE_TYPE
-
-ForceType(pair,ForcePair)
-
-#else
-
-#ifndef PTF_FORCE_PAIR_H
-#define PTF_FORCE_PAIR_H
-
-#include "../force.h"
+#ifndef PTF_VECTOR_3D_H
+#define PTF_VECTOR_3D_H
 
 namespace POTFIT_NS {
 
-  class ForcePair : public Force {
+  template <typename T>
+  class Vector3D {
   public:
-    ForcePair(class POTFIT *);
-    virtual ~ForcePair();
+    Vector3D() :
+      x(0), y(0), z(0) {};
+    Vector3D(T &a, T &b, T &c) :
+      x(a), y(b), z(c) {};
 
-    void read_additional_data(FILE *);
-
-    int num_slots(void);
-    int neigh_type(void);
-    int get_col(int, int, int);
-    void update_min_dist(double *);
-
-    double calc_forces(void);
-
-    int cols(void);
+  private:
+    T x, y, z;
   };
-
 }
 
-#endif // PTF_FORCE_PAIR_H
-
-#endif // FORCE_TYPE
+#endif // PTF_VECTOR_3D_H
