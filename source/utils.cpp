@@ -28,7 +28,6 @@
  *
  ****************************************************************/
 
-#include <cmath>
 #include <cstring>
 
 #include "potential.h"

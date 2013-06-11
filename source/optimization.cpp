@@ -28,8 +28,6 @@
  *
  ****************************************************************/
 
-#include <cstdlib>
-
 #include "interaction.h"
 #include "io.h"
 #include "optimization.h"
@@ -42,8 +40,7 @@ using namespace POTFIT_NS;
 
 Optimization::Optimization(POTFIT *ptf) :
   Pointers(ptf),
-  opt(NULL),
-  num_algs(0)
+  opt(NULL)
 {}
 
 Optimization::~Optimization() {}
@@ -56,10 +53,10 @@ void Optimization::run(void) {
       io->write << " - Global energy weight " << settings->get_eweight() << std::endl;
     if (settings->get_sweight() != 0.0)
       io->write << " - Global stress weight "<< settings->get_sweight() << std::endl;
-    io->write << " - " << potential->num_free_params << " free parameters" << std::endl << std::endl;
+    io->write << " - " << potential->get_num_free_params() << " free parameters" << std::endl << std::endl;
 
     if (0 == settings->get_myid()) {
-      for (int i=0; i<num_algs; i++) {
+      for (unsigned int i=0; i<algorithms.size(); i++) {
         io->write << "Starting " << i + 1 << ". optimization algorithm:" << std::endl;
         opt = init_algorithm(algorithms[i]);
         if (NULL == opt) {
@@ -85,6 +82,9 @@ void Optimization::run(void) {
     io->write << "Optimization has been disabled in the parameter file." << std::endl << std::endl;
   }
 
+  // Calculate forces at least once for errors
+  interaction->calc_forces();
+
   return;
 }
 
@@ -96,7 +96,6 @@ void Optimization::add_algorithm(std::vector<std::string> &tokens) {
   for (unsigned int i=2; i<tokens.size(); i++) {
     temp.push_back(tokens[i]);
   }
-  num_algs++;
 
   params.push_back(temp);
 

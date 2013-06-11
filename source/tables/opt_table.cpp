@@ -28,22 +28,28 @@
  *
  ****************************************************************/
 
-#include <cstdlib>
-
 #include "opt_table.h"
 
 using namespace POTFIT_NS;
 
-OptTable::OptTable(POTFIT *ptf, int n) : Pointers(ptf) {
-  len = 0;
+OptTable::OptTable(POTFIT *ptf, int n) :
+  Pointers(ptf),
+  val_p(NULL) {
   values = new double[n];
-  val_p = NULL;
-
-  return;
+  val_min = new double[n];
+  val_max = new double[n];
+  for (int i=0;i<n;i++) {
+    values[i] = 0.0;
+    val_min[i] = 0.0;
+    val_max[i] = 0.0;
+  }
+  val_p = values;
 }
 
 OptTable::~OptTable() {
-  delete [] values;
-
-  return;
+  if (NULL != values) {
+    delete [] values;
+    delete [] val_min;
+    delete [] val_max;
+  }
 }

@@ -97,10 +97,6 @@ void ChempotTable::add_value(int i, const char *name, double val, double min, do
   val_min[i] = min;
   val_max[i] = max;
 
-  potential->num_params++;
-  if (invar_par[i] == 0)
-    potential->num_free_params++;
-
   return;
 }
 
@@ -112,4 +108,12 @@ void ChempotTable::write_potential(std::ofstream &outfile) {
   outfile << std::endl << "Chempot_Table" << std::endl;
 
   return;
+}
+
+int ChempotTable::get_num_params(void) {
+  return num_params;
+}
+
+int ChempotTable::get_num_free_params(void) {
+  return num_invar_params - num_params;
 }

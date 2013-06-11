@@ -28,9 +28,7 @@
  *
  ****************************************************************/
 
-#include <cmath>
 #include <cstdlib>
-#include <iomanip>
 
 #include "opt_simann.h"
 
@@ -49,7 +47,6 @@
 #define STEPVAR 2.0
 #define TEMPVAR 0.85
 #define KMAX 1000
-#define GAUSS(a) (1.0/sqrt(2*M_PI)*(exp(-((a)*(a))/2.)))
 
 using namespace POTFIT_NS;
 
@@ -76,7 +73,7 @@ void OptSimann::init(std::vector<std::string> &p) {
 }
 
 void OptSimann::run(void) {
-  int ndim = potential->num_free_params;
+  int ndim = potential->get_num_free_params();
   double *Fvar;			/* backlog of Fn vals */
   double *v;			/* step vector */
   double *xi = potential->opt->values;
@@ -147,7 +144,7 @@ void OptSimann::run(void) {
     io->write << "Setting T=" << T << std::endl << std::endl;
   }
 
-  io->write << "  k\tT\tm\tF\t\tFopt" << std::endl;
+  io->write << "  k\t\tT\tm\t\tF\t\tFopt" << std::endl;
   io->write << std::setw(3) << 0 << "\t";
   io->write << std::setw(8) << T << "\t";
   io->write << std::setw(3) << 0 << "\t";
@@ -270,17 +267,17 @@ void OptSimann::run(void) {
 
 void OptSimann::randomize_parameter(int n, double *xi, double *v)
 {
-  int idxpot = potential->idxpot[n];
-  int idxpar = potential->idxparam[n];
+  const int idxpot = potential->idxpot[n];
+  const int idxpar = potential->idxparam[n];
 
   // analytic potential - only change single parameter
-  if (potential->pots[idxpot]->format == 0) {
+  if (potential->get_format(idxpot) == 0) {
     double temp, rand;
     int   done = 0, count = 0;
     double min, max;
 
-    min = potential->pots[idxpot]->get_val_min(idxpar);
-    max = potential->pots[idxpot]->get_val_max(idxpar);
+    min = potential->opt->val_min[n];
+    max = potential->opt->val_max[n];
 
     if (v[n] > max - min)
       v[n] = max - min;
@@ -302,13 +299,13 @@ void OptSimann::randomize_parameter(int n, double *xi, double *v)
 
     for (int i = 0; i <= 4. * width; i++) {
       /* using idx avoids moving fixed points */
-      if ((idxpar + i <= potential->pots[idxpot]->num_params) && ((n + i) < potential->num_free_params)) {
-        xi[n + i] += GAUSS((double)i / width) * height;
+      if ((idxpar + i <= potential->pots[idxpot]->num_params) && ((n + i) < potential->get_num_free_params())) {
+        xi[n + i] += gauss((double)i / width) * height;
       }
     }
     for (int i = 1; i <= 4. * width; i++) {
       if ((idxpar - i) >= 0) {
-        xi[n - i] += GAUSS((double)i / width) * height;
+        xi[n - i] += gauss((double)i / width) * height;
       }
     }
   }

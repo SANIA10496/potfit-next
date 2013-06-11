@@ -29,10 +29,7 @@
  ****************************************************************/
 
 #include <algorithm>
-#include <cmath>
-#include <cstdlib>
 #include <limits>
-#include <iomanip>
 
 #include "opt_evo.h"
 
@@ -66,7 +63,7 @@ OptEvo::OptEvo(POTFIT *ptf) :
 {}
 
 OptEvo::~OptEvo() {
-  int ndim = potential->num_free_params;
+  int ndim = potential->get_num_free_params();
 
   for (int i=0; i<2*NP; i++)
     delete [] tot_P[i];
@@ -99,7 +96,7 @@ void OptEvo::init(std::vector<std::string> &p) {
 }
 
 void OptEvo::run(void) {
-  int ndim = potential->num_free_params;
+  int ndim = potential->get_num_free_params();
 
   int   a, b, c;		/* store randomly picked numbers */
 //  int   d, e; 			/* enable this line for more vectors */
@@ -223,8 +220,8 @@ void OptEvo::run(void) {
           /* DE/rand-to-best/2/exp */
           /*          temp = x1[e][j] + (1 - trial[D-2]) * (best[j] - x1[e][j]) +*/
           /*            trial[D-2] * (x1[a][j] + x1[b][j] - x1[c][j] - x1[d][j]);*/
-          pmin = potential->pots[potential->idxpot[j]]->get_val_min(potential->idxparam[j]);
-          pmax = potential->pots[potential->idxpot[j]]->get_val_max(potential->idxparam[j]);
+          pmin = potential->opt->val_min[j];
+          pmax = potential->opt->val_max[j];
           if (temp > pmax) {
             trial[j] = pmax;
           } else if (temp < pmin) {
@@ -312,7 +309,7 @@ void OptEvo::run(void) {
 
 void OptEvo::init_population(double **pop, double *xi, double *cost) {
   int   i, j;
-  int ndim = potential->num_free_params;
+  int ndim = potential->get_num_free_params();
   double temp, max, min, val;
 
   for (i = 0; i < NP; i++) {
@@ -325,8 +322,8 @@ void OptEvo::init_population(double **pop, double *xi, double *cost) {
     for (j = 0; j < ndim; j++) {
       val = xi[j];
       if (potential->pots[potential->idxpot[j]]->format == 0) {
-        min = potential->pots[potential->idxpot[j]]->get_val_min(potential->idxparam[j]);
-        max = potential->pots[potential->idxpot[j]]->get_val_max(potential->idxparam[j]);
+        min = potential->opt->val_min[j];
+        max = potential->opt->val_max[j];
         /* initialize with normal distribution */
         temp = random->normdist() / 3.;
         if (fabs(temp) > 1)
@@ -356,7 +353,7 @@ void OptEvo::init_population(double **pop, double *xi, double *cost) {
 // TODO: check for apot
 void OptEvo::opposite_check(double **P, double *costP, int init) {
   int   i, j;
-  int ndim = potential->num_free_params;
+  int ndim = potential->get_num_free_params();
   double max, min;
   double minp[ndim], maxp[ndim];
 
@@ -399,8 +396,8 @@ void OptEvo::opposite_check(double **P, double *costP, int init) {
   for (i = 0; i < NP; i++) {
     for (j = 0; j < ndim; j++) {
       if (init) {
-        min = potential->pots[potential->idxpot[j]]->get_val_min(potential->idxparam[j]);
-        max = potential->pots[potential->idxpot[j]]->get_val_max(potential->idxparam[j]);
+        min = potential->opt->val_min[j];
+        max = potential->opt->val_max[j];
       } else {
         min = minp[j];
         max = maxp[j];
@@ -467,7 +464,7 @@ int OptEvo::partition(double *x, int low, int high, int index, double **p) {
 }
 
 void OptEvo::swap_population(double *a, double *b) {
-  for (int i = 0; i < potential->num_free_params + 2; i++) {
+  for (int i = 0; i < potential->get_num_free_params() + 2; i++) {
     std::swap(a[i], b[i]);
   }
 

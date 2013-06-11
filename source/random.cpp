@@ -28,7 +28,6 @@
  *
  ****************************************************************/
 
-#include <cmath>
 #include <cstdlib>
 
 #include "random.h"

@@ -53,8 +53,8 @@ namespace POTFIT_NS {
     double get_val_min(int);
     double get_val_max(int);
 
-    void set_params(double *);
-    void update_calc_table(int);
+    void set_param(int, double &);
+    void update_potential(int);
     void update_slots(void);
 
     void write_potential(std::ofstream &);
@@ -62,6 +62,8 @@ namespace POTFIT_NS {
     void write_plotpoint(FILE *);
 
   private:
+    void update_values(void);
+    void update_calc_table(int);
   };
 }
 

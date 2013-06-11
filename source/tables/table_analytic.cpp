@@ -30,6 +30,7 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <iomanip>
 
 #include "splines.h"
 #include "table_analytic.h"
@@ -56,6 +57,7 @@ TableAnalytic::TableAnalytic(POTFIT *ptf) : Table(ptf) {
   pot_number = 0;
   num_params = 0;
   num_free_params = 0;
+  opt_pot_start = -1;
 
   len = 0;
   step = 0.0;
@@ -74,6 +76,7 @@ TableAnalytic::TableAnalytic(POTFIT *ptf) : Table(ptf) {
   val_min = NULL;
   val_max = NULL;
   invar_par = NULL;
+  idx = NULL;
 
   function = NULL;
 
@@ -90,6 +93,7 @@ TableAnalytic::~TableAnalytic() {
   delete [] stored_values;
   delete [] invar_par;
   delete [] param_name;
+  delete [] idx;
 
   if (len != 0) {
     delete [] xcoord;
@@ -217,13 +221,13 @@ void TableAnalytic::read_potential(FILE *infile) {
     if (strrchr(param_name[i], '!') != NULL) {
       if (potential->num_globals == 0) {
         io->error  << "You need to define a global parameter before using it!" << std::endl;
-	io->pexit(EXIT_FAILURE);
+        io->pexit(EXIT_FAILURE);
       }
       param_name[i][strlen(param_name[i]) - 1] = '\0';
       j = potential->global_params->get_index(param_name[i]);
       if (j<0) {
         io->error << "Could not find global parameter " << param_name[i] << "!" << std::endl;
-	io->pexit(EXIT_FAILURE);
+        io->pexit(EXIT_FAILURE);
       }
       sprintf(param_name[i], "%s!", param_name[i]);
 
@@ -254,10 +258,10 @@ void TableAnalytic::read_potential(FILE *infile) {
         } else {
           if (strcmp(param_name[i], "type") == 0) {
             io->error << "Not enough parameters for potential #" << pot_number + 1 << " (" << name << ") in potential file." << std::endl;
-	    io->pexit(EXIT_FAILURE);
+            io->pexit(EXIT_FAILURE);
           }
           io->error << "Could not read parameter #" << i + 1 << " of potential #" << pot_number + 1 << " in potential file." << std::endl;
-	  io->pexit(EXIT_FAILURE);
+          io->pexit(EXIT_FAILURE);
         }
       }
 
@@ -286,6 +290,11 @@ void TableAnalytic::read_potential(FILE *infile) {
       }
     }
   }
+
+  idx = new int[num_free_params];
+  for (int i=0; i<num_free_params; i++)
+    idx[i] = -1;
+
 
   init_calc_table();
 
@@ -317,11 +326,6 @@ double TableAnalytic::get_val_max(int n) {
   return val_max[n];
 }
 
-void TableAnalytic::set_params(double *) {
-
-  return;
-}
-
 void TableAnalytic::init_calc_table(void) {
   double fval, h;
 
@@ -349,6 +353,27 @@ void TableAnalytic::init_calc_table(void) {
   return;
 }
 
+void TableAnalytic::set_param(int i, double& val) {
+  values[i] = val;
+
+  return;
+}
+
+void TableAnalytic::update_potential(int update) {
+  update_values();
+  update_calc_table(update);
+
+  return;
+}
+
+void TableAnalytic::update_values(void) {
+  for (int i=0;i<num_free_params;i++) {
+    values[idx[i]] = potential->opt->val_p[opt_pot_start + i];
+  }
+
+  return;
+}
+
 void TableAnalytic::update_calc_table(int update) {
   double fval, h;
   int change = 0;
@@ -368,7 +393,6 @@ void TableAnalytic::update_calc_table(int update) {
   }
 
   splines.spline_ed(step, table, len, 10e30, 0, d2tab);
-  update_slots();
 
   return;
 }
@@ -412,10 +436,13 @@ void TableAnalytic::write_potential(std::ofstream &outfile) {
     outfile << std::endl;
   }
   outfile << "cutoff " << end << std::endl;
-  outfile << "# r_min " << 12.3 << std::endl;
+  outfile << "# r_min " << get_rmin() << std::endl;
   for (int i=0; i<num_params; i++) {
     if (param_name[i][strlen(param_name[i]) - 1] != '!') {
-      outfile << param_name[i] << "\t" << values[i] << "\t" << val_min[i] << "\t" << val_max[i] << std::endl;
+      outfile << param_name[i] << "\t\t";
+      outfile << std::fixed << std::setw(12) << std::setprecision(5) << values[i];
+      outfile << "\t" << std::setw(12) << std::setprecision(5) << val_min[i];
+      outfile << "\t" << std::setw(12) << std::setprecision(5) << val_max[i] << std::endl;
     } else {
       outfile << param_name[i] << std::endl;
     }

@@ -47,8 +47,6 @@ Potential::Potential(POTFIT *ptf) :
   num_globals(0),
   num_pots(0),
   num_free_pots(0),
-  num_params(0),
-  num_free_params(0),
   invar_pot(NULL),
   idxpot(NULL),
   idxparam(NULL),
@@ -59,11 +57,13 @@ Potential::Potential(POTFIT *ptf) :
   opt(NULL),
   global_params(NULL),
   chem_pot(NULL),
-  enable_cp(0)
+  enable_cp(0),
+  num_params(0),
+  num_free_params(0)
 {}
 
 Potential::~Potential() {
-  if (NULL!=invar_pot)
+  if (NULL != invar_pot)
     delete [] invar_pot;
   if (NULL != rcut)
     delete [] rcut;
@@ -148,6 +148,7 @@ void Potential::read_globals(FILE *infile) {
   io->write << "- Read " << num_globals << " global parameters" << std::endl;
 
   num_params += global_params->get_number_params();
+  num_free_params += global_params->get_number_free_params();
 
   return;
 }
@@ -228,21 +229,36 @@ void Potential::write_potentials(std::ofstream &outfile) {
 }
 
 void Potential::init_opt_table(void) {
-  int count = 0;
+  int count = 0, loc_count = 0;
+  double temp[3];
 
   idxpot = new int[num_free_params];
   idxparam = new int[num_free_params];
 
   for (int i=0; i<num_pots; i++) {
     if (0 == invar_pot[i]) {
+      loc_count = 0;
+      pots[i]->opt_pot_start = count;
       for (int j=0; j<pots[i]->get_number_params(); j++) {
         if (pots[i]->invar_par[j] == 0) {
           idxpot[count] = i;
           idxparam[count] = j;
+	  pots[i]->idx[loc_count++] = j;
+	  opt->val_min[count] = pots[i]->get_val_min(j);
+	  opt->val_max[count] = pots[i]->get_val_max(j);
           opt->values[count++] = pots[i]->values[j];
         }
       }
     }
+  }
+  global_params->set_opt_pot_start(count);
+  for (int i=0;i<global_params->get_number_params();i++) {
+    idxpot[count] = num_pots;
+    idxparam[count] = i;
+    global_params->get_value(i,temp);
+    opt->val_min[count] = temp[1];
+    opt->val_max[count] = temp[2];
+    opt->values[count++] = temp[0];
   }
 
   if (count != num_free_params) {
@@ -254,15 +270,28 @@ void Potential::init_opt_table(void) {
 }
 
 void Potential::update_potentials(int update) {
+  if (NULL == opt->val_p)
+    opt->val_p = opt->values;
+  if (global_params->get_number_free_params() > 0)
+    global_params->update_potentials();
   for (int i=0; i<num_pots; i++) {
     if (0 == invar_pot[i] || update)
-      pots[i]->update_calc_table(update);
+      pots[i]->update_potential(update);
+  }
+  opt->val_p = opt->values;
+
+  return;
+}
+
+void Potential::update_slots(void) {
+  for (int i=0; i<num_pots; i++) {
+    pots[i]->update_slots();
   }
 
   return;
 }
 
-void Potential::set_enable_cp(int i) {
+void Potential::set_enable_cp(const int i) {
   enable_cp = i;
 
   return;
@@ -290,4 +319,20 @@ void Potential::write_potential_header(std::ofstream &outfile) {
   outfile << "#E" << std::endl;
 
   return;
+}
+
+int Potential::get_num_params(void) {
+  return num_params;
+}
+
+int Potential::get_num_free_params(void) {
+  return num_free_params;
+}
+
+int Potential::get_format(const int &index) {
+  if (index < num_pots)
+    return pots[index]->format;
+  // everything else but regular potentials are analytic potentials
+  else
+    return 0;
 }

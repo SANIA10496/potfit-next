@@ -56,7 +56,9 @@ namespace POTFIT_NS {
     virtual double get_val_min(int) =0;
     virtual double get_val_max(int) =0;
 
-    virtual void set_params(double *) = 0;
+    virtual void set_param(int, double &) = 0;
+    virtual void update_potential(int) = 0;
+    virtual void update_values(void) = 0;
     virtual void update_calc_table(int) = 0;
     virtual void update_slots(void) = 0;
 
@@ -79,6 +81,7 @@ namespace POTFIT_NS {
     int pot_number; 		// index of potential
     int num_params; 		// number of parameters
     int num_free_params; 	// number of invariant parameters
+    int opt_pot_start; 		// first index in opt_pot belonging to this potential
 
     // former calcpot table
     Splines splines;

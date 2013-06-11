@@ -31,6 +31,8 @@
 #ifndef PTF_FUNCTION_H
 #define PTF_FUNCTION_H
 
+#include "../potfit.h"
+
 namespace POTFIT_NS {
 
   class Function {

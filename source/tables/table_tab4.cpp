@@ -74,7 +74,20 @@ double TableTab4::get_val_max(int n) {
   return std::numeric_limits<double>::infinity();
 }
 
-void TableTab4::set_params(double *val) {
+void TableTab4::set_param(int i, double& val) {
+  return;
+}
+
+void TableTab4::update_potential(int update) {
+  update_values();
+  update_calc_table(update);
+
+  return;
+}
+
+void TableTab4::update_values(void) {
+
+  return;
 }
 
 void TableTab4::update_calc_table(int update) {

@@ -33,7 +33,9 @@
 
 #define POT_STEPS 500
 
+#include <cmath>
 #include <cstdlib>
+#include <iomanip>
 
 #include "templates.h"
 

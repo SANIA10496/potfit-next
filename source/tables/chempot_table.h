@@ -47,6 +47,9 @@ namespace POTFIT_NS {
 
     void write_potential(std::ofstream &);
 
+    int get_num_params(void);
+    int get_num_free_params(void);
+
   private:
     int num_params;		// number of chemical potentials
     int num_invar_params; 	// number of invariant parameters

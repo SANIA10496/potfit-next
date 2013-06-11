@@ -28,9 +28,6 @@
  *
  ****************************************************************/
 
-#include <cmath>
-#include <iomanip>
-
 #include "error.h"
 #include "interaction.h"
 #include "io.h"
@@ -111,8 +108,7 @@ void Error::write_report(void) {
 void Error::calc_errors(void) {
   int i, j, count = 0;
 
-  // calculate forces with current potential
-  total_sum = interaction->calc_forces();
+  total_sum = interaction->force->get_error_sum();
 
   num_forces = 3 * structures->get_num_contrib_atoms();
   num_energies = structures->get_num_contrib_energies();
@@ -135,6 +131,7 @@ void Error::calc_errors(void) {
   }
 
   // calculate rms errors
+  count = 0;
   for (i=0; i<structures->get_num_total_configs(); i++) {
     for (j=0; j<structures->config[i]->num_atoms; j++) {
       rms_force += square(interaction->force->force_vect[count++]);

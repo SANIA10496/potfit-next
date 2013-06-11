@@ -28,9 +28,6 @@
  *
  ****************************************************************/
 
-#include <cmath>
-#include <cstdlib>
-
 #include "opt_powell.h"
 
 #include "../interaction.h"

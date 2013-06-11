@@ -28,8 +28,6 @@
  *
  ****************************************************************/
 
-#include <cmath>
-
 #include "func_eopp.h"
 
 using namespace POTFIT_NS;

@@ -28,7 +28,7 @@
  *
  ****************************************************************/
 
-#include <stdexcept>
+//#include <stdexcept>
 
 #include "potfit.h"
 #include "io.h"
@@ -99,6 +99,15 @@ void POTFIT::run() {
 
   // write error report
   error->write_report();
+
+//  Vector3D<int> a(0,1,2);
+//  Vector3D<int> b(2,1,0);
+//  Vector3D<int> c;
+
+//  std::cout << a << b << c << std::endl;
+//  c = a + b;
+
+//  std::cout << c << std::endl;
 
   return;
 }

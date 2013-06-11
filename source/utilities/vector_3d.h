@@ -31,18 +31,66 @@
 #ifndef PTF_VECTOR_3D_H
 #define PTF_VECTOR_3D_H
 
+#include <ostream>
+
 namespace POTFIT_NS {
 
   template <typename T>
   class Vector3D {
   public:
     Vector3D() :
-      x(0), y(0), z(0) {};
-    Vector3D(T &a, T &b, T &c) :
-      x(a), y(b), z(c) {};
+      _x(0), _y(0), _z(0) {};
+    Vector3D(T& a, T& b, T& c) :
+      _x(a), _y(b), _z(c) {};
+    Vector3D(T a, T b, T c) :
+      _x(a), _y(b), _z(c) {};
+    Vector3D(Vector3D<T>& v) :
+      _x(0), _y(0), _z(0) {
+        _x = v.x();
+        _y = v.y();
+        _z = v.z();
+      };
+
+    void assign(T& a, T& b, T& c) {
+      _x = a; _y = b; _z = c;
+      return;
+    }
+
+    const T& x(void) {
+      return _x;
+    }
+
+    const T& y(void) {
+      return _y;
+    }
+
+    const T& z(void) {
+      return _z;
+    };
+
+    std::ostream& OutputToStream(std::ostream& lhs) const {
+      lhs << "(" << _x << "," << _y << "," << _z << ")";
+      return lhs;
+    };
 
   private:
-    T x, y, z;
+    T _x, _y, _z;
+  };
+
+  template <typename T>
+  const Vector3D<T>& operator+(const Vector3D<T>& a, const Vector3D<T>& b) {
+    Vector3D<T> c;
+  };
+
+  template <typename T>
+  const Vector3D<T>& operator+(const T& a, const Vector3D<T>& b) {};
+
+  template <typename T>
+  const Vector3D<T>& operator+(const Vector3D<T>& a, const T& b) {};
+
+  template <typename T>
+  std::ostream& operator<<(std::ostream& lhs, const Vector3D<T>& rhs) {
+    return rhs.OutputToStream(lhs);
   };
 }
 

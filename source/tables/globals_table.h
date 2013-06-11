@@ -50,10 +50,13 @@ namespace POTFIT_NS {
     void check_usage(void);
 
     void set_value(int, double);
+    void set_opt_pot_start(const int &);
 
     int get_index(const char *);
     void add_usage(int, int, int);
     void get_value(int, double *);
+
+    void update_potentials(void);
 
     void get_values(int *, double *);
 
@@ -62,6 +65,7 @@ namespace POTFIT_NS {
   private:
     int num_globals; 		// number of global parameters
     int num_free_globals; 	// number of free global parameters
+    int opt_pot_start;
 
     char **param_name; 		// parameter names
     double *values; 		// parameter values

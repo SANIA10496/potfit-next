@@ -42,7 +42,8 @@ using namespace POTFIT_NS;
 GlobalsTable::GlobalsTable(POTFIT *ptf, int num) :
   Pointers(ptf),
   num_globals(num),
-  num_free_globals(num)
+  num_free_globals(num),
+  opt_pot_start(0)
 {
 
   param_name = (char **)malloc(num_globals * sizeof(char *));
@@ -136,7 +137,6 @@ void GlobalsTable::check_usage(void) {
   for (int i=0; i<num_globals; i++)
     if (usage[i] == 0)
       num_free_globals--;
-  potential->num_free_params += num_free_globals;
 }
 
 int GlobalsTable::get_number_params(void) {
@@ -150,6 +150,12 @@ int GlobalsTable::get_number_free_params(void) {
 
 void GlobalsTable::set_value(int index, double val) {
   values[index] = val;
+}
+
+void GlobalsTable::set_opt_pot_start(const int & val) {
+  opt_pot_start = val;
+
+  return;
 }
 
 int GlobalsTable::get_index(const char *name) {
@@ -177,8 +183,21 @@ void GlobalsTable::get_value(int index, double *val) {
   val[2] = val_max[index];
 }
 
+void GlobalsTable::update_potentials(void) {
+  for (int i=0;i<num_free_globals;i++) {
+    values[i] = potential->opt->val_p[opt_pot_start + i];
+    for (int j=0;j<usage[i];j++) {
+      potential->pots[global_idx[i][j][0]]->set_param(global_idx[i][j][1],values[i]);
+    }
+  }
+
+  return;
+}
+
 void GlobalsTable::get_values(int *number, double *values) {
   *number = num_globals;
+
+  return;
 }
 
 void GlobalsTable::write_potential(std::ofstream &outfile) {

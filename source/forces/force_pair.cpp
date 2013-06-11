@@ -28,10 +28,6 @@
  *
  ****************************************************************/
 
-#include <cstdlib>
-//#include <cstring>
-#include <cmath>
-
 #include "force_pair.h"
 #include "../communication.h"
 #include "../io.h"
@@ -89,6 +85,7 @@ void ForcePair::update_min_dist(double *min_dist) {
     }
 
   potential->update_potentials(1);
+  potential->update_slots();
 
   return;
 }
@@ -216,7 +213,8 @@ double ForcePair::calc_forces(void) {
           neigh = atom->neighs[j];
 	  pot = potential->pots[neigh->col[0]];
           // In small cells, an atom might interact with itself
-          self = (neigh->nr == i + conf->cnfstart) ? 1 : 0;
+          self = (neigh->nr == i) ? 1 : 0;
+//          self = (neigh->nr == i + conf->cnfstart) ? 1 : 0;
 
           // pair potential part
           if (neigh->r < pot->end) {
@@ -247,7 +245,7 @@ double ForcePair::calc_forces(void) {
                 force_vect[k + 1] += tmp_force.y;
                 force_vect[k + 2] += tmp_force.z;
                 // actio = reactio
-                l = conf->cnfstart + 3 * neigh->nr;
+                l = 3 * (conf->cnfstart + neigh->nr);
                 force_vect[l] -= tmp_force.x;
                 force_vect[l + 1] -= tmp_force.y;
                 force_vect[l + 2] -= tmp_force.z;
@@ -353,9 +351,12 @@ double ForcePair::calc_forces(void) {
 #ifdef DEBUG
 	io->write("\n--> Force is nan! <--\n\n");
 #endif /* DEBUG */
-	return 10e10;
-      } else
+	set_error_sum(1e10);
+	return 1e10;
+      } else {
+	set_error_sum(sum);
 	return sum;
+      }
     }
 
   }

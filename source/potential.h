@@ -41,8 +41,6 @@
 #include "tables/globals_table.h"
 #include "tables/chempot_table.h"
 
-#include "utilities/vector_3d.h"
-
 namespace POTFIT_NS {
 
   class Potential : protected Pointers {
@@ -57,21 +55,23 @@ namespace POTFIT_NS {
     void write_potentials(std::ofstream &);
 
     void update_potentials(int);
+    void update_slots(void);
 
     void init_opt_table(void);
 
     void set_enable_cp(int);
     int get_enable_cp(void);
 
-    std::vector<char *> elements;
+    int get_num_params(void);
+    int get_num_free_params(void);
 
+    int get_format(const int &);
+
+    std::vector<char *> elements;
     int num_globals; 		// global potentials
 
     int num_pots; 		// total number of potentials
     int num_free_pots; 		// total number of invariant potentials
-
-    int num_params; 		// total number of free parameters
-    int num_free_params; 	// total number of invariant parameters
 
     // invar_pot data from potential header
     int *invar_pot;
@@ -93,7 +93,9 @@ namespace POTFIT_NS {
     void write_potential_header(std::ofstream &);
 
     int enable_cp; 		// chemical potential (only for pair)
-    Vector3D<double> test1;
+
+    int num_params; 		// total number of free parameters
+    int num_free_params; 	// total number of invariant parameters
   };
 }
 

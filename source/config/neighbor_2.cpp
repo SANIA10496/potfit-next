@@ -30,7 +30,6 @@
 
 #include <algorithm>
 #include <cstdio>
-#include <cmath>
 
 #include "config.h"
 #include "neighbor_2.h"

@@ -55,8 +55,6 @@ namespace POTFIT_NS {
 
   private:
     BaseOpt *opt;
-
-    int num_algs;
   };
 }
 

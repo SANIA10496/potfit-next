@@ -42,7 +42,8 @@ Force::Force(POTFIT *ptf) :
   limit_p(0),
   punish_par_p(0),
   punish_pot_p(0),
-  fcalls(0)
+  fcalls(0),
+  error_sum(0.0)
 {}
 
 Force::~Force() {
@@ -63,15 +64,27 @@ void Force::calc_pointers(void) {
 
   force_vect = new double[dummy_p];
 
+  for (int i=0;i<dummy_p;i++)
+    force_vect[i] = 0.0;
+
   return;
 }
 
-int Force::get_fcalls(void) {
+const int& Force::get_fcalls(void) {
   return fcalls;
 }
 
 void Force::inc_fcalls(void) {
   fcalls++;
 
+  return;
+}
+
+const double& Force::get_error_sum(void) {
+  return error_sum;
+}
+
+void Force::set_error_sum(const double& x) {
+  error_sum = x;
   return;
 }

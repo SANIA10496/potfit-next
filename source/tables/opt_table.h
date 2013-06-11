@@ -40,10 +40,10 @@ namespace POTFIT_NS {
     OptTable(class POTFIT *, int);
     ~OptTable();
 
-    int len;
     double *values;
+    double *val_min;
+    double *val_max;
     double *val_p;
-
   };
 }
 

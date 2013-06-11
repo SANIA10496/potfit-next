@@ -57,7 +57,6 @@ namespace POTFIT_NS {
 
     int cols(void);
   };
-
 }
 
 #endif // PTF_FORCE_PAIR_H
