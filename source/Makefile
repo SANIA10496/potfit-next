@@ -247,6 +247,11 @@ debug: TARGET = debug
 debug: git potfit
 #potfit: CFLAGS += ${OPT_FLAGS}
 
+profile: CFLAGS += ${PROF_FLAGS}
+profile: LIBS += -pg
+profile: TARGET = profile
+profile: git potfit
+
 SUBDIRS = config forces functions io opt random tables
 CLEANDIRS = $(SUBDIRS:%=clean-%)
 
@@ -282,7 +287,7 @@ git:
 
 # potfit is the default target
 potfit: subdirs ${OBJECTS}
-	${CXX} ${LIBS} ${LFLAGS_${PARALLEL}} -o $@ ${OBJECTS} ${FORCE_OBJECTS} ${RANDOM_OBJECTS} ${TABLE_OBJECTS} ${FUNCTION_OBJECTS} ${CONFIG_OBJECTS} ${OPT_OBJECTS} ${IO_OBJECTS}
+	${CXX} ${LIBS} ${LFLAGS_${PARALLEL}} -o $@ ${OBJECTS} ${FORCE_OBJECTS} ${RANDOM_OBJECTS} ${TABLE_OBJECTS} ${FUNCTION_OBJECTS} ${CONFIG_OBJECTS} ${OPT_OBJECTS} ${IO_OBJECTS} -Wl,--start-group -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -Wl,--end-group -lpthread -Wl,--as-needed
 
 strip:
 	${STRIP} --strip-unneeded -R .comment potfit
@@ -299,9 +304,12 @@ TABLE_HEADERS:
 # all objects depend on headers
 #${OBJECTS}: ${HEADERS}
 
+utils.o: utils.cpp
+	${CXX} ${OPT_FLAGS} ${CFLAGS} -I/common/linux/paket/intel/compiler-11.0/cc/mkl/include -c utils.cpp
+
 # generic compilation rule
 .cpp.o:
-	${CXX} ${CFLAGS} -c $<
+	${CXX} ${OPT_FLAGS} ${CFLAGS} -c $<
 
 clean: ${CLEANDIRS}
 	rm -f *.o *.u *~ \#* *.V *.T *.O *.il potfit version.h

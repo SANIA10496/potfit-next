@@ -80,7 +80,8 @@ namespace POTFIT_NS {
             str("");
           }
           output.flush();
-          logfile.flush();
+	  if (logfile.is_open())
+            logfile.flush();
           return 0;
         } else if (prefix.compare("Error") == 0) {
           output << "[" << prefix << "] " << str();

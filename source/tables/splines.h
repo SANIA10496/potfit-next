@@ -36,6 +36,7 @@
 #include "../pointers.h"
 
 namespace POTFIT_NS {
+
   class Splines : protected Pointers {
   public:
     Splines(class POTFIT *);
@@ -45,25 +46,33 @@ namespace POTFIT_NS {
     void  spline_ed(double, double *, int, double, double, double *);
     void  spline_ne(double *, double *, int, double, double, double *);
 
-    // calculate values with spline interpolation
-//    double splint_ed(pot_table_t *, double *, int, double);
-//    double splint_ne(pot_table_t *, double *, int, double);
-
-    // calculate gradients with spline interpolation
-//    double splint_grad_ed(pot_table_t *, double *, int, double);
-//    double splint_grad_ne(pot_table_t *, double *, int, double);
-
-    // calculate values and gradients with spline interpolation
-//    double splint_comb_ed(pot_table_t *, double *, int, double, double *);
-//    double splint_comb_ne(pot_table_t *, double *, int, double, double *);
-
-    // calculate ???
     double splint_dir(double *, double *, int, double, double);
-    double splint_comb_dir(double *, double *, int, double, double, double *);
-//    double splint_grad_dir(pot_table_t *, double *, int, double, double);
-
+    double splint_comb_dir(double *, double *, int, const double &, const double &, double *);
+  private:
+    double a, p1, p2, d21, d22;
     std::vector<double> u;
   };
+
+  inline double Splines::splint_dir(double *xi, double *d2tab, int k, double b, double step) {
+    a = 1.0 - b;
+    p1 = xi[k];
+    d21 = d2tab[k++];
+    p2 = xi[k];
+    d22 = d2tab[k];
+
+    return a * p1 + b * p2 + ((a * a * a - a) * d21 + (b * b * b - b) * d22) * (step * step) / 6.0;
+  }
+
+  inline double Splines::splint_comb_dir(double *xi, double *d2tab, int k, const double &b, const double &step, double *grad) {
+    a = 1.0 - b;
+    p1 = xi[k];
+    d21 = d2tab[k++];
+    p2 = xi[k];
+    d22 = d2tab[k];
+    *grad = (p2 - p1) / step + ((3 * (b * b) - 1) * d22 - (3 * (a * a) - 1) * d21) * step / 6.0;
+
+    return a * p1 + b * p2 + ((a * a * a - a) * d21 + (b * b * b - b) * d22) * (step * step) / 6.0;
+  }
 }
 
 #endif // PTF_SPLINES_H

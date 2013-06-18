@@ -45,36 +45,9 @@ using namespace POTFIT_NS;
 
 Neighbor_2::Neighbor_2(POTFIT *ptf) :
   Neighbor(ptf)
-{
-  dist.x = 0.0;
-  dist.y = 0.0;
-  dist.z = 0.0;
+{}
 
-  slot = new int[interaction->force->num_slots()];
-  shift = new double[interaction->force->num_slots()];
-  step = new double[interaction->force->num_slots()];
-  col = new int[interaction->force->num_slots()];
-
-  // ADP
-  rdist.x = 0.0;
-  rdist.y = 0.0;
-  rdist.z = 0.0;
-  sqrdist.xx = 0.0;
-  sqrdist.yy = 0.0;
-  sqrdist.zz = 0.0;
-  sqrdist.zx = 0.0;
-  sqrdist.xy = 0.0;
-  sqrdist.yz = 0.0;
-}
-
-Neighbor_2::~Neighbor_2() {
-  delete [] slot;
-  delete [] shift;
-  delete [] step;
-  delete [] col;
-
-  return;
-}
+Neighbor_2::~Neighbor_2() {}
 
 void Neighbor_2::init(Config *conf, int i, int j, vector *dd) {
   int type1 = conf->atoms[i]->type;
@@ -89,9 +62,10 @@ void Neighbor_2::init(Config *conf, int i, int j, vector *dd) {
 
   type = conf->atoms[j]->type;
   nr = j;
+  self = (j == i) ? 1 : 0;
 
   // Coulomb
-  r2 = r * r;
+  r2 = square(r);
 
   // ADP
   rdist.x = dd->x * r;

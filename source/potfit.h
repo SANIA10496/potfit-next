@@ -32,6 +32,7 @@
 #define PTF_POTFIT_H
 
 #define POT_STEPS 500
+#define MAX_SLOTS 1
 
 #include <cmath>
 #include <cstdlib>

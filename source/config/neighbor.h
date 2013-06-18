@@ -31,8 +31,6 @@
 #ifndef PTF_NEIGHBOR_H
 #define PTF_NEIGHBOR_H
 
-#include <vector>
-
 #include "../pointers.h"
 #include "../types.h"
 
@@ -50,25 +48,26 @@ namespace POTFIT_NS {
 
     int   type;
     int   nr;
+    int   self;
     double r;
-    vector dist;			/* distance divided by r */
-    int   *slot;
-    double *shift;
-    double *step;
-    int   *col;		/* coloumn of interaction for this neighbor */
+    int   col[MAX_SLOTS];	/* coloumn of interaction for this neighbor */
+    int   slot[MAX_SLOTS];
+    double shift[MAX_SLOTS];
+    double step[MAX_SLOTS];
+
+    vector dist;		/* distance divided by r */
 
     // ADP
-    vector rdist;			/* real distance */
+    vector rdist;		/* real distance */
     sym_tens sqrdist;		/* real squared distance */
-    double u_val, u_grad;		/* value and gradient of u(r) */
-    double w_val, w_grad;		/* value and gradient of w(r) */
+    double u_val, u_grad;	/* value and gradient of u(r) */
+    double w_val, w_grad;	/* value and gradient of w(r) */
 
     // Coulomb
     double r2;			/* r^2 */
     double fnval_el;		/* stores tail of electrostatic potential */
     double grad_el;		/* stores tail of first derivative of electrostatic potential */
     double ggrad_el;		/* stores tail of second derivative of electrostatic potential */
-
   };
 }
 

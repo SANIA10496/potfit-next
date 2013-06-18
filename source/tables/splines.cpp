@@ -35,9 +35,14 @@
 
 using namespace POTFIT_NS;
 
-Splines::Splines(POTFIT *ptf) : Pointers(ptf) {
-  return;
-}
+Splines::Splines(POTFIT *ptf) :
+  Pointers(ptf),
+  a(0.0),
+  p1(0.0),
+  p2(0.0),
+  d21(0.0),
+  d22(0.0)
+{}
 
 Splines::~Splines(void) {
   return;
@@ -65,7 +70,6 @@ void Splines::spline_ed(double xstep, double *y, int n, double yp1, double ypn, 
     u[0] = (3.0 / (xstep)) * ((y[1] - y[0]) / (xstep) - yp1);
   }
   for (i = 1; i < n - 1; i++) {
-    /* sig=(x[i]-x[i-1])/(x[i+1]-x[i-1])=.5; */
     p = 0.5 * y2[i - 1] + 2.0;
     y2[i] = (-0.5) / p;
     u[i] = (y[i + 1] - y[i]) / xstep - (y[i] - y[i - 1]) / (xstep);
@@ -119,54 +123,4 @@ void Splines::spline_ne(double *x, double *y, int n, double yp1, double ypn, dou
   y2[n - 1] = (un - qn * u[n - 2]) / (qn * y2[n - 2] + 1.0);
   for (k = n - 2; k >= 0; k--)
     y2[k] = y2[k] * y2[k + 1] + u[k];
-}
-
-/****************************************************************
- *
- * splint_dir: interpolates the function with splines
- *            (equidistant AND NON-eq.dist x[i])
- *            with known index position
- *
- ****************************************************************/
-
-double Splines::splint_dir(double *xi, double *d2tab, int k, double b, double step)
-{
-  double a, p1, p2, d21, d22;
-
-  /* indices into potential table */
-  a = 1.0 - b;
-  p1 = xi[k];
-  d21 = d2tab[k++];
-  p2 = xi[k];
-  d22 = d2tab[k];
-
-  return a * p1 + b * p2 + ((a * a * a - a) * d21 + (b * b * b - b) * d22) * (step * step) / 6.0;
-}
-
-/****************************************************************
- *
- * splint_comb_dir: calculates spline interpolation of a function
- *            (return value)
- *            and its gradiend (grad), equidistant and non-eqd x[i]
- *            with known index position
- *
- ****************************************************************/
-
-double Splines::splint_comb_dir(double *xi, double *d2tab, int k, double b, double step, double *grad)
-{
-  double a, p1, p2, d21, d22;
-
-  /* indices into potential table */
-  a = 1.0 - b;
-  p1 = xi[k];
-//  printf("xi[%d] = %f\n",k,xi[k]);
-  d21 = d2tab[k++];
-//  printf("d21 = %f\n",d21);
-  p2 = xi[k];
-//  printf("xi[%d] = %f\n",k,xi[k]);
-  d22 = d2tab[k];
-//  printf("d22 = %f\n",d22);
-  *grad = (p2 - p1) / step + ((3 * (b * b) - 1) * d22 - (3 * (a * a) - 1) * d21) * step / 6.0;
-
-  return a * p1 + b * p2 + ((a * a * a - a) * d21 + (b * b * b - b) * d22) * (step * step) / 6.0;
 }

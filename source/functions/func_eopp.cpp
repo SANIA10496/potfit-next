@@ -30,6 +30,8 @@
 
 #include "func_eopp.h"
 
+#include "../utils.h"
+
 using namespace POTFIT_NS;
 
 FuncEOPP::FuncEOPP() {
@@ -39,17 +41,19 @@ FuncEOPP::FuncEOPP() {
   return;
 }
 
-FuncEOPP::~FuncEOPP() {
-  return;
-}
+FuncEOPP::~FuncEOPP() {}
 
 int FuncEOPP::num_params(void) {
   return 6;
 }
 
-void FuncEOPP::calc(double r, double *p, double *f) {
-  power[0] = pow(r, p[1]);
-  power[1] = pow(r, p[3]);
+void FuncEOPP::calc(double &r, double *p, double *f) {
+  x[0] = r;
+  x[1] = r;
+  y[0] = p[1];
+  y[1] = p[3];
+
+  power_m(2, power, x, y);
 
   *f = p[0] / power[0] + (p[2] / power[1]) * cos(p[4] * r + p[5]);
 

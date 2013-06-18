@@ -375,7 +375,7 @@ void TableAnalytic::update_values(void) {
 }
 
 void TableAnalytic::update_calc_table(int update) {
-  double fval, h;
+  double f, h;
   int change = 0;
 
   for (int i=0; i<num_params; i++)
@@ -385,11 +385,14 @@ void TableAnalytic::update_calc_table(int update) {
   if (0 == change && 0 == update)
     return;
 
+  if (1 == update)
+    for (int i=0; i<len; i++)
+      xcoord[i] = begin + i * step;
+
   h = values[num_params - 1];
   for (int i=0; i<len; i++) {
-    xcoord[i] = begin + i * step;
-    function->calc(xcoord[i], values , &fval);
-    table[i] = smooth_pot ? fval * cutoff(xcoord[i], end, h) : fval;
+    function->calc(xcoord[i], values, &f);
+    table[i] = smooth_pot ? f * cutoff(xcoord[i], end, h) : f;
   }
 
   splines.spline_ed(step, table, len, 10e30, 0, d2tab);
@@ -459,11 +462,9 @@ void TableAnalytic::write_plotpoint(FILE *outfile) {
   return;
 }
 
-double TableAnalytic::cutoff(double x, double rcut, double h) {
+double TableAnalytic::cutoff(double& x, double& rcut, double& h) {
   if ((x-rcut)>0)
     return 0.0;
-
-  static double fval = 0.0;
 
   fval = (x-rcut) / h;
   fval *= fval;

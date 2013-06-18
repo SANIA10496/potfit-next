@@ -30,6 +30,32 @@
 
 #include <cstring>
 
+#include <stdint.h>
+
+/* 32-bit */
+#if UINTPTR_MAX == 0xffffffff
+#ifndef ACML
+#include <mkl_vml.h>
+#endif /* ACML */
+#define _32BIT
+
+/* 64-bit */
+#elif UINTPTR_MAX == 0xffffffffffffffff
+#ifndef ACML
+#include <mkl_vml.h>
+#elif defined ACML4
+#include <acml_mv.h>
+#elif defined ACML5
+#include <amdlibm.h>
+#endif /* ACML */
+
+/* wtf */
+#else
+#include <mkl_vml.h>
+//#error Unknown integer size
+
+#endif /* UINTPTR_MAX */
+
 #include "potential.h"
 #include "utils.h"
 
@@ -89,4 +115,43 @@ void Utils::set_flagfile(std::string str) {
 
 int Utils::check_for_flagfile(void) {
   return 0;
+}
+
+void POTFIT_NS::power_1(double &result, const double &x, const double &y) {
+#ifdef _32BIT
+  *result = pow(*x, *y);
+#else
+#ifndef ACML
+  vdPow(1, &x, &y, &result);
+#elif defined ACML4
+  *result = fastpow(*x, *y);
+#elif defined ACML5
+  *result = pow(*x, *y);
+#endif /* ACML */
+#endif /* _32BIT */
+
+  return;
+}
+
+void POTFIT_NS::power_m(int const& dim, double *result, const double *x, const double *y) {
+#ifdef _32BIT
+  int   i = 0;
+  for (i = 0; i < dim; i++)
+    result[i] = pow(x[i], y[i]);
+#else
+#ifndef ACML
+  vdPow(dim, x, y, result);
+#elif defined ACML4
+  int   i;
+  for (i = 0; i < dim; i++)
+    *(result + i) = fastpow(*(x + i), *(y + i));
+#elif defined ACML5
+  int   i;
+  for (i = 0; i < dim; i++)
+    *(result + i) = pow(*(x + i), *(y + i));
+#endif /* ACML */
+#endif /* _32BIT */
+
+
+  return;
 }

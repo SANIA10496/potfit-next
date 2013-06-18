@@ -68,6 +68,8 @@ void IO::print_version() {
     printf("\nContributing authors are listed on <http://potfit.sourceforge.net>.\n");
   }
   pexit(EXIT_SUCCESS);
+
+  return;
 }
 
 void IO::print_help() {
@@ -79,22 +81,29 @@ void IO::print_help() {
     printf("\t-v\tprint version information\n");
   }
   pexit(EXIT_SUCCESS);
+
+  return;
 }
 
 void IO::set_logfile(const char *filename) {
-  if (write_logfile && screen) {
-    logfile.open(filename);
+  if (screen) {
+    if (write_logfile)
+      logfile.open(filename);
     write.init_done(screen);
     warning.init_done(screen);
     error.init_done(screen);
     debug.init_done(screen);
   }
+
+  return;
 }
 
 void IO::close_logfile() {
   if (write_logfile && screen) {
-//    logfile.close();
+    logfile.close();
   }
+
+  return;
 }
 
 void IO::pexit(int status) {
@@ -108,6 +117,8 @@ void IO::pexit(int status) {
   close_logfile();
   MPI::Finalize();
   exit(status);
+
+  return;
 }
 
 void IO::set_screen(const int scr) {

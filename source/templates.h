@@ -35,13 +35,12 @@
 
 namespace POTFIT_NS {
 
-  template <class T>
-  inline T square(const T& a) {
+  template <typename T>
+  inline const T square(const T& a) {
     return a*a;
   }
 
-  template <class T>
-  inline const double gauss(const T& a) {
+  inline const double gauss(const double& a) {
     return 1.0/sqrt(2*M_PI)*exp(-a*a/2.0);
   }
 

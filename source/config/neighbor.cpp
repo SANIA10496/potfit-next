@@ -34,9 +34,7 @@ using namespace POTFIT_NS;
 
 Neighbor::Neighbor(POTFIT *ptf) :
   Pointers(ptf),
-  type(-1),
-  nr(-1),
-  r(0.0),
+  // ADP
   u_val(0.0),
   u_grad(0.0),
   w_val(0.0),
@@ -46,6 +44,32 @@ Neighbor::Neighbor(POTFIT *ptf) :
   fnval_el(0.0),
   grad_el(0.0),
   ggrad_el(0.0)
-{}
+{
+  type= -1;
+  nr = -1;
+  self = 0;
+  r = 0.0;
+  dist.x = 0.0;
+  dist.y = 0.0;
+  dist.z = 0.0;
+
+  for (int i=0;i<MAX_SLOTS;i++) {
+    slot[i] = 0;
+    shift[i] = 0.0;
+    step[i] = 0.0;
+    col[i] = 0;
+  }
+
+  // ADP
+  rdist.x = 0.0;
+  rdist.y = 0.0;
+  rdist.z = 0.0;
+  sqrdist.xx = 0.0;
+  sqrdist.yy = 0.0;
+  sqrdist.zz = 0.0;
+  sqrdist.zx = 0.0;
+  sqrdist.xy = 0.0;
+  sqrdist.yz = 0.0;
+}
 
 Neighbor::~Neighbor() {}

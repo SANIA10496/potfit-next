@@ -41,7 +41,7 @@ namespace POTFIT_NS {
     ~Function() {};
 
     virtual int num_params() = 0;
-    virtual void calc(double, double *, double *) = 0;
+    virtual void calc(double &, double *, double *) = 0;
   };
 
 }

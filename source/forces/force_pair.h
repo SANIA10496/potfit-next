@@ -39,6 +39,10 @@ ForceType(pair,ForcePair)
 
 #include "../force.h"
 
+#include "../structures.h"
+#include "../tables/table.h"
+#include "../types.h"
+
 namespace POTFIT_NS {
 
   class ForcePair : public Force {
@@ -56,6 +60,19 @@ namespace POTFIT_NS {
     double calc_forces(void);
 
     int cols(void);
+  private:
+    int   atom_count;
+    int   h, i, j, k, l;
+    int   self, uf;
+    int   us, stresses;
+    double tmpsum, sum;
+    double phi_val, phi_grad;
+    double *val;
+    vector tmp_force;
+    Atom *atom;
+    Config *conf;
+    Neighbor *neigh;
+    Table *pot;
   };
 }
 

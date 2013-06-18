@@ -60,6 +60,9 @@ namespace POTFIT_NS {
 
     std::string flagfile;
   };
+
+  void power_1(double &, const double &, const double &);
+  void power_m(const int &, double *, const double *, const double *);
 }
 
 #endif /* PTF_UTILS_H */

@@ -51,6 +51,7 @@ namespace POTFIT_NS {
     std::vector<Atom *> atoms;
     int cell_scale[3];
     int num_atoms;
+    double inv_num_atoms;
     int *num_per_type;
     int use_forces;
     int use_stresses;
@@ -60,6 +61,7 @@ namespace POTFIT_NS {
     double coh_energy;
     double conf_weight;
     double volume;
+    double inv_volume;
 
     sym_tens stress;
     vector box_x, box_y, box_z;

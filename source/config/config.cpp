@@ -47,11 +47,13 @@ Config::Config(POTFIT *ptf, int idx) :
   Pointers(ptf),
   num_per_type(NULL),
   num_atoms(0),
+  inv_num_atoms(0.0),
   use_forces(0),
   use_stresses(0),
   coh_energy(0.0),
   conf_weight(0.0),
   volume(0.0),
+  inv_volume(0.0),
   index(idx),
   cnfstart(0)
 {
@@ -124,6 +126,7 @@ void Config::read(FILE *infile, int *line) {
     io->error << "Error - number of atoms missing on line " << *line << std::endl;
     io->pexit(EXIT_FAILURE);
   }
+  inv_num_atoms = 1./num_atoms;
 
   num_per_type = new int[structures->get_ntypes()];
   for (int i=0; i<structures->get_ntypes(); i++)
@@ -235,6 +238,7 @@ void Config::read(FILE *infile, int *line) {
   volume = SPROD(box_x, tbox_x);
   if (0 == volume)
     io->error << "Box edges are parallel" << std::endl;
+  inv_volume = 1./volume;
 
   // normalization
   tbox_x.x /= volume;
@@ -371,8 +375,11 @@ void Config::calc_neighbors(void) {
     io->error << "Unknown return value of neigh_type from force routine!" << std::endl;
   }
 
-  //for (int i=0; i<atoms.size(); i++)
-  //printf("atom %d has %ld neighbors\n",i,atoms[i]->neighs.size());
+//  for (int i=0; i<atoms.size(); i++) {
+//    printf("atom %d has %ld neighbors\n",i,atoms[i]->neighs.size());
+//    for (int j=0; j<atoms[i]->neighs.size(); j++)
+//      printf("neigh %d @ %ld (%ld)\n",j,atoms[i]->neighs[j],sizeof(Neighbor_2));
+//  }
 
   return;
 }

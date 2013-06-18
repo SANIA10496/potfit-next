@@ -72,12 +72,13 @@ namespace POTFIT_NS {
 
     int smooth_pot;
 
-    double cutoff(double, double, double);
+    double cutoff(double &, double &, double &);
 
     char **param_name; 		// parameter names
     double *val_min; 		// parameter minimum
     double *val_max; 		// parameter maximum
     double *stored_values; 	// values currently used in the calc_pot tables
+    double fval; 		// temp variable
 
     Function *function; 	// function pointer for analytic potentials
   };
