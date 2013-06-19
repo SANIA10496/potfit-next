@@ -188,7 +188,7 @@ void Output::write_output_file_forces(void) {
 
 void Output::write_output_file_energies(void) {
   double sqr = 0.0;
-  double *force = interaction->force->force_vect;
+  double *force = interaction->force->force_vect + interaction->force->energy_p;
   std::string filename(output_prefix);
 
   filename.append(".energy");
@@ -201,14 +201,14 @@ void Output::write_output_file_energies(void) {
 
   for (int i=0; i<structures->get_num_total_configs(); i++) {
     sqr = settings->get_eweight() * structures->config[i]->conf_weight *
-	    square(force[interaction->force->energy_p + i]);
+          square(force[i]);
     output << std::setw(4) << i << "\t";
     output << std::fixed << std::setprecision(2) << structures->config[i]->conf_weight << "\t";
     output << std::setw(8) << std::setprecision(6) << sqr << "\t";
-    output << force[interaction->force->energy_p + i] + structures->config[i]->coh_energy << "\t";
+    output << force[i] + structures->config[i]->coh_energy << "\t";
     output << structures->config[i]->coh_energy << "\t";
-    output << force[interaction->force->energy_p + i] << "\t";
-    output << std::fabs(force[interaction->force->energy_p + i] / structures->config[i]->coh_energy) * 100. << std::endl;
+    output << force[i] << "\t";
+    output << std::fabs(force[i] / structures->config[i]->coh_energy) * 100. << std::endl;
   }
 
   output.close();
@@ -218,11 +218,32 @@ void Output::write_output_file_energies(void) {
 }
 
 void Output::write_output_file_stresses(void) {
+  double sqr = 0.0;
+  double *force = interaction->force->force_vect + interaction->force->stress_p;
   std::string filename(output_prefix);
+  const std::string component[] = {"xx", "yy", "zz", "xy", "yz", "zx"};
+
   filename.append(".stress");
 
   std::ofstream output;
   output.open (filename.c_str(), std::ofstream::out);
+
+  output << "# global stress weight w is " << settings->get_sweight() << std::endl;
+  output << "# nr.\tconf_w\tw*ds^2\t\ts\t\ts0\t\ts-s0\t\tds/s0 [%]" << std::endl;
+
+  for (int i=0; i<structures->get_num_total_configs(); i++) {
+    for (int j=0; j<6; j++) {
+      sqr = settings->get_sweight() * structures->config[i]->conf_weight *
+            square(force[6*i + j]);
+      output << std::setw(4) << i << ":" << component[j] << "\t";
+      output << std::fixed << std::setprecision(2) << structures->config[i]->conf_weight << "\t";
+      output << std::setw(8) << std::setprecision(6) << sqr << "\t";
+      output << force[6 * i + j] + *(structures->config[i]->dstress[j]) << "\t";
+      output << *(structures->config[i]->dstress[j]) << "\t";
+      output << force[6 * i + j] << "\t";
+      output << std::fabs(force[6 * i + j] / *(structures->config[i]->dstress[j])) * 100. << std::endl;
+    }
+  }
 
   output.close();
   io->write << "Stress data written to\t\t\t\t" << filename << std::endl;

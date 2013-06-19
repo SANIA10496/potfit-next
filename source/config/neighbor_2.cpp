@@ -54,7 +54,7 @@ void Neighbor_2::init(Config *conf, int i, int j, vector *dd) {
   int col_temp = 0;
   int k, l;
 
-  r = sqrt(SPROD(*dd,*dd));
+  r = sqrt(sprod(*dd,*dd));
 
   dist.x = dd->x / r;
   dist.y = dd->y / r;
@@ -68,9 +68,9 @@ void Neighbor_2::init(Config *conf, int i, int j, vector *dd) {
   r2 = square(r);
 
   // ADP
-  rdist.x = dd->x * r;
-  rdist.y = dd->y * r;
-  rdist.z = dd->z * r;
+  rdist.x = dd->x;
+  rdist.y = dd->y;
+  rdist.z = dd->z;
   sqrdist.xx = dd->x * dd->x * r * r;
   sqrdist.yy = dd->y * dd->y * r * r;
   sqrdist.zz = dd->z * dd->z * r * r;

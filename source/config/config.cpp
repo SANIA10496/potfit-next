@@ -64,8 +64,14 @@ Config::Config(POTFIT *ptf, int idx) :
   stress.yy = 0.0;
   stress.zz = 0.0;
   stress.xy = 0.0;
-  stress.zx = 0.0;
   stress.yz = 0.0;
+  stress.zx = 0.0;
+  dstress[0] = &stress.xx;
+  dstress[1] = &stress.yy;
+  dstress[2] = &stress.zz;
+  dstress[3] = &stress.xy;
+  dstress[4] = &stress.yz;
+  dstress[5] = &stress.zx;
 
   box_x.x = box_x.y = box_x.z = 0.0;
   box_y.x = box_y.y = box_y.z = 0.0;
@@ -235,7 +241,7 @@ void Config::read(FILE *infile, int *line) {
   tbox_z = vec_prod(box_x, box_y);
 
   // volume
-  volume = SPROD(box_x, tbox_x);
+  volume = sprod(box_x, tbox_x);
   if (0 == volume)
     io->error << "Box edges are parallel" << std::endl;
   inv_volume = 1./volume;
@@ -274,9 +280,9 @@ void Config::read(FILE *infile, int *line) {
         temp_vect.x = atom->pos.x - cbox_o.x;
         temp_vect.y = atom->pos.y - cbox_o.y;
         temp_vect.z = atom->pos.z - cbox_o.z;
-        n_a = SPROD(temp_vect, cbox_a) / SPROD(cbox_a,cbox_a);
-        n_b = SPROD(temp_vect, cbox_b) / SPROD(cbox_b,cbox_b);
-        n_c = SPROD(temp_vect, cbox_c) / SPROD(cbox_c,cbox_c);
+        n_a = sprod(temp_vect, cbox_a) / sprod(cbox_a,cbox_a);
+        n_b = sprod(temp_vect, cbox_b) / sprod(cbox_b,cbox_b);
+        n_c = sprod(temp_vect, cbox_c) / sprod(cbox_c,cbox_c);
         if (n_a >= 0 && n_a <= 1)
           if (n_b >= 0 && n_b <= 1)
             if (n_c >= 0 && n_c <= 1)
@@ -287,7 +293,7 @@ void Config::read(FILE *infile, int *line) {
         temp_vect.x = (atom->pos.x - sphere_centers[i].x);
         temp_vect.y = (atom->pos.y - sphere_centers[i].y);
         temp_vect.z = (atom->pos.z - sphere_centers[i].z);
-        r = SPROD(temp_vect, temp_vect);
+        r = sprod(temp_vect, temp_vect);
         r = sqrt(r);
         if (r < sphere_radii[i])
           atom->contrib = 1;
@@ -299,9 +305,9 @@ void Config::read(FILE *infile, int *line) {
   }
   // check cell size
   // inverse height in direction
-  iheight.x = sqrt(SPROD(tbox_x, tbox_x));
-  iheight.y = sqrt(SPROD(tbox_y, tbox_y));
-  iheight.z = sqrt(SPROD(tbox_z, tbox_z));
+  iheight.x = sqrt(sprod(tbox_x, tbox_x));
+  iheight.y = sqrt(sprod(tbox_y, tbox_y));
+  iheight.z = sqrt(sprod(tbox_z, tbox_z));
 
   if ((ceil(potential->rcut_max * iheight.x) > 30000)
       || (ceil(potential->rcut_max * iheight.y) > 30000)
@@ -356,7 +362,7 @@ void Config::calc_neighbors(void) {
               dd.x = d.x + ix * box_x.x + iy * box_y.x + iz * box_z.x;
               dd.y = d.y + ix * box_x.y + iy * box_y.y + iz * box_z.y;
               dd.z = d.z + ix * box_x.z + iy * box_y.z + iz * box_z.z;
-              r = sqrt(SPROD(dd, dd));
+              r = sqrt(sprod(dd, dd));
               type1 = atom_i->type;
               type2 = atom_j->type;
               if (r <= potential->rcut[type1 * structures->get_ntypes() + type2]) {
@@ -383,13 +389,3 @@ void Config::calc_neighbors(void) {
 
   return;
 }
-
-vector Config::vec_prod(vector a, vector b) {
-  vector ret;
-  ret.x = a.y * b.z - a.z * b.y;
-  ret.y = a.z * b.x - a.x * b.z;
-  ret.z = a.x * b.y - a.y * b.x;
-
-  return ret;
-}
-

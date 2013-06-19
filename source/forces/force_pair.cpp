@@ -281,7 +281,7 @@ double ForcePair::calc_forces(void) {
       if (uf && us) {
         for (i = 0; i < 6; i++) {
           force_vect[stress_p + 6 * h + i] *= conf->inv_volume;
-          force_vect[stress_p + 6 * h + i] -= conf->stress.xx;
+          force_vect[stress_p + 6 * h + i] -= *(conf->dstress[i]);
           tmpsum +=
             conf->conf_weight * settings->get_sweight() * square(force_vect[stress_p + 6 * h + i]);
         }

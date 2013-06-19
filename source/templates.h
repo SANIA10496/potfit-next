@@ -31,13 +31,26 @@
 #ifndef PTF_TEMPLATES_H
 #define PTF_TEMPLATES_H
 
-#define SPROD(a,b) (((a).x * (b).x) + ((a).y * (b).y) + ((a).z * (b).z))
+#include "types.h"
 
 namespace POTFIT_NS {
 
   template <typename T>
   inline const T square(const T& a) {
     return a*a;
+  }
+
+  inline const double sprod(const vector& a, const vector& b) {
+    return a.x * b.x + a.y * b.y + a.z * b.z;
+  }
+
+  inline const vector vec_prod(const vector& a, const vector& b) {
+    vector temp;
+    temp.x = a.y * b.z - a.z * b.y;
+    temp.y = a.z * b.x - a.x * b.z;
+    temp.z = a.x * b.y - a.y * b.x;
+
+    return temp;
   }
 
   inline const double gauss(const double& a) {

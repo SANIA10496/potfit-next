@@ -64,14 +64,12 @@ namespace POTFIT_NS {
     double inv_volume;
 
     sym_tens stress;
+    double *dstress[6];
     vector box_x, box_y, box_z;
 
   private:
     void calc_neighbors(void);
-    vector vec_prod(vector, vector);
-
   };
-
 }
 
 #endif /* PTF_CONFIG_H */

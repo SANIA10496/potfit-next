@@ -70,7 +70,7 @@ void Force::calc_pointers(void) {
   return;
 }
 
-const int& Force::get_fcalls(void) {
+const int Force::get_fcalls(void) {
   return fcalls;
 }
 
@@ -80,7 +80,7 @@ void Force::inc_fcalls(void) {
   return;
 }
 
-const double& Force::get_error_sum(void) {
+const double Force::get_error_sum(void) {
   return error_sum;
 }
 
