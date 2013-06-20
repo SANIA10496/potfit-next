@@ -47,7 +47,7 @@ int ForceCoulomb::neigh_type(void) {
   return 2;
 }
 
-int ForceCoulomb::get_col(int col, int a, int b) {
+int ForceCoulomb::get_col(const int &col, const int &a, const int &b) {
   return 0;
 }
 
@@ -55,7 +55,7 @@ void ForceCoulomb::update_min_dist(double *min_dist) {
   return;
 }
 
-int ForceCoulomb::cols() {
+int ForceCoulomb::cols(void) {
   int n = structures->get_ntypes();
   return (int)n*(n+1)/2.;
 }

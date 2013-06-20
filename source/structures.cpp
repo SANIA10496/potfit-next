@@ -108,7 +108,7 @@ void Structures::print_mindist(void) {
     io->write << potential->elements[i] << "\t";
     for (j = 0; j < ntypes; j++) {
       k = (i <= j) ? i * ntypes + j - ((i * (i + 1)) / 2) : j * ntypes + i - ((j * (j + 1)) / 2);
-      io->write << min_dist[k] << "\t";
+      io->write << std::fixed << std::setw(8) << std::setprecision(4) << min_dist[k] << "\t";
 
     }
     io->write << std::endl;
@@ -120,7 +120,7 @@ void Structures::print_mindist(void) {
   return;
 }
 
-int Structures::get_num_contrib_atoms(void) {
+const int Structures::get_num_contrib_atoms(void) {
   int count = 0;
 
   for (int i=0; i<total_num_conf; i++) {
@@ -135,11 +135,11 @@ int Structures::get_num_contrib_atoms(void) {
   return count;
 }
 
-int Structures::get_num_contrib_energies(void) {
+const int Structures::get_num_contrib_energies(void) {
   return total_num_conf;
 }
 
-int Structures::get_num_contrib_stresses(void) {
+const int Structures::get_num_contrib_stresses(void) {
   int count = 0;
 
   for (int i=0; i<total_num_conf; i++) {
@@ -150,15 +150,15 @@ int Structures::get_num_contrib_stresses(void) {
   return 6 * count;
 }
 
-int Structures::get_num_total_atoms(void) {
+const int Structures::get_num_total_atoms(void) {
   return total_num_atoms;
 }
 
-int Structures::get_num_total_configs(void) {
+const int Structures::get_num_total_configs(void) {
   return total_num_conf;
 }
 
-void Structures::set_ntypes(int n) {
+void Structures::set_ntypes(const int &n) {
   if (n < 1) {
     io->error << "ntypes cannot be smaller than 1!" << std::endl;
     io->pexit(EXIT_FAILURE);

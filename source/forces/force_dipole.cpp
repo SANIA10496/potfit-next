@@ -47,7 +47,7 @@ int ForceDipole::neigh_type(void) {
   return 2;
 }
 
-int ForceDipole::get_col(int col, int a, int b) {
+int ForceDipole::get_col(const int &col, const int &a, const int &b) {
   return 0;
 }
 
@@ -55,7 +55,7 @@ void ForceDipole::update_min_dist(double *min_dist) {
   return;
 }
 
-int ForceDipole::cols() {
+int ForceDipole::cols(void) {
 }
 
 void ForceDipole::read_additional_data(FILE *infile) {

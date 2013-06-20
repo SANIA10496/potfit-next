@@ -87,7 +87,7 @@ void Error::write_report(void) {
 
   io->write << std::endl << "rms-errors:" << std::endl;
   io->write << "force\t" << std::setw(12) << std::setprecision(6) << std::scientific << rms_force << "\t(";
-  io->write << std::fixed << std::setw(8) << std::setprecision(2) << rms_force * 1000. << " meV/Å)" << std::endl;
+  io->write << std::fixed << std::setw(8) << std::setprecision(2) << rms_force * 1000. << " meV/\u212B)" << std::endl;
   io->write << "energy\t" << std::setw(12) << std::setprecision(6) <<  std::scientific << rms_energy << "\t(";
   io->write << std::fixed << std::setw(8) << std::setprecision(2) << rms_energy * 1000. << " meV/atom)" << std::endl;
   io->write << "stress\t" << std::setw(12) << std::setprecision(6) <<  std::scientific << rms_stress << "\t(";

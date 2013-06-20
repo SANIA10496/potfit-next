@@ -50,7 +50,7 @@ namespace POTFIT_NS {
 
     int num_slots(void);
     int neigh_type(void);
-    int get_col(int, int, int);
+    int get_col(const int &, const int &, const int &);
     void update_min_dist(double *);
 
     double calc_forces(void);

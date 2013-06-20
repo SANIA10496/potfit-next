@@ -106,7 +106,7 @@ void IO::close_logfile() {
   return;
 }
 
-void IO::pexit(int status) {
+void IO::pexit(const int &status) {
   // broadcast error
   if (init_done == 1) {
     // MPI::BCast.force finish
@@ -121,13 +121,13 @@ void IO::pexit(int status) {
   return;
 }
 
-void IO::set_screen(const int scr) {
+void IO::set_screen(const int &scr) {
   screen = scr;
 
   return;
 }
 
-void IO::set_write_logfile(int i) {
+void IO::set_write_logfile(const int &i) {
   if (1 == screen)
     write_logfile = i;
 

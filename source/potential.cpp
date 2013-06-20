@@ -95,7 +95,7 @@ Potential::~Potential() {
   return;
 }
 
-void Potential::init(int size) {
+void Potential::init(const int &size) {
   num_pots = size;
   num_free_pots = size;
   invar_pot = new int[interaction->force->cols()];
@@ -269,7 +269,7 @@ void Potential::init_opt_table(void) {
   return;
 }
 
-void Potential::update_potentials(int update) {
+void Potential::update_potentials(const int &update) {
   if (NULL == opt->val_p)
     opt->val_p = opt->values;
   if (global_params->get_number_free_params() > 0)
@@ -291,7 +291,7 @@ void Potential::update_slots(void) {
   return;
 }
 
-void Potential::set_enable_cp(const int i) {
+void Potential::set_enable_cp(const int &i) {
   enable_cp = i;
 
   return;

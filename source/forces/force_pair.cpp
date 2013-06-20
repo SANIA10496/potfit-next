@@ -61,21 +61,17 @@ int ForcePair::neigh_type(void) {
   return 2;
 }
 
-int ForcePair::get_col(int slot, int a, int b) {
-  int col;
-
+int ForcePair::get_col(const int &slot, const int &a, const int &b) {
   if (slot != 0) {
     io->error << "Pair potentials only use 1 slot." << std::endl;
     io->pexit(EXIT_FAILURE);
   }
 
-  col = (a <= b) ? a * structures->get_ntypes() + b - ((a * (a + 1)) / 2)
+  return (a <= b) ? a * structures->get_ntypes() + b - ((a * (a + 1)) / 2)
         : b * structures->get_ntypes() + a - ((b * (b + 1)) / 2);
-
-  return col;
 }
 
-int ForcePair::cols() {
+int ForcePair::cols(void) {
   int n = structures->get_ntypes();
 
   return (int)n*(n+1)/2.;
@@ -88,7 +84,7 @@ void ForcePair::update_min_dist(double *min_dist) {
   for (int i=0;i<n;i++)
     for (int j=0;j<n;j++) {
       k = (i <= j) ? i * n + j - ((i * (i + 1)) / 2) : j * n + i - ((j * (j + 1)) / 2);
-      potential->pots[i*n+j]->begin = 0.95 * min_dist[k];
+      potential->pots[k]->begin = 0.95 * min_dist[k];
     }
 
   potential->update_potentials(1);

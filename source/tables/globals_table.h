@@ -32,6 +32,7 @@
 #define PTF_GLOBALS_TABLE_H
 
 #include <iostream>
+#include <vector>
 
 #include "../pointers.h"
 
@@ -42,23 +43,21 @@ namespace POTFIT_NS {
     GlobalsTable(class POTFIT *, int);
     ~GlobalsTable();
 
-    void add_param(int, const char *, double, double, double);
+    void add_param(const int &, const char *, const double &, const double &, const double &);
 
     int get_number_params(void);
     int get_number_free_params(void);
 
     void check_usage(void);
 
-    void set_value(int, double);
+    void set_value(const int &, const double &);
     void set_opt_pot_start(const int &);
 
     int get_index(const char *);
-    void add_usage(int, int, int);
-    void get_value(int, double *);
+    void add_usage(const int &, const int &, const int &);
+    void get_value(const int &, double *);
 
     void update_potentials(void);
-
-    void get_values(int *, double *);
 
     void write_potential(std::ofstream &);
 
@@ -67,14 +66,14 @@ namespace POTFIT_NS {
     int num_free_globals; 	// number of free global parameters
     int opt_pot_start;
 
-    char **param_name; 		// parameter names
-    double *values; 		// parameter values
-    double *val_min; 		// parameter minimum
-    double *val_max; 		// parameter maximum
-    int *invar_par; 		// invariant parameters
-    int *idx; 			// indirect index
-    int *usage; 		// how often each parameter is used
-    int ***global_idx; 		// where each parameter is used
+    std::vector<std::string> 	param_name; 	// parameter names
+    std::vector<double> 	values; 	// parameter values
+    std::vector<double>  	val_min; 	// parameter minimum
+    std::vector<double> 	val_max; 	// parameter maximum
+    std::vector<int>  		invar_par; 	// invariant parameters
+    std::vector<int>  		idx; 		// indirect index
+    std::vector<int>  		usage; 		// how often each parameter is used
+    int ***global_idx; 				// where each parameter is used
   };
 }
 

@@ -49,7 +49,7 @@ int ForceEAM::neigh_type(void) {
   return 2;
 }
 
-int ForceEAM::get_col(int col, int a, int b) {
+int ForceEAM::get_col(const int &col, const int &a, const int &b) {
   return 0;
 }
 
@@ -57,7 +57,8 @@ void ForceEAM::update_min_dist(double *min_dist) {
   return;
 }
 
-int ForceEAM::cols() {
+int ForceEAM::cols(void) {
+  return 0;
 }
 
 void ForceEAM::read_additional_data(FILE *infile) {

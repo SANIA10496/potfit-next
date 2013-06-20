@@ -277,7 +277,7 @@ std::string Input::get_param_str(const std::string &name, const std::string &tok
  *
  ****************************************************************/
 
-void Input::check_params()
+void Input::check_params(void)
 {
   if (structures->get_ntypes() <= 0) {
     io->error << "Missing parameter or invalid value in " << param_file << ": ntypes is \"" << structures->get_ntypes() << "\"." << std::endl;

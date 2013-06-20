@@ -53,7 +53,7 @@ int ForceADP::neigh_type(void) {
   return 2;
 }
 
-int ForceADP::get_col(int slot, int a, int b) {
+int ForceADP::get_col(const int &slot, const int &a, const int &b) {
   return 0;
 }
 
@@ -61,7 +61,7 @@ void ForceADP::update_min_dist(double *min_dist) {
   return;
 }
 
-int ForceADP::cols() {
+int ForceADP::cols(void) {
   int n = structures->get_ntypes();
   return (int)n*(n+1)/2.;
 }

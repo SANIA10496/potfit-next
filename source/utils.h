@@ -45,14 +45,14 @@ namespace POTFIT_NS {
     ~Utils();
 
     char *tolowercase(char *);
-    double vect_dist(vector, vector);
+    double vect_dist(const vector &, const vector &);
 
     void start_timer(void);
     void end_timer(void);
-    int timediff(void);
+    const int timediff(void);
 
-    void set_flagfile(std::string);
-    int check_for_flagfile(void);
+    void set_flagfile(const std::string &);
+    const int check_for_flagfile(void);
 
   private:
     time_t t_begin;

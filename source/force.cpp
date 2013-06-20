@@ -49,6 +49,8 @@ Force::Force(POTFIT *ptf) :
 Force::~Force() {
   if (NULL != force_vect)
     delete [] force_vect;
+
+  return;
 }
 
 void Force::calc_pointers(void) {

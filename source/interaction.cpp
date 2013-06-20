@@ -48,7 +48,7 @@ Interaction::~Interaction() {
   return;
 }
 
-void Interaction::init() {
+void Interaction::init(void) {
   force = init_force(type);
 
   return;
@@ -71,7 +71,7 @@ Force *Interaction::init_force(const std::string &force_type)
   return NULL;
 }
 
-void Interaction::set_type(std::string str) {
+void Interaction::set_type(const std::string &str) {
   type = str;
 
   return;

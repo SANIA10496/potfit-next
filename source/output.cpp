@@ -109,7 +109,13 @@ void Output::write_plotfile(void) {
 }
 
 void Output::write_lammpspot(void) {
-  io->write << "Potential in LAMMPS format written to\t\t" << plotfile << std::endl;
+  if (!output_prefix.empty()) {
+    lammpspot = output_prefix + ".lammps";
+  } else {
+    lammpspot = endpot + ".lammps";
+  }
+
+  io->write << "Potential in LAMMPS format written to\t\t" << lammpspot << std::endl;
   return;
 }
 
@@ -265,7 +271,7 @@ void Output::write_output_file_punishments(void) {
   return;
 }
 
-void Output::set_endpot(std::string str) {
+void Output::set_endpot(const std::string &str) {
   endpot = str;
 
   return;
@@ -275,7 +281,7 @@ std::string Output::get_endpot(void) {
   return endpot;
 }
 
-void Output::set_output_prefix(std::string str) {
+void Output::set_output_prefix(const std::string &str) {
   output_prefix = str;
   if (!output_prefix.empty())
     enable_output_files = 1;
@@ -287,7 +293,7 @@ std::string Output::get_output_prefix(void) {
   return output_prefix;
 }
 
-void Output::set_imdpot(std::string str) {
+void Output::set_imdpot(const std::string &str) {
   imdpot = str;
   enable_imd_pot = 1;
 
@@ -298,7 +304,7 @@ std::string Output::get_imdpot(void) {
   return imdpot;
 }
 
-void Output::set_plotfile(std::string str) {
+void Output::set_plotfile(const std::string &str) {
   plotfile = str;
   enable_plotfile = 1;
 
@@ -309,7 +315,7 @@ std::string Output::get_plotfile(void) {
   return plotfile;
 }
 
-void Output::set_distfile(std::string str) {
+void Output::set_distfile(const std::string &str) {
   distfile = str;
   enable_distfile = 1;
 
@@ -320,7 +326,7 @@ std::string Output::get_distfile(void) {
   return distfile;
 }
 
-void Output::set_imdpotsteps(int n) {
+void Output::set_imdpotsteps(const int &n) {
   imdpotsteps = n;
 
   return;
@@ -330,7 +336,7 @@ int Output::get_imdpotsteps(void) {
   return imdpotsteps;
 }
 
-void Output::set_plotmin(double x) {
+void Output::set_plotmin(const double &x) {
   plotmin = x;
 
   return;
@@ -340,7 +346,7 @@ double Output::get_plotmin(void) {
   return plotmin;
 }
 
-void Output::set_tempfile(std::string str) {
+void Output::set_tempfile(const std::string &str) {
   tempfile = str;
 
   return;
@@ -350,7 +356,7 @@ std::string Output::get_tempfile(void) {
   return tempfile;
 }
 
-void Output::set_enable_pairdist(int i) {
+void Output::set_enable_pairdist(const int &i) {
   enable_pairdist = i;
 
   return;
@@ -360,7 +366,7 @@ int Output::get_enable_pairdist(void) {
   return enable_pairdist;
 }
 
-void Output::set_plotpointfile(std::string str) {
+void Output::set_plotpointfile(const std::string &str) {
   plotpointfile = str;
 
   return;
@@ -370,7 +376,7 @@ std::string Output::get_plotpointfile(void) {
   return plotpointfile;
 }
 
-void Output::set_lammps_pot(int i) {
+void Output::set_lammps_pot(const int &i) {
   enable_lammps_pot = i;
 
   return;

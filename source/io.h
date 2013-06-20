@@ -45,11 +45,11 @@ namespace POTFIT_NS {
     ~IO();
 
     // output for standard runs
-    void print_header();
+    void print_header(void);
 
     // output for command line flags
-    void print_version();
-    void print_help();
+    void print_version(void);
+    void print_help(void);
 
     // custom streams for output
     PStream write;
@@ -61,12 +61,12 @@ namespace POTFIT_NS {
     void set_logfile(const char *);
     void close_logfile();
 
-    void set_write_logfile(int);
+    void set_write_logfile(const int &);
     int get_write_logfile(void);
 
-    void pexit(int);
+    void pexit(const int &);
 
-    void set_screen(const int);
+    void set_screen(const int &);
 
   private:
     int screen;

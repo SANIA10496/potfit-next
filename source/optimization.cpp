@@ -48,6 +48,11 @@ Optimization::~Optimization() {}
 void Optimization::run(void) {
 
   if (1 == settings->get_opt()) {
+    if (0 == algorithms.size()) {
+      io->warning << "You have enabled the optimization in the parameter file" << std::endl;
+      io->warning << "but did not specify any optimization algorithms with the opt_alg keyword!" << std::endl;
+      io->write << std::endl;
+    }
     io->write << "Starting optimization with the following parameters:" << std::endl;
     if (settings->get_eweight() != 0.0)
       io->write << " - Global energy weight " << settings->get_eweight() << std::endl;

@@ -48,18 +48,18 @@ namespace POTFIT_NS {
     Potential(class POTFIT *);
     ~Potential();
 
-    void init(int);
+    void init(const int &);
     void read_globals(FILE *);
     void read_potentials(FILE *);
 
     void write_potentials(std::ofstream &);
 
-    void update_potentials(int);
+    void update_potentials(const int &);
     void update_slots(void);
 
     void init_opt_table(void);
 
-    void set_enable_cp(int);
+    void set_enable_cp(const int &);
     int get_enable_cp(void);
 
     int get_num_params(void);

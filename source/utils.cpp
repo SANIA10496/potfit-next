@@ -29,8 +29,10 @@
  ****************************************************************/
 
 #include <cstring>
+#include <fstream>
 
 #include <stdint.h>
+#include <unistd.h>
 
 /* 32-bit */
 #if UINTPTR_MAX == 0xffffffff
@@ -64,7 +66,8 @@ using namespace POTFIT_NS;
 Utils::Utils(POTFIT *ptf) :
   Pointers(ptf),
   t_begin(0),
-  t_end(0)
+  t_end(0),
+  flagfile("STOP")
 {}
 
 Utils::~Utils() {}
@@ -86,7 +89,7 @@ char *Utils::tolowercase(char *str) {
   return str;
 }
 
-double Utils::vect_dist(vector a, vector b) {
+double Utils::vect_dist(const vector &a, const vector &b) {
   return sqrt(square(b.x-a.x)+square(b.y-a.y)+square(b.z-a.z));
 }
 
@@ -103,17 +106,24 @@ void Utils::end_timer(void) {
   return;
 }
 
-int Utils::timediff(void) {
+const int Utils::timediff(void) {
   return (int)difftime(t_end, t_begin);
 }
 
-void Utils::set_flagfile(std::string str) {
+void Utils::set_flagfile(const std::string &str) {
   flagfile = str;
 
   return;
 }
 
-int Utils::check_for_flagfile(void) {
+const int Utils::check_for_flagfile(void) {
+  std::ifstream infile(flagfile.c_str());
+  if (infile) {
+    infile.close();
+    unlink(flagfile.c_str());
+    return 1;
+  }
+
   return 0;
 }
 

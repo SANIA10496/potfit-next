@@ -50,13 +50,13 @@ namespace POTFIT_NS {
 
     void print_mindist(void);
 
-    int get_num_contrib_atoms(void);
-    int get_num_contrib_energies(void);
-    int get_num_contrib_stresses(void);
-    int get_num_total_atoms(void);
-    int get_num_total_configs(void);
+    const int get_num_contrib_atoms(void);
+    const int get_num_contrib_energies(void);
+    const int get_num_contrib_stresses(void);
+    const int get_num_total_atoms(void);
+    const int get_num_total_configs(void);
 
-    void set_ntypes(int);
+    void set_ntypes(const int &);
     int get_ntypes(void);
 
     std::vector<int> num_per_type; 	// total number of atoms per type
@@ -68,6 +68,8 @@ namespace POTFIT_NS {
     double *min_dist; 			// minimal distances for all interactions
 
     std::vector<Config *> config; 	// configurations
+    std::vector<Atom> atoms; 		// atoms
+    std::vector<Neighbor> neighs; 	// neighbors
   private:
     int ntypes; 			// number of atom types
     int line;

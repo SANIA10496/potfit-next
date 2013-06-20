@@ -46,7 +46,7 @@ namespace POTFIT_NS {
 
     virtual int num_slots(void) = 0;
     virtual int neigh_type(void) = 0;
-    virtual int get_col(int, int, int) = 0;
+    virtual int get_col(const int &, const int &, const int &) = 0;
     virtual void update_min_dist(double *) = 0;
 
     virtual double calc_forces(void) = 0;
@@ -59,7 +59,7 @@ namespace POTFIT_NS {
     void inc_fcalls(void);
 
     const double get_error_sum(void);
-    void set_error_sum(const double&);
+    void set_error_sum(const double &);
 
     double *force_vect; 	// all deviations
     int energy_p; 		// pointer for energies

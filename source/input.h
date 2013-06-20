@@ -48,16 +48,16 @@ namespace POTFIT_NS {
     Input(class POTFIT *, int, char **);
     ~Input();
 
-    void read_parameter_file();
-    void read_potential_file();
-    void read_config_file();
+    void read_parameter_file(void);
+    void read_potential_file(void);
+    void read_config_file(void);
 
   private:
     double get_param_dbl(const std::string &, const std::string &);
     int get_param_int(const std::string &, const std::string &);
     std::string get_param_str(const std::string &, const std::string &);
 
-    void check_params();
+    void check_params(void);
 
     int curline;
     int enable_maxch_file;

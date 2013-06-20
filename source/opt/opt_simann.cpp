@@ -206,8 +206,10 @@ void OptSimann::run(void) {
 
       /* End annealing if break flagfile exists */
       if (utils->check_for_flagfile() == 1) {
-        io->write << "Annealing terminated in presence of break flagfile !" << std::endl;
-        io->write << "Temperature was " << T << ", returning optimum configuration" << std::endl;
+	io->write << std::endl;
+        io->warning << "Annealing terminated in presence of break flagfile!" << std::endl;
+        io->warning << "Temperature was " << T << ", returning optimum configuration." << std::endl;
+	io->write << std::endl;
         for (n = 0; n < ndim; n++)
           xi[n] = xopt[n];
         F = Fopt;

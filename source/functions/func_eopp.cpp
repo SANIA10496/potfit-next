@@ -47,7 +47,7 @@ int FuncEOPP::num_params(void) {
   return 6;
 }
 
-void FuncEOPP::calc(double &r, double *p, double *f) {
+void FuncEOPP::calc(const double &r, double *p, double *f) {
   x[0] = r;
   x[1] = r;
   y[0] = p[1];

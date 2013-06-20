@@ -42,38 +42,38 @@ namespace POTFIT_NS {
     Settings(class POTFIT *);
     ~Settings();
 
-    void set_myid(int);
-    int get_myid(void);
+    void set_myid(const int &);
+    const int get_myid(void);
 
-    void set_num_cpus(int);
-    int get_num_cpus(void);
+    void set_num_cpus(const int &);
+    const int get_num_cpus(void);
 
-    void set_extend(double);
-    double get_extend(void);
+    void set_extend(const double &);
+    const double get_extend(void);
 
-    void set_opt(int);
-    int get_opt(void);
+    void set_opt(const int &);
+    const int get_opt(void);
 
-    void set_apot_punish(double);
-    double get_apot_punish(void);
+    void set_apot_punish(const double &);
+    const double get_apot_punish(void);
 
-    void set_eweight(double);
-    double get_eweight(void);
+    void set_eweight(const double &);
+    const double get_eweight(void);
 
-    void set_sweight(double);
-    double get_sweight(void);
+    void set_sweight(const double &);
+    const double get_sweight(void);
 
-    void set_deps(double);
-    double get_deps(void);
+    void set_deps(const double &);
+    const double get_deps(void);
 
-    void set_dp_cut(double);
-    double get_dp_cut(void);
+    void set_dp_cut(const double &);
+    const double get_dp_cut(void);
 
-    void set_dp_tol(double);
-    double get_dp_tol(void);
+    void set_dp_tol(const double &);
+    const double get_dp_tol(void);
 
-    void set_dp_mix(double);
-    double get_dp_mix(void);
+    void set_dp_mix(const double &);
+    const double get_dp_mix(void);
 
   private:
     int myid;

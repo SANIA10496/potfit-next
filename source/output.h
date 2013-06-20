@@ -44,37 +44,37 @@ namespace POTFIT_NS {
     void write_output(void);
     void write_tempfile(void);
 
-    void set_endpot(std::string);
+    void set_endpot(const std::string &);
     std::string get_endpot(void);
 
-    void set_output_prefix(std::string);
+    void set_output_prefix(const std::string &);
     std::string get_output_prefix(void);
 
-    void set_imdpot(std::string);
+    void set_imdpot(const std::string &);
     std::string get_imdpot(void);
 
-    void set_plotfile(std::string);
+    void set_plotfile(const std::string &);
     std::string get_plotfile(void);
 
-    void set_distfile(std::string);
+    void set_distfile(const std::string &);
     std::string get_distfile(void);
 
-    void set_imdpotsteps(int);
+    void set_imdpotsteps(const int &);
     int get_imdpotsteps(void);
 
-    void set_plotmin(double);
+    void set_plotmin(const double &);
     double get_plotmin(void);
 
-    void set_tempfile(std::string);
+    void set_tempfile(const std::string &);
     std::string get_tempfile(void);
 
-    void set_enable_pairdist(int);
+    void set_enable_pairdist(const int &);
     int get_enable_pairdist(void);
 
-    void set_plotpointfile(std::string);
+    void set_plotpointfile(const std::string &);
     std::string get_plotpointfile(void);
 
-    void set_lammps_pot(int);
+    void set_lammps_pot(const int &);
 
   private:
     void write_distfile(void);

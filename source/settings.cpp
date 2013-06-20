@@ -53,112 +53,112 @@ Settings::~Settings() {
   return;
 }
 
-void Settings::set_myid(int id) {
+void Settings::set_myid(const int &id) {
   myid = id;
 
   return;
 }
 
-int Settings::get_myid(void) {
+const int Settings::get_myid(void) {
   return myid;
 }
 
-void Settings::set_num_cpus(int n) {
+void Settings::set_num_cpus(const int &n) {
   num_cpus = n;
 
   return;
 }
 
-int Settings::get_num_cpus(void) {
+const int Settings::get_num_cpus(void) {
   return num_cpus;
 }
 
-void Settings::set_extend(double x) {
+void Settings::set_extend(const double &x) {
   extend = x;
 
   return;
 }
 
-double Settings::get_extend(void) {
+const double Settings::get_extend(void) {
   return extend;
 }
 
-void Settings::set_opt(int i) {
+void Settings::set_opt(const int &i) {
   opt = i;
 
   return;
 }
 
-int Settings::get_opt(void) {
+const int Settings::get_opt(void) {
   return opt;
 }
 
-void Settings::set_apot_punish(double x) {
+void Settings::set_apot_punish(const double &x) {
   apot_punish_value = x;
 
   return;
 }
 
-double Settings::get_apot_punish(void) {
+const double Settings::get_apot_punish(void) {
   return apot_punish_value;
 }
 
-void Settings::set_eweight(double x) {
+void Settings::set_eweight(const double &x) {
   eweight = x;
 
   return;
 }
 
-double Settings::get_eweight(void) {
+const double Settings::get_eweight(void) {
   return eweight;
 }
 
-void Settings::set_sweight(double x) {
+void Settings::set_sweight(const double &x) {
   sweight = x;
 
   return;
 }
 
-double Settings::get_sweight(void) {
+const double Settings::get_sweight(void) {
   return sweight;
 }
 
-void Settings::set_deps(double x) {
+void Settings::set_deps(const double &x) {
   d_eps = x;
 
   return;
 }
 
-double Settings::get_deps(void) {
+const double Settings::get_deps(void) {
   return d_eps;
 }
 
-void Settings::set_dp_cut(double x) {
+void Settings::set_dp_cut(const double &x) {
   dp_cut = x;
 
   return;
 }
 
-double Settings::get_dp_cut(void) {
+const double Settings::get_dp_cut(void) {
   return dp_cut;
 }
 
-void Settings::set_dp_tol(double x) {
+void Settings::set_dp_tol(const double &x) {
   dp_tol = x;
 
   return;
 }
 
-double Settings::get_dp_tol(void) {
+const double Settings::get_dp_tol(void) {
   return dp_tol;
 }
 
-void Settings::set_dp_mix(double x) {
+void Settings::set_dp_mix(const double &x) {
   dp_mix = x;
 
   return;
 }
 
-double Settings::get_dp_mix(void) {
+const double Settings::get_dp_mix(void) {
   return dp_mix;
 }
