@@ -28,6 +28,8 @@
  *
  ****************************************************************/
 
+#include <mpi.h>
+
 #include "force_pair.h"
 #include "../communication.h"
 #include "../io.h"
@@ -68,21 +70,21 @@ int ForcePair::get_col(const int &slot, const int &a, const int &b) {
   }
 
   return (a <= b) ? a * structures->get_ntypes() + b - ((a * (a + 1)) / 2)
-        : b * structures->get_ntypes() + a - ((b * (b + 1)) / 2);
+         : b * structures->get_ntypes() + a - ((b * (b + 1)) / 2);
 }
 
 int ForcePair::cols(void) {
-  int n = structures->get_ntypes();
+  const int n = structures->get_ntypes();
 
   return (int)n*(n+1)/2.;
 }
 
 void ForcePair::update_min_dist(double *min_dist) {
-  int n = structures->get_ntypes();
+  const int n = structures->get_ntypes();
   k = 0;
 
-  for (int i=0;i<n;i++)
-    for (int j=0;j<n;j++) {
+  for (i=0; i<n; i++)
+    for (j=0; j<n; j++) {
       k = (i <= j) ? i * n + j - ((i * (i + 1)) / 2) : j * n + i - ((j * (j + 1)) / 2);
       potential->pots[k]->begin = 0.95 * min_dist[k];
     }
@@ -133,7 +135,7 @@ void ForcePair::read_additional_data(FILE *infile) {
       if (strcmp("cp", name) != 0) {
         io->error << "Found \"" << name << "\" instead of \"cp\"" << std::endl;
         io->error << "No chemical potentials found in potential file." << std::endl;
-	io->pexit(EXIT_FAILURE);
+        io->pexit(EXIT_FAILURE);
       }
       potential->chem_pot->add_value(j, buffer, val, min, max);
     }
@@ -168,6 +170,7 @@ double ForcePair::calc_forces(void) {
     pot = NULL;
 
     // loop over configurations
+
     for (h = structures->firstconf; h < structures->firstconf + structures->nconf; h++) {
       conf = structures->config[h];
       uf = conf->use_forces;
@@ -176,7 +179,7 @@ double ForcePair::calc_forces(void) {
       // reset energies and stresses
       force_vect[energy_p + h] = 0.;
       for (i = 0; i < 6; i++)
-	force_vect[stress_p + 6 * h + i] = 0.;
+        force_vect[stress_p + 6 * h + i] = 0.;
 
       //      TODO: chemical potentials
 //      force_vect[energy_p + h] += chemical_potential(ntypes, na_type[h], xi_opt + cp_start);
@@ -184,15 +187,15 @@ double ForcePair::calc_forces(void) {
       // first loop over atoms: reset forces, densities
       for (i = 0; i < conf->num_atoms; i++) {
         atom = &conf->atoms[i];
-	val = force_vect + 3 * (conf->cnfstart + i);
+        val = force_vect + 3 * (conf->cnfstart + i);
         if (uf && 1 == atom->contrib) {
-	  *(val++) = -atom->force.x;
-	  *(val++) = -atom->force.y;
-	  *val = -atom->force.z;
+          *(val++) = -atom->force.x;
+          *(val++) = -atom->force.y;
+          *val = -atom->force.z;
         } else {
-	  *(val++) = 0.0;
-	  *(val++) = 0.0;
-	  *val = 0.0;
+          *(val++) = 0.0;
+          *(val++) = 0.0;
+          *val = 0.0;
         }
       }
       // end first loop
@@ -204,20 +207,20 @@ double ForcePair::calc_forces(void) {
         // loop over neighbors
         for (j = 0; j < atom->num_neighbors; j++) {
           neigh = &atom->neighs[j];
-	  l = neigh->col[0];
-	  pot = potential->pots[l];
+          l = neigh->col[0];
+          pot = potential->pots[l];
 
           // pair potential part
           if (neigh->r < pot->end) {
             // fn value and grad are calculated in the same step
             if (uf)
               phi_val = pot->splines.splint_comb_dir(pot->table, pot->d2tab, neigh->slot[0],
-			      neigh->shift[0], neigh->step[0], &phi_grad);
+                                                     neigh->shift[0], neigh->step[0], &phi_grad);
             else
               phi_val = pot->splines.splint_dir(pot->table, pot->d2tab, neigh->slot[0],
-			      neigh->shift[0], neigh->step[0]);
+                                                neigh->shift[0], neigh->step[0]);
             // avoid double counting if atom is interacting with a copy of itself
-	    if (neigh->self) {
+            if (neigh->self) {
               phi_val *= 0.5;
               phi_grad *= 0.5;
             }
@@ -228,26 +231,26 @@ double ForcePair::calc_forces(void) {
               tmp_force.x = neigh->dist[0] * phi_grad;
               tmp_force.y = neigh->dist[1] * phi_grad;
               tmp_force.z = neigh->dist[2] * phi_grad;
-	      if (1 == atom->contrib) {
-		val = force_vect + k;
-	        *(val++) += tmp_force.x;
-  	        *(val++) += tmp_force.y;
-	        *(val) += tmp_force.z;
+              if (1 == atom->contrib) {
+                val = force_vect + k;
+                *(val++) += tmp_force.x;
+                *(val++) += tmp_force.y;
+                *(val) += tmp_force.z;
                 // actio = reactio
-	        val = force_vect + 3 * (conf->cnfstart + neigh->nr);
-		*(val++) -= tmp_force.x;
-		*(val++) -= tmp_force.y;
-		*(val) -= tmp_force.z;
-	      }
+                val = force_vect + 3 * (conf->cnfstart + neigh->nr);
+                *(val++) -= tmp_force.x;
+                *(val++) -= tmp_force.y;
+                *(val) -= tmp_force.z;
+              }
               // also calculate pair stresses
               if (us) {
-		val = force_vect + stress_p + 6 * h;
-		*(val++) -= neigh->rdist.x * tmp_force.x;
-		*(val++) -= neigh->rdist.y * tmp_force.y;
-		*(val++) -= neigh->rdist.z * tmp_force.z;
-		*(val++) -= neigh->rdist.x * tmp_force.y;
-		*(val++) -= neigh->rdist.y * tmp_force.z;
-		*(val) -= neigh->rdist.z * tmp_force.x;
+                val = force_vect + stress_p + 6 * h;
+                *(val++) -= neigh->rdist.x * tmp_force.x;
+                *(val++) -= neigh->rdist.y * tmp_force.y;
+                *(val++) -= neigh->rdist.z * tmp_force.z;
+                *(val++) -= neigh->rdist.x * tmp_force.y;
+                *(val++) -= neigh->rdist.y * tmp_force.z;
+                *(val) -= neigh->rdist.z * tmp_force.x;
               }
             }
           }
@@ -255,7 +258,7 @@ double ForcePair::calc_forces(void) {
 
         // then we can calculate contribution of forces right away
         if (uf) {
-		// TODO
+          // TODO
           /* Weigh by absolute value of force */
 //          forces[k] /= FORCE_EPS + atom->absforce;
 //          forces[k + 1] /= FORCE_EPS + atom->absforce;
@@ -263,7 +266,7 @@ double ForcePair::calc_forces(void) {
           /* sum up forces */
           if (atom->contrib)
             tmpsum += conf->conf_weight * (
-			    square(force_vect[k]) + square(force_vect[k + 1]) + square(force_vect[k + 2]));
+                        square(force_vect[k]) + square(force_vect[k + 1]) + square(force_vect[k + 2]));
         }			/* second loop over atoms */
       }
 
@@ -293,34 +296,8 @@ double ForcePair::calc_forces(void) {
 //    }
 //#endif /* APOT */
 
-    sum = tmpsum;		/* global sum = local sum  */
-//#ifdef MPI
-//    /* reduce global sum */
-//    sum = 0.;
-//    MPI_Reduce(&tmpsum, &sum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-//    /* gather forces, energies, stresses */
-//    if (myid == 0) {		/* root node already has data in place */
-//      /* forces */
-//      MPI_Gatherv(MPI_IN_PLACE, myatoms, MPI_VECTOR, forces, atom_len,
-//        atom_dist, MPI_VECTOR, 0, MPI_COMM_WORLD);
-//      /* energies */
-//      MPI_Gatherv(MPI_IN_PLACE, myconf, MPI_DOUBLE, forces + natoms * 3,
-//        conf_len, conf_dist, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-//      /* stresses */
-//      MPI_Gatherv(MPI_IN_PLACE, myconf, MPI_STENS, forces + natoms * 3 + nconf,
-//        conf_len, conf_dist, MPI_STENS, 0, MPI_COMM_WORLD);
-//    } else {
-//      /* forces */
-//      MPI_Gatherv(forces + firstatom * 3, myatoms, MPI_VECTOR, forces, atom_len,
-//        atom_dist, MPI_VECTOR, 0, MPI_COMM_WORLD);
-//      /* energies */
-//      MPI_Gatherv(forces + natoms * 3 + firstconf, myconf, MPI_DOUBLE,
-//        forces + natoms * 3, conf_len, conf_dist, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-//      /* stresses */
-//      MPI_Gatherv(forces + natoms * 3 + nconf + 6 * firstconf, myconf, MPI_STENS,
-//        forces + natoms * 3 + nconf, conf_len, conf_dist, MPI_STENS, 0, MPI_COMM_WORLD);
-//    }
-//#endif /* MPI */
+    // reduce global sum
+    sum = communication->gather_forces(tmpsum);
 
     // root process exits this function now
     if (settings->get_myid() == 0) {
@@ -328,17 +305,19 @@ double ForcePair::calc_forces(void) {
       inc_fcalls();
       if (std::isnan(sum)) {
 #ifdef DEBUG
-	io->write("\n--> Force is nan! <--\n\n");
+        io->write("\n--> Force is nan! <--\n\n");
 #endif // DEBUG
-	set_error_sum(1e10);
-	return 1e10;
+        set_error_sum(1e10);
+        return 1e10;
       } else {
-	set_error_sum(sum);
-	return sum;
+        set_error_sum(sum);
+        return sum;
       }
     }
-  } // end while
+
+  // end while
+  }
 
   // once a non-root process arrives here, all is done.
-  return 0.;
+  return 0.0;
 }

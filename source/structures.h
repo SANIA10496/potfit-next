@@ -64,15 +64,23 @@ namespace POTFIT_NS {
     std::vector<int> num_per_type; 	// total number of atoms per type
     int using_forces; 			// total number of configs using forces
     int using_stresses;			// total number of configs using stress
-    int firstconf; 			// number of first configuration (for MPI)
-    int nconf; 				// number of configurations (for MPI)
+    // MPI communication related
+    int firstconf; 			// number of first configuration
+    int nconf; 				// number of configurations
+    int myatoms; 			// number of atoms
+    int firstatom; 			// number of first atom on this cpu
+    int *atom_len;
+    int *atom_dist;
+    int *conf_len;
+    int *conf_dist;
 
     double *min_dist; 			// minimal distances for all interactions
 
     std::vector<Config *> config; 	// configurations
     std::vector<Atom> atoms; 		// atoms
-    std::vector<Neighbor_2> neigh_2; 	// neighbors
-    std::vector<Neighbor_3> neigh_3; 	// ???
+    std::vector<Neighbor_2> neigh_2; 	// two-body neighbors
+    std::vector<Neighbor_3> neigh_3; 	// three-body neighbors
+
   private:
     int ntypes; 			// number of atom types
     int line;

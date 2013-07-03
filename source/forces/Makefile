@@ -1,5 +1,7 @@
 SHELL := /bin/bash
 
+include ../Makefile.in
+
 FORCE_FILES = $(shell ls *.cpp)
 
 OBJECTS := $(subst .cpp,.o,${FORCE_FILES})

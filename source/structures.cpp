@@ -44,6 +44,13 @@ Structures::Structures(POTFIT *ptf) :
   Pointers(ptf),
   using_forces(0),
   using_stresses(0),
+  firstconf(-1),
+  nconf(-1),
+  myatoms(0),
+  atom_len(NULL),
+  atom_dist(NULL),
+  conf_len(NULL),
+  conf_dist(NULL),
   min_dist(NULL),
   ntypes(0),
   line(0),
@@ -59,6 +66,18 @@ Structures::~Structures() {
     delete config[i];
   config.clear();
   num_per_type.clear();
+
+  if (atom_len != NULL)
+    delete [] atom_len;
+
+  if (atom_dist != NULL)
+    delete [] atom_dist;
+
+  if (conf_len != NULL)
+    delete [] conf_len;
+
+  if (conf_dist != NULL)
+    delete [] conf_dist;
 
   return;
 }

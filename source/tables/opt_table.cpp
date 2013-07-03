@@ -34,7 +34,8 @@ using namespace POTFIT_NS;
 
 OptTable::OptTable(POTFIT *ptf, int n) :
   Pointers(ptf),
-  val_p(NULL) {
+  val_p(NULL)
+{
   values = new double[n];
   val_min = new double[n];
   val_max = new double[n];
@@ -44,12 +45,19 @@ OptTable::OptTable(POTFIT *ptf, int n) :
     val_max[i] = 0.0;
   }
   val_p = values;
+
+  return;
 }
 
 OptTable::~OptTable() {
-  if (NULL != values) {
+  if (NULL != values)
     delete [] values;
+
+  if (NULL != val_min)
     delete [] val_min;
+
+  if (NULL != val_max)
     delete [] val_max;
-  }
+
+  return;
 }

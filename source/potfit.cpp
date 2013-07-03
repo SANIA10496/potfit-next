@@ -60,6 +60,8 @@ POTFIT::POTFIT(int argc, char **argv) {
   utils = new Utils(this);
   input = new Input(this, argc, argv);
   error = new Error(this);
+
+  return;
 }
 
 POTFIT::~POTFIT() {
@@ -75,6 +77,8 @@ POTFIT::~POTFIT() {
   delete communication;
   delete utils;
   delete error;
+
+  return;
 }
 
 void POTFIT::run() {
@@ -90,24 +94,17 @@ void POTFIT::run() {
   input->read_config_file();
 
   // perform optimization
-  utils->start_timer();
+  if (0 == settings->get_myid())
+    utils->start_timer();
   optimization->run();
-  utils->end_timer();
+  if (0 == settings->get_myid())
+    utils->end_timer();
 
   // write potentials to disk
   output->write_output();
 
   // write error report
   error->write_report();
-
-//  Vector3D<int> a(0,1,2);
-//  Vector3D<int> b(2,1,0);
-//  Vector3D<int> c;
-
-//  std::cout << a << b << c << std::endl;
-//  c = a + b;
-
-//  std::cout << c << std::endl;
 
   return;
 }

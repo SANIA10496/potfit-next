@@ -31,6 +31,8 @@
 #ifndef PTF_COMMUNICATION_H
 #define PTF_COMMUNICATION_H
 
+#include <mpi.h>
+
 #include "pointers.h"
 
 namespace POTFIT_NS {
@@ -42,7 +44,14 @@ namespace POTFIT_NS {
 
     void init(void);
     void broadcast_params(void);
+    double gather_forces(const double &);
     void set_config_per_cpu(void);
+
+    MPI::Datatype MPI_VECTOR;
+    MPI::Datatype MPI_STENS;
+
+  private:
+    int opt_pot_len;
   };
 
 }
