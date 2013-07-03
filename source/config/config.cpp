@@ -45,7 +45,6 @@ using namespace POTFIT_NS;
 
 Config::Config(POTFIT *ptf, int idx) :
   Pointers(ptf),
-  num_per_type(NULL),
   num_atoms(0),
   inv_num_atoms(0.0),
   use_forces(0),
@@ -79,24 +78,11 @@ Config::Config(POTFIT *ptf, int idx) :
 
   for (int i=0;i<idx;i++)
     cnfstart += structures->config[i]->num_atoms;
-}
-
-Config::~Config() {
-  for (int i=0; i<atoms.size(); i++) {
-    for (int j=0; j<atoms[i]->neighs.size(); j++) {
-      delete atoms[i]->neighs[j];
-    }
-    atoms[i]->neighs.clear();
-  }
-
-  for (unsigned i = 0; i < atoms.size(); ++i)
-    delete atoms[i];
-  atoms.clear();
-
-  delete [] num_per_type;
 
   return;
 }
+
+Config::~Config() {}
 
 void Config::read(FILE *infile, int *line) {
   char *res, *ptr;
@@ -134,9 +120,7 @@ void Config::read(FILE *infile, int *line) {
   }
   inv_num_atoms = 1./num_atoms;
 
-  num_per_type = new int[structures->get_ntypes()];
-  for (int i=0; i<structures->get_ntypes(); i++)
-    num_per_type[i] = 0;
+  num_per_type.resize(structures->get_ntypes(),0);
 
   do {
     res = fgets(buffer, 1024, infile);
@@ -260,8 +244,7 @@ void Config::read(FILE *infile, int *line) {
   // read the atoms
   Atom *atom;
   for (int i = 0; i < num_atoms; i++) {
-    atoms.push_back(new Atom(ptf));
-    atom = atoms[i];
+    atom = new Atom;
     if (7 > fscanf(infile, "%d %lf %lf %lf %lf %lf %lf\n", &(atom->type),
                    &(atom->pos.x), &(atom->pos.y), &(atom->pos.z), &(atom->force.x), &(atom->force.y),
                    &(atom->force.z)))
@@ -298,11 +281,13 @@ void Config::read(FILE *infile, int *line) {
         if (r < sphere_radii[i])
           atom->contrib = 1;
       }
-    }
-    else
+    } else {
       atom->contrib = 1;
+    }
     num_per_type[atom->type] += 1;
+    structures->atoms.push_back(*atom);
   }
+
   // check cell size
   // inverse height in direction
   iheight.x = sqrt(sprod(tbox_x, tbox_x));
@@ -335,6 +320,7 @@ void Config::read(FILE *infile, int *line) {
                   2 * cell_scale[0] + 1, 2 * cell_scale[1] + 1, 2 * cell_scale[2] + 1);
 #endif /* DEBUG */
 
+  structures->update_pointers(index);
   calc_neighbors();
 
   return;
@@ -342,15 +328,17 @@ void Config::read(FILE *infile, int *line) {
 
 void Config::calc_neighbors(void) {
   Atom *atom_i, *atom_j;
+  Neighbor_2 *temp_neigh_2;
+  Neighbor_3 *temp_neigh_3;
   double r;
   int type1, type2;
   vector d, dd;
 
   if (interaction->force->neigh_type() == 2) {
-    for (int i=0; i<atoms.size(); i++) {
-      atom_i = atoms[i];
-      for (int j=i; j<atoms.size(); j++) {
-        atom_j = atoms[j];
+    for (int i=0; i<num_atoms; i++) {
+      atom_i = &atoms[i];
+      for (int j=i; j<num_atoms; j++) {
+        atom_j = &atoms[j];
         d.x = atom_j->pos.x - atom_i->pos.x;
         d.y = atom_j->pos.y - atom_i->pos.y;
         d.z = atom_j->pos.z - atom_i->pos.z;
@@ -369,8 +357,9 @@ void Config::calc_neighbors(void) {
                 if (r <= potential->rmin[type1 * structures->get_ntypes() + type2]) {
                   io->error << "Short distance in configuration " << index << std::endl;
                 }
-                atoms[i]->neighs.push_back(new Neighbor_2(ptf));
-                atoms[i]->neighs[atoms[i]->neighs.size()-1]->init(this, i, j, &dd);
+		temp_neigh_2 = new Neighbor_2(ptf);
+		temp_neigh_2->init(this, i, j, &dd);
+		structures->neigh_2.push_back(*temp_neigh_2);
               }
             }
       }

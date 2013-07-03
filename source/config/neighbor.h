@@ -55,7 +55,7 @@ namespace POTFIT_NS {
     double shift[MAX_SLOTS];
     double step[MAX_SLOTS];
 
-    vector dist;		/* distance divided by r */
+    double dist[3];		/* distance divided by r */
 
     // ADP
     vector rdist;		/* real distance */

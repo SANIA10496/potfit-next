@@ -40,9 +40,9 @@
 
 namespace POTFIT_NS {
 
-  class Atom : protected Pointers {
+  class Atom{
   public:
-    Atom(class POTFIT *);
+    Atom();
     ~Atom();
 
     int type;
@@ -52,7 +52,7 @@ namespace POTFIT_NS {
     double absforce;
     int contrib;
 
-    std::vector<Neighbor *> neighs;
+    Neighbor *neighs;
 
     // EAM
     double rho;

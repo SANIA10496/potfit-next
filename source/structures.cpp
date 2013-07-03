@@ -90,8 +90,34 @@ void Structures::read_config(FILE *infile) {
     total_num_conf++;
   } while (!feof(infile));
 
+  update_pointers(total_num_conf-1);
+
   communication->set_config_per_cpu();
   interaction->force->calc_pointers();
+
+  return;
+}
+
+void Structures::update_pointers(const int &index) {
+  int count = 0;
+  int count_neigh = 0;
+  int neigh_type = interaction->force->neigh_type();
+
+  for (int i=0;i<=index;i++) {
+    config[i]->atoms = &atoms[count];
+    count += config[i]->num_atoms;
+    if (2 == neigh_type) {
+      for (int j=0;j<config[i]->num_atoms;j++) {
+        config[i]->atoms[j].neighs = &neigh_2[count_neigh];
+	count_neigh += config[i]->atoms[j].num_neighbors;
+      }
+    } else {
+      for (int j=0;j<config[i]->num_atoms;j++) {
+        config[i]->atoms[j].neighs = &neigh_3[count_neigh];
+	count_neigh += config[i]->atoms[j].num_neighbors;
+      }
+    }
+  }
 
   return;
 }
@@ -126,7 +152,7 @@ const int Structures::get_num_contrib_atoms(void) {
   for (int i=0; i<total_num_conf; i++) {
     if (1 == config[i]->use_forces) {
       for (int j=0; j<config[i]->num_atoms; j++) {
-        if (1 == config[i]->atoms[j]->contrib)
+        if (1 == config[i]->atoms[j].contrib)
           count++;
       }
     }

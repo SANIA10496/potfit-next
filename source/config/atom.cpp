@@ -32,8 +32,7 @@
 
 using namespace POTFIT_NS;
 
-Atom::Atom(POTFIT *ptf) :
-  Pointers(ptf),
+Atom::Atom() :
   type(0),
   num_neighbors(0),
   absforce(0.0),

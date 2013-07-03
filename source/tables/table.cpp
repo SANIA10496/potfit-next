@@ -36,7 +36,25 @@ using namespace POTFIT_NS;
 
 Table::Table(POTFIT *ptf) :
   Pointers(ptf),
-  splines(ptf)
+  splines(ptf),
+  init_done(0),
+  name(NULL),
+  format(0),
+  begin(0.0),
+  end(0.0),
+  pot_number(0),
+  num_params(0),
+  num_free_params(0),
+  opt_pot_start(-1),
+  len(0),
+  step(0.0),
+  invstep(0.0),
+  xcoord(NULL),
+  table(NULL),
+  d2tab(NULL),
+  values(NULL),
+  invar_par(NULL),
+  idx(NULL)
 {}
 
 Table::~Table() {}

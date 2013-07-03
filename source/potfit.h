@@ -64,7 +64,6 @@ namespace POTFIT_NS {
     // main potfit procedure, calls all subroutines
     void run();
   };
-
 }
 
 #endif /* POTFIT_H */

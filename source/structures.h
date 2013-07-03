@@ -36,6 +36,7 @@
 #include "pointers.h"
 
 #include "config/config.h"
+#include "config/list_neighbors.h"
 
 namespace POTFIT_NS {
 
@@ -47,6 +48,7 @@ namespace POTFIT_NS {
     void init(void);
 
     void read_config(FILE *);
+    void update_pointers(const int &);
 
     void print_mindist(void);
 
@@ -69,7 +71,8 @@ namespace POTFIT_NS {
 
     std::vector<Config *> config; 	// configurations
     std::vector<Atom> atoms; 		// atoms
-    std::vector<Neighbor> neighs; 	// neighbors
+    std::vector<Neighbor_2> neigh_2; 	// neighbors
+    std::vector<Neighbor_3> neigh_3; 	// ???
   private:
     int ntypes; 			// number of atom types
     int line;

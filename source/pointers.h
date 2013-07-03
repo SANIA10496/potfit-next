@@ -53,6 +53,25 @@ namespace POTFIT_NS {
       utils(ptr->utils) {}
     virtual ~Pointers() {}
 
+    Pointers& operator=(const Pointers &a) {
+      if (this == &a)
+        return *this;
+      ptf = a.ptf;
+      io = a.io;
+      input = a.input;
+      output = a.output;
+      interaction = a.interaction;
+      optimization = a.optimization;
+      random = a.random;
+      structures = a.structures;
+      settings = a.settings;
+      potential = a.potential;
+      memory = a.memory;
+      communication = a.communication;
+      utils = a.utils;
+      return *this;
+    };
+
   protected:
     POTFIT *ptf;
     IO *&io;

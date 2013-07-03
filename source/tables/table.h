@@ -69,7 +69,7 @@ namespace POTFIT_NS {
     int init_done; 		// is the table initialized?
 
     char *name; 		// name of analytic function / potential type
-    int  format; 		// potential format
+    const int  format; 		// potential format
 
     double begin; 		// starting position of potential = r_min
     double *values; 		// values

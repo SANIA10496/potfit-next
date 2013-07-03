@@ -50,17 +50,17 @@ Neighbor_2::Neighbor_2(POTFIT *ptf) :
 Neighbor_2::~Neighbor_2() {}
 
 void Neighbor_2::init(Config *conf, int i, int j, vector *dd) {
-  int type1 = conf->atoms[i]->type;
+  int type1 = conf->atoms[i].type;
   int col_temp = 0;
   int k, l;
 
   r = sqrt(sprod(*dd,*dd));
 
-  dist.x = dd->x / r;
-  dist.y = dd->y / r;
-  dist.z = dd->z / r;
+  dist[0] = dd->x / r;
+  dist[1] = dd->y / r;
+  dist[2] = dd->z / r;
 
-  type = conf->atoms[j]->type;
+  type = conf->atoms[j].type;
   nr = j;
   self = (j == i) ? 1 : 0;
 
@@ -78,7 +78,7 @@ void Neighbor_2::init(Config *conf, int i, int j, vector *dd) {
   sqrdist.zx = dd->z * dd->x * r * r;
   sqrdist.xy = dd->x * dd->y * r * r;
 
-  conf->atoms[i]->num_neighbors++;
+  conf->atoms[i].num_neighbors++;
 
   col[0] = interaction->force->get_col(0, type1, type);
   structures->min_dist[col[0]] = std::min(structures->min_dist[col[0]], r);

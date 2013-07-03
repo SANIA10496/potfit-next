@@ -183,7 +183,7 @@ double ForcePair::calc_forces(void) {
 
       // first loop over atoms: reset forces, densities
       for (i = 0; i < conf->num_atoms; i++) {
-        atom = conf->atoms[i];
+        atom = &conf->atoms[i];
 	val = force_vect + 3 * (conf->cnfstart + i);
         if (uf && 1 == atom->contrib) {
 	  *(val++) = -atom->force.x;
@@ -199,11 +199,11 @@ double ForcePair::calc_forces(void) {
 
       // 2nd loop: calculate pair forces and energies
       for (i = 0; i < conf->num_atoms; i++) {
-        atom = conf->atoms[i];
+        atom = &conf->atoms[i];
         k = 3 * (conf->cnfstart + i);
         // loop over neighbors
         for (j = 0; j < atom->num_neighbors; j++) {
-          neigh = atom->neighs[j];
+          neigh = &atom->neighs[j];
 	  l = neigh->col[0];
 	  pot = potential->pots[l];
 
@@ -225,9 +225,9 @@ double ForcePair::calc_forces(void) {
             force_vect[energy_p + h] += phi_val;
 
             if (uf) {
-              tmp_force.x = neigh->dist.x * phi_grad;
-              tmp_force.y = neigh->dist.y * phi_grad;
-              tmp_force.z = neigh->dist.z * phi_grad;
+              tmp_force.x = neigh->dist[0] * phi_grad;
+              tmp_force.y = neigh->dist[1] * phi_grad;
+              tmp_force.z = neigh->dist[2] * phi_grad;
 	      if (1 == atom->contrib) {
 		val = force_vect + k;
 	        *(val++) += tmp_force.x;

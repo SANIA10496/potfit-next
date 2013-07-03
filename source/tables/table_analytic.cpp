@@ -44,41 +44,16 @@
 
 using namespace POTFIT_NS;
 
-TableAnalytic::TableAnalytic(POTFIT *ptf) : Table(ptf) {
-  // from table.h
-  init_done = 0;
-
-  name = NULL;
-  format = 0;
-
-  begin = 0.0;
-  end = 0.0;
-
-  pot_number = 0;
-  num_params = 0;
-  num_free_params = 0;
-  opt_pot_start = -1;
-
-  len = 0;
-  step = 0.0;
-  invstep = 0.0;
+TableAnalytic::TableAnalytic(POTFIT *ptf) :
+  Table(ptf),
+  smooth_pot(0),
+  param_name(NULL),
+  val_min(NULL),
+  val_max(NULL),
+  function(NULL)
+{
   grad[0] = 0.0;
   grad[1] = 0.0;
-  xcoord = NULL;
-  table = NULL;
-  d2tab = NULL;
-
-  // from table_analytic.h
-  smooth_pot = 0;
-
-  values = NULL;
-  param_name = NULL;
-  val_min = NULL;
-  val_max = NULL;
-  invar_par = NULL;
-  idx = NULL;
-
-  function = NULL;
 
   return;
 }
@@ -94,12 +69,6 @@ TableAnalytic::~TableAnalytic() {
   delete [] invar_par;
   delete [] param_name;
   delete [] idx;
-
-  if (len != 0) {
-    delete [] xcoord;
-    delete [] table;
-    delete [] d2tab;
-  }
 
   return;
 }
@@ -334,9 +303,9 @@ void TableAnalytic::init_calc_table(void) {
   invstep = 1. / step;
   grad[0] = 10e30;
   grad[1] = 0.0;
-  xcoord = new double[POT_STEPS];
-  table = new double[POT_STEPS];
-  d2tab = new double[POT_STEPS];
+  xcoord = potential->xcoord + pot_number * POT_STEPS;
+  table = potential->table + pot_number * POT_STEPS;
+  d2tab = potential->d2tab + pot_number * POT_STEPS;
 
   h = values[num_params - 1];
   for (int i=0; i<len; i++) {
@@ -410,9 +379,9 @@ void TableAnalytic::update_slots(void) {
   for (int i = 0; i < structures->get_num_total_configs(); i++) {
     conf = structures->config[i];
     for (int j = 0; j < conf->num_atoms; j++) {
-      atom = conf->atoms[j];
+      atom = &conf->atoms[j];
       for (int k = 0; k < atom->num_neighbors; k++) {
-        neigh = atom->neighs[k];
+        neigh = &atom->neighs[k];
         r = neigh->r;
 
         // update slots for pair potential part, slot 0

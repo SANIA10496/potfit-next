@@ -89,6 +89,11 @@ namespace POTFIT_NS {
     GlobalsTable 	*global_params; 	// table for global parameters (apot)
     ChempotTable 	*chem_pot; 		// table for chemical potentials (pair)
 
+    // pointers for data storage
+    double *xcoord;
+    double *table;
+    double *d2tab;
+
   private:
     void write_potential_header(std::ofstream &);
 

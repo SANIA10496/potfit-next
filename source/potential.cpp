@@ -92,13 +92,27 @@ Potential::~Potential() {
   if (NULL != chem_pot)
     delete chem_pot;
 
+  if (NULL != xcoord)
+    delete [] xcoord;
+
+  if (NULL != table)
+    delete [] table;
+
+  if (NULL != d2tab)
+    delete d2tab;
+
   return;
 }
 
 void Potential::init(const int &size) {
+  const int cols = interaction->force->cols();
+
   num_pots = size;
   num_free_pots = size;
-  invar_pot = new int[interaction->force->cols()];
+  invar_pot = new int[cols];
+  xcoord = new double[cols * POT_STEPS];
+  table = new double[cols * POT_STEPS];
+  d2tab = new double[cols * POT_STEPS];
   for (int i=0; i<interaction->force->cols(); i++)
     invar_pot[i] = 0;
   for (int i = 0; i < structures->get_ntypes(); ++i) {

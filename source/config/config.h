@@ -48,11 +48,11 @@ namespace POTFIT_NS {
 
     void read(FILE *, int *);
 
-    std::vector<Atom *> atoms;
+    Atom *atoms;
     int cell_scale[3];
     int num_atoms;
     double inv_num_atoms;
-    int *num_per_type;
+    std::vector<int> num_per_type;
     int use_forces;
     int use_stresses;
     int index;

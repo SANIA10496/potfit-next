@@ -49,9 +49,9 @@ Neighbor::Neighbor(POTFIT *ptf) :
   nr = -1;
   self = 0;
   r = 0.0;
-  dist.x = 0.0;
-  dist.y = 0.0;
-  dist.z = 0.0;
+  dist[0] = 0.0;
+  dist[1] = 0.0;
+  dist[2] = 0.0;
 
   for (int i=0;i<MAX_SLOTS;i++) {
     slot[i] = 0;
