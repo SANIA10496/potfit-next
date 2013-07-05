@@ -231,7 +231,8 @@ void OptSimann::run(void) {
 //      }
 #endif /* !APOT && ( EAM || ADP ) && !NORESCALE */
     }
-//    io->pexit(EXIT_SUCCESS);
+    io->error << "Test" << std::endl;
+    io->pexit(EXIT_SUCCESS);
 
     /*Temp adjustment */
     T *= TEMPVAR;

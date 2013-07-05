@@ -55,7 +55,7 @@ Splines::~Splines(void) {
  *
  ****************************************************************/
 
-void Splines::spline_ed(double xstep, double *y, int n, double yp1, double ypn, double *y2)
+void Splines::spline_ed(const double &xstep, double *y, const int &n, const double &yp1, const double &ypn, double *y2)
 {
   int   i, k;
   double p, qn, un;
@@ -93,7 +93,7 @@ void Splines::spline_ed(double xstep, double *y, int n, double yp1, double ypn, 
  *
  ****************************************************************/
 
-void Splines::spline_ne(double *x, double *y, int n, double yp1, double ypn, double *y2)
+void Splines::spline_ne(double *x, double *y, const int &n, const double &yp1, const double &ypn, double *y2)
 {
   int   i, k;
   double p, qn, sig, un;
@@ -124,3 +124,27 @@ void Splines::spline_ne(double *x, double *y, int n, double yp1, double ypn, dou
   for (k = n - 2; k >= 0; k--)
     y2[k] = y2[k] * y2[k + 1] + u[k];
 }
+
+//double Splines::splint_dir(double *xi, double *d2tab, const int &k, const double &b, const double &step)
+//{
+//  a = 1.0 - b;
+//  p1 = *(xi + k);
+//  d21 = *(d2tab + k);
+//  p2 = *(xi + k + 1);
+//  d22 = *(d2tab + k + 1);
+
+//  return a * p1 + b * p2 + ((a * a * a - a) * d21 + (b * b * b - b) * d22) * (step * step) / 6.0;
+//}
+
+//double Splines::splint_comb_dir(double *xi, double *d2tab, const int &k, const double &b, const double &step, double *grad)
+//{
+//  a = 1.0 - b;
+//  p1 = xi[k];
+//  d21 = d2tab[k];
+//  p2 = xi[k+1];
+//  d22 = d2tab[k+1];
+
+//  *grad = (p2 - p1) / step + ((3 * (b * b) - 1) * d22 - (3 * (a * a) - 1) * d21) * step / 6.0;
+
+//  return a * p1 + b * p2 + ((a * a * a - a) * d21 + (b * b * b - b) * d22) * (step * step) / 6.0;
+//}

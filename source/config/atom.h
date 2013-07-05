@@ -47,10 +47,10 @@ namespace POTFIT_NS {
 
     int type;
     int num_neighbors;
+    int contrib;
     vector pos;
     vector force;
     double absforce;
-    int contrib;
 
     Neighbor *neighs;
 
@@ -71,7 +71,6 @@ namespace POTFIT_NS {
     vector E_old;
     vector E_tot;
   };
-
 }
 
-#endif /* PTF_CONFIG_H */
+#endif /* PTF_ATOM_H */

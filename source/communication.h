@@ -50,6 +50,7 @@ namespace POTFIT_NS {
     MPI::Datatype MPI_VECTOR;
     MPI::Datatype MPI_STENS;
 
+    int exit_flag;
   private:
     int opt_pot_len;
   };

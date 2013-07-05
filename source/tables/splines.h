@@ -43,32 +43,32 @@ namespace POTFIT_NS {
     ~Splines(void);
 
     // init splines with equidistand or non-equidistant sampling points
-    void  spline_ed(double, double *, int, double, double, double *);
-    void  spline_ne(double *, double *, int, double, double, double *);
+    void  spline_ed(const double &, double *, const int &, const double &, const double &, double *);
+    void  spline_ne(double *, double *, const int &, const double &, const double &, double *);
 
-    double splint_dir(double *, double *, int, double, double);
-    double splint_comb_dir(double *, double *, int, const double &, const double &, double *);
+    double splint_dir(double *, double *, const int &, const double &, const double &);
+    double splint_comb_dir(double *, double *, const int &, const double &, const double &, double *);
   private:
     double a, p1, p2, d21, d22;
     std::vector<double> u;
   };
 
-  inline double Splines::splint_dir(double *xi, double *d2tab, int k, double b, double step) {
+  inline double Splines::splint_dir(double *xi, double *d2tab, const int &k, const double &b, const double &step) {
     a = 1.0 - b;
     p1 = xi[k];
-    d21 = d2tab[k++];
-    p2 = xi[k];
-    d22 = d2tab[k];
+    d21 = d2tab[k];
+    p2 = xi[k+1];
+    d22 = d2tab[k+1];
 
     return a * p1 + b * p2 + ((a * a * a - a) * d21 + (b * b * b - b) * d22) * (step * step) / 6.0;
   }
 
-  inline double Splines::splint_comb_dir(double *xi, double *d2tab, int k, const double &b, const double &step, double *grad) {
+  inline double Splines::splint_comb_dir(double *xi, double *d2tab, const int &k, const double &b, const double &step, double *grad) {
     a = 1.0 - b;
     p1 = xi[k];
-    d21 = d2tab[k++];
-    p2 = xi[k];
-    d22 = d2tab[k];
+    d21 = d2tab[k];
+    p2 = xi[k+1];
+    d22 = d2tab[k+1];
     *grad = (p2 - p1) / step + ((3 * (b * b) - 1) * d22 - (3 * (a * a) - 1) * d21) * step / 6.0;
 
     return a * p1 + b * p2 + ((a * a * a - a) * d21 + (b * b * b - b) * d22) * (step * step) / 6.0;

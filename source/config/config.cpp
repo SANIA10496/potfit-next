@@ -328,11 +328,13 @@ void Config::read(FILE *infile, int *line) {
 
 void Config::calc_neighbors(void) {
   Atom *atom_i, *atom_j;
-  Neighbor_2 *temp_neigh_2;
+  Neighbor_2 temp_neigh_2(ptf);
   Neighbor_3 *temp_neigh_3;
   double r;
-  int type1, type2;
+  int ntypes, type1, type2;
   vector d, dd;
+
+  ntypes = structures->get_ntypes();
 
   if (interaction->force->neigh_type() == 2) {
     for (int i=0; i<num_atoms; i++) {
@@ -353,13 +355,12 @@ void Config::calc_neighbors(void) {
               r = sqrt(sprod(dd, dd));
               type1 = atom_i->type;
               type2 = atom_j->type;
-              if (r <= potential->rcut[type1 * structures->get_ntypes() + type2]) {
-                if (r <= potential->rmin[type1 * structures->get_ntypes() + type2]) {
+              if (r <= potential->rcut[type1 * ntypes + type2]) {
+                if (r <= potential->rmin[type1 * ntypes + type2]) {
                   io->error << "Short distance in configuration " << index << std::endl;
                 }
-		temp_neigh_2 = new Neighbor_2(ptf);
-		temp_neigh_2->init(this, i, j, &dd);
-		structures->neigh_2.push_back(*temp_neigh_2);
+		temp_neigh_2.init(this, i, j, &dd);
+		structures->neigh_2.push_back(temp_neigh_2);
               }
             }
       }
@@ -367,14 +368,10 @@ void Config::calc_neighbors(void) {
   } else if (interaction->force->neigh_type() == 3) {
     // TODO
   } else {
-    io->error << "Unknown return value of neigh_type from force routine!" << std::endl;
+    io->error << "Unknown return value of neigh_type() from force routine!" << std::endl;
+    io->error << "Invalid value of " << interaction->force->neigh_type() << " (expected 2 or 3)" << std::endl;
+    io->pexit(EXIT_FAILURE);
   }
-
-//  for (int i=0; i<atoms.size(); i++) {
-//    printf("atom %d has %ld neighbors\n",i,atoms[i]->neighs.size());
-//    for (int j=0; j<atoms[i]->neighs.size(); j++)
-//      printf("neigh %d @ %ld (%ld)\n",j,atoms[i]->neighs[j],sizeof(Neighbor_2));
-//  }
 
   return;
 }

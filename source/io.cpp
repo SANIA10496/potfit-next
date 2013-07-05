@@ -30,7 +30,9 @@
 
 #include <mpi.h>
 
+#include "communication.h"
 #include "input.h"
+#include "interaction.h"
 #include "io.h"
 #include "settings.h"
 #include "version.h"
@@ -95,6 +97,8 @@ void IO::set_logfile(const char *filename) {
     debug.init_done(screen);
   }
 
+  init_done = 1;
+
   return;
 }
 
@@ -108,8 +112,9 @@ void IO::close_logfile() {
 
 void IO::pexit(const int &status) {
   // broadcast error
-  if (init_done == 1) {
-    // MPI::BCast.force finish
+  if (init_done == 1 && screen) {
+    communication->exit_flag = 2;
+    interaction->force->calc_forces();
   }
   // wait for others to arrive
   MPI::COMM_WORLD.Barrier();

@@ -61,14 +61,13 @@ namespace POTFIT_NS {
 
     int cols(void);
   private:
-    int   atom_count;
-    int   h, i, j, k, l;
+    int   h, i, j, k;
     int   self, uf;
     int   us, stresses;
     double tmpsum, sum;
     double phi_val, phi_grad;
     double *val;
-    vector tmp_force;
+    float tmp_force[3];
     Atom *atom;
     Config *conf;
     Neighbor *neigh;

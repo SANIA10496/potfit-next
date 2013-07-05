@@ -46,11 +46,11 @@ namespace POTFIT_NS {
     virtual void init(class Config *, int, int, vector *) = 0;
     virtual void init(class Config *, int, int, int, vector *, vector *) = 0;
 
+    int   col[MAX_SLOTS];	/* coloumn of interaction for this neighbor */
     int   type;
     int   nr;
     int   self;
     double r;
-    int   col[MAX_SLOTS];	/* coloumn of interaction for this neighbor */
     int   slot[MAX_SLOTS];
     double shift[MAX_SLOTS];
     double step[MAX_SLOTS];

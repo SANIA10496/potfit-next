@@ -38,7 +38,9 @@
 using namespace POTFIT_NS;
 
 Communication::Communication(POTFIT *ptf) :
-  Pointers(ptf)
+  Pointers(ptf),
+  opt_pot_len(0),
+  exit_flag(0)
 {
   MPI_VECTOR = MPI::DOUBLE.Create_contiguous(3);
   MPI_VECTOR.Commit();
@@ -64,6 +66,7 @@ void Communication::init(void) {
 
 void Communication::broadcast_params(void) {
   MPI::COMM_WORLD.Bcast(potential->opt->val_p,opt_pot_len,MPI_DOUBLE,0);
+  MPI::COMM_WORLD.Bcast(&exit_flag,1,MPI_INT,0);
 
   return;
 }
@@ -91,8 +94,8 @@ double Communication::gather_forces(const double &tmpsum) {
       MPI::COMM_WORLD.Gatherv(interaction->force->force_vect + structures->firstatom, structures->myatoms, MPI_VECTOR,
                               interaction->force->force_vect, structures->atom_len, structures->atom_dist, MPI_VECTOR, 0);
       // energies
-      MPI::COMM_WORLD.Gatherv(interaction->force->force_vect + interaction->force->energy_p + structures->firstconf, structures->nconf,
-                              MPI_DOUBLE, interaction->force->force_vect + interaction->force->energy_p,
+      MPI::COMM_WORLD.Gatherv(interaction->force->force_vect + interaction->force->energy_p + structures->firstconf,
+		      	      structures->nconf, MPI_DOUBLE, interaction->force->force_vect + interaction->force->energy_p,
                               structures->conf_len, structures->conf_dist, MPI_DOUBLE, 0);
       // stresses
       MPI::COMM_WORLD.Gatherv(interaction->force->force_vect + interaction->force->stress_p + structures->firstconf,
@@ -100,7 +103,7 @@ double Communication::gather_forces(const double &tmpsum) {
                               structures->conf_len, structures->conf_dist, MPI_STENS, 0);
     }
   } else {
-    sum = tmpsum;
+    return tmpsum;
   }
 
   return sum;
