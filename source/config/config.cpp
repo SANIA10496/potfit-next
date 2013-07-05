@@ -104,9 +104,8 @@ void Config::read(FILE *infile, int *line) {
   res = fgets(buffer, 1024, infile);
   (*line)++;
   if (NULL == res) {
-//    io->write << "Test" << std::endl;
     io->error << "Unexpected end of config file on line " << *line << std::endl;
-    io->pexit(-1);
+    io->pexit(EXIT_FAILURE);
   }
   h_eng = h_stress = h_boxx = h_boxy = h_boxz = 0;
   if (res[1] == 'N') {
@@ -304,21 +303,21 @@ void Config::read(FILE *infile, int *line) {
   cell_scale[2] = (int)ceil(potential->rcut_max * iheight.z);
 
 #ifdef DEBUG
-  io->write_debug("Checking cell size for configuration %d:\n", nconf);
-  io->write_debug("Box dimensions:\n");
-  io->write_debug("     %10.6f %10.6f %10.6f\n", box_x.x, box_x.y, box_x.z);
-  io->write_debug("     %10.6f %10.6f %10.6f\n", box_y.x, box_y.y, box_y.z);
-  io->write_debug("     %10.6f %10.6f %10.6f\n", box_z.x, box_z.y, box_z.z);
-  io->write_debug("Box normals:\n");
-  io->write_debug("     %10.6f %10.6f %10.6f\n", tbox_x.x, tbox_x.y, tbox_x.z);
-  io->write_debug("     %10.6f %10.6f %10.6f\n", tbox_y.x, tbox_y.y, tbox_y.z);
-  io->write_debug("     %10.6f %10.6f %10.6f\n", tbox_z.x, tbox_z.y, tbox_z.z);
-  io->write_debug("Box heights:\n");
-  io->write_debug("     %10.6f %10.6f %10.6f\n", 1. / iheight.x, 1. / iheight.y, 1. / iheight.z);
-  io->write_debug("Potential range:  %f\n", rcutmax);
-  io->write_debug("Periodic images needed: %d %d %d\n\n",
+  io->debug << "Checking cell size for configuration " << nconf << std::endl;
+  io->debug << "Box dimensions:" << std::endl;
+  io->debug("     %10.6f %10.6f %10.6f\n", box_x.x, box_x.y, box_x.z);
+  io->debug("     %10.6f %10.6f %10.6f\n", box_y.x, box_y.y, box_y.z);
+  io->debug("     %10.6f %10.6f %10.6f\n", box_z.x, box_z.y, box_z.z);
+  io->debug("Box normals:\n");
+  io->debug("     %10.6f %10.6f %10.6f\n", tbox_x.x, tbox_x.y, tbox_x.z);
+  io->debug("     %10.6f %10.6f %10.6f\n", tbox_y.x, tbox_y.y, tbox_y.z);
+  io->debug("     %10.6f %10.6f %10.6f\n", tbox_z.x, tbox_z.y, tbox_z.z);
+  io->debug("Box heights:\n");
+  io->debug("     %10.6f %10.6f %10.6f\n", 1. / iheight.x, 1. / iheight.y, 1. / iheight.z);
+  io->debug("Potential range:  %f\n", rcutmax);
+  io->debug("Periodic images needed: %d %d %d\n\n",
                   2 * cell_scale[0] + 1, 2 * cell_scale[1] + 1, 2 * cell_scale[2] + 1);
-#endif /* DEBUG */
+#endif // DEBUG
 
   structures->update_pointers(index);
   calc_neighbors();
@@ -329,7 +328,7 @@ void Config::read(FILE *infile, int *line) {
 void Config::calc_neighbors(void) {
   Atom *atom_i, *atom_j;
   Neighbor_2 temp_neigh_2(ptf);
-  Neighbor_3 *temp_neigh_3;
+  Neighbor_3 temp_neigh_3(ptf);
   double r;
   int ntypes, type1, type2;
   vector d, dd;
@@ -358,6 +357,7 @@ void Config::calc_neighbors(void) {
               if (r <= potential->rcut[type1 * ntypes + type2]) {
                 if (r <= potential->rmin[type1 * ntypes + type2]) {
                   io->error << "Short distance in configuration " << index << std::endl;
+		  io->pexit(EXIT_FAILURE);
                 }
 		temp_neigh_2.init(this, i, j, &dd);
 		structures->neigh_2.push_back(temp_neigh_2);

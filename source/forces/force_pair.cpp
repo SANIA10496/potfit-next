@@ -147,8 +147,7 @@ void ForcePair::read_additional_data(FILE *infile) {
 
 /****************************************************************
  *
- * ForcePair::calc_forces(double *forces)
- * 	read the chemical potentials (if present)
+ * ForcePair::calc_forces(void)
  *
  ****************************************************************/
 
@@ -156,18 +155,22 @@ double ForcePair::calc_forces(void) {
 
   // This is the start of an infinite loop
   while (1) {
+    // broadcast all parameters to other processes
     communication->broadcast_params();
-    if (2 == communication->exit_flag) {
+
+    // check for exit flag
+    if (2 == communication->exit_flag)
       if (0 != settings->get_myid()) {
         io->pexit(EXIT_FAILURE);
       } else {
 	return 0.0;
       }
-    }
+
+    // update all local potential tables
     potential->update_potentials(0);
 
-    tmpsum = 0.0;		// sum of squares of local process
-
+    // reset all local variables
+    tmpsum = 0.0;
     phi_val = 0.0;
     phi_grad = 0.0;
     conf = NULL;
@@ -175,8 +178,7 @@ double ForcePair::calc_forces(void) {
     neigh = NULL;
     pot = NULL;
 
-    // loop over configurations
-
+    // loop over all local configurations
     for (h = structures->firstconf; h < structures->firstconf + structures->nconf; h++) {
       conf = structures->config[h];
       uf = conf->use_forces;
@@ -190,7 +192,7 @@ double ForcePair::calc_forces(void) {
       //      TODO: chemical potentials
 //      force_vect[energy_p + h] += chemical_potential(ntypes, na_type[h], xi_opt + cp_start);
 
-      // first loop over atoms: reset forces, densities
+      // first loop over atoms: reset forces
       for (i = 0; i < conf->num_atoms; i++) {
         atom = &conf->atoms[i];
         val = force_vect + 3 * (conf->cnfstart + i);
@@ -204,13 +206,12 @@ double ForcePair::calc_forces(void) {
           *val = 0.0;
         }
       }
-      // end first loop
 
-      // 2nd loop: calculate pair forces and energies
+      // second loop over atoms: calculate pair forces and energies
       for (i = 0; i < conf->num_atoms; i++) {
         atom = &conf->atoms[i];
         k = 3 * (conf->cnfstart + i);
-        // loop over neighbors
+        // loop over all neighbors
         for (j = 0; j < atom->num_neighbors; j++) {
           neigh = &atom->neighs[j];
 	  pot = potential->pots[neigh->col[0]];
@@ -229,7 +230,7 @@ double ForcePair::calc_forces(void) {
               phi_val *= 0.5;
               phi_grad *= 0.5;
             }
-            // not double force: cohesive energy
+            // cohesive energy
             force_vect[energy_p + h] += phi_val;
 
             if (uf) {
@@ -318,6 +319,9 @@ double ForcePair::calc_forces(void) {
         set_error_sum(sum);
         return sum;
       }
+    }
+    if (1 == communication->exit_flag) {
+      return 0.0;
     }
 
   // end while

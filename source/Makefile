@@ -37,7 +37,7 @@ CFLAGS := ${FLAGS}
 
 default: git potfit strip
 
-debug: CFLAGS += ${DEBUG_FLAGS}
+debug: CFLAGS += ${DEBUG_FLAGS} -DDEBUG
 debug: TARGET = debug
 debug: git potfit
 #potfit: CFLAGS += ${OPT_FLAGS}

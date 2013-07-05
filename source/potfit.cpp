@@ -97,14 +97,13 @@ void POTFIT::run() {
   if (0 == settings->get_myid())
     utils->start_timer();
   optimization->run();
-  if (0 == settings->get_myid())
+  if (0 == settings->get_myid()) {
     utils->end_timer();
-
-  // write potentials to disk
-  output->write_output();
-
-  // write error report
-  error->write_report();
+    // write potentials to disk
+    output->write_output();
+    // write error report
+    error->write_report();
+  }
 
   return;
 }

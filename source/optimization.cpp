@@ -82,6 +82,7 @@ void Optimization::run(void) {
       }
     } else {
       interaction->calc_forces();
+      return;
     }
   } else {
     io->write << "Optimization has been disabled in the parameter file." << std::endl << std::endl;

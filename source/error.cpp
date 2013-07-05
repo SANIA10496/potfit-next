@@ -29,6 +29,8 @@
  ****************************************************************/
 
 #include "error.h"
+
+#include "communication.h"
 #include "interaction.h"
 #include "io.h"
 #include "settings.h"
@@ -108,7 +110,9 @@ void Error::write_report(void) {
 void Error::calc_errors(void) {
   int i, j, count = 0;
 
-  total_sum = interaction->force->get_error_sum();
+  communication->exit_flag = 1;
+
+  total_sum = interaction->force->calc_forces();
 
   num_forces = 3 * structures->get_num_contrib_atoms();
   num_energies = structures->get_num_contrib_energies();

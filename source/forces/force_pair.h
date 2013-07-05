@@ -67,7 +67,7 @@ namespace POTFIT_NS {
     double tmpsum, sum;
     double phi_val, phi_grad;
     double *val;
-    float tmp_force[3];
+    double tmp_force[3];
     Atom *atom;
     Config *conf;
     Neighbor *neigh;

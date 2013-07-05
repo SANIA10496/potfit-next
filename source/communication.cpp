@@ -91,14 +91,14 @@ double Communication::gather_forces(const double &tmpsum) {
                               structures->conf_len, structures->conf_dist, MPI_STENS, 0);
     } else {
       // forces
-      MPI::COMM_WORLD.Gatherv(interaction->force->force_vect + structures->firstatom, structures->myatoms, MPI_VECTOR,
+      MPI::COMM_WORLD.Gatherv(interaction->force->force_vect + 3 * structures->firstatom, structures->myatoms, MPI_VECTOR,
                               interaction->force->force_vect, structures->atom_len, structures->atom_dist, MPI_VECTOR, 0);
       // energies
       MPI::COMM_WORLD.Gatherv(interaction->force->force_vect + interaction->force->energy_p + structures->firstconf,
-		      	      structures->nconf, MPI_DOUBLE, interaction->force->force_vect + interaction->force->energy_p,
+                              structures->nconf, MPI_DOUBLE, interaction->force->force_vect + interaction->force->energy_p,
                               structures->conf_len, structures->conf_dist, MPI_DOUBLE, 0);
       // stresses
-      MPI::COMM_WORLD.Gatherv(interaction->force->force_vect + interaction->force->stress_p + structures->firstconf,
+      MPI::COMM_WORLD.Gatherv(interaction->force->force_vect + interaction->force->stress_p + 6 * structures->firstconf,
                               structures->nconf, MPI_STENS, interaction->force->force_vect + interaction->force->stress_p,
                               structures->conf_len, structures->conf_dist, MPI_STENS, 0);
     }
