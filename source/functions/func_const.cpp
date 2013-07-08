@@ -42,8 +42,8 @@ int FuncCONST::num_params(void) {
   return 1;
 }
 
-void FuncCONST::calc(const double &r, double *p, double *f) {
-  *f = *p;
+void FuncCONST::calc(const double &r, const std::vector<double> &p, double *f) {
+  *f = p[0];
 
   return;
 }

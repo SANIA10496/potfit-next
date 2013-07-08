@@ -42,7 +42,7 @@ int FuncEXP_PLUS::num_params(void) {
   return 3;
 }
 
-void FuncEXP_PLUS::calc(const double &r, double *p, double *f) {
+void FuncEXP_PLUS::calc(const double &r, const std::vector<double> &p, double *f) {
   *f = p[0] * exp(-p[1] * r) + p[2];
 
   return;

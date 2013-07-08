@@ -42,7 +42,7 @@ namespace POTFIT_NS {
     TableTab4(class POTFIT *);
     ~TableTab4();
 
-    void init(const char *, int);
+    void init(const std::string &, const int &);
 
     void read_potential(FILE *);
 
@@ -50,11 +50,13 @@ namespace POTFIT_NS {
     int get_number_free_params(void);
     double get_cutoff(void);
     double get_rmin(void);
-    double get_val_min(int);
-    double get_val_max(int);
+    double get_val_min(const int &);
+    double get_val_max(const int &);
+    double get_plotmin(void);
+    double get_value(const double &);
 
-    void set_param(int, double &);
-    void update_potential(int);
+    void set_param(const int &, const double &);
+    void update_potential(const int &);
     void update_slots(void);
 
     void write_potential(std::ofstream &);
@@ -63,7 +65,7 @@ namespace POTFIT_NS {
 
   private:
     void update_values(void);
-    void update_calc_table(int);
+    void update_calc_table(const int &);
   };
 }
 

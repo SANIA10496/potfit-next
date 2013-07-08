@@ -36,6 +36,7 @@
 #include "table_analytic.h"
 
 #include "../io.h"
+#include "../output.h"
 #include "../potential.h"
 #include "../settings.h"
 #include "../structures.h"
@@ -47,9 +48,6 @@ using namespace POTFIT_NS;
 TableAnalytic::TableAnalytic(POTFIT *ptf) :
   Table(ptf),
   smooth_pot(0),
-  param_name(NULL),
-  val_min(NULL),
-  val_max(NULL),
   function(NULL)
 {
   grad[0] = 0.0;
@@ -59,23 +57,19 @@ TableAnalytic::TableAnalytic(POTFIT *ptf) :
 }
 
 TableAnalytic::~TableAnalytic() {
-  for (int i=0; i<num_params; i++) {
-    delete [] param_name[i];
-  }
-  delete [] values;
-  delete [] val_min;
-  delete [] val_max;
-  delete [] stored_values;
-  delete [] invar_par;
-  delete [] param_name;
-  delete [] idx;
+  param_name.clear();
+  values.clear();
+  val_min.clear();
+  val_max.clear();
+  stored_values.clear();
+  invar_par.clear();
+  idx.clear();
 
   return;
 }
 
-void TableAnalytic::init(const char *fname, int index) {
-  char *token;
-  char buffer[255];
+void TableAnalytic::init(const std::string &fname, const int &index) {
+  std::size_t pos;
 
   if (!init_done) {
     init_done = 1;
@@ -83,22 +77,23 @@ void TableAnalytic::init(const char *fname, int index) {
     pot_number = index;
 
     // split name and _sc
-    token = strrchr((char *)fname, '_');
-    if (token != NULL && strcmp(token + 1, "sc") == 0) {
-      strncpy(buffer, fname, strlen(fname) - 3);
-      buffer[strlen(fname) - 3] = '\0';
-      strcpy((char *)fname, buffer);
-      smooth_pot = 1;
+    pos = fname.find_last_of('_');
+    if (std::string::npos != pos) {
+      if (fname.substr(pos+1).compare("sc") == 0) {
+        name = fname.substr(0,pos);
+	smooth_pot = 1;
+      } else {
+	name = fname;
+      }
+    } else {
+      name = fname;
     }
 
-    name = (char *)malloc(40 * sizeof(char));
-    strcpy(name, fname);
-
-    if (strcmp(fname,"none") == 0)
+    if (name.compare("none") == 0)
       return;
 #define FUNCTION_TYPE
 #define FunctionType(key,Class) \
-  else if (strcmp(fname,#key) == 0) \
+  else if (name.compare(#key) == 0) \
     function = new Class();
 #include "../functions/list_functions.h"
 #undef FUNCTION_TYPE
@@ -113,21 +108,12 @@ void TableAnalytic::init(const char *fname, int index) {
     if (smooth_pot == 1)
       num_params++;
 
-    values = new double[num_params];
-    val_min = new double[num_params];
-    val_max = new double[num_params];
-    stored_values = new double[num_params];
-    invar_par = new int[num_params];
-    param_name = new char*[num_params];
-
-    for (int i=0; i<num_params; i++) {
-      values[i] = 0.0;
-      val_min[i] = 0.0;
-      val_max[i] = 0.0;
-      invar_par[i] = 0;
-      param_name[i] = new char[30];
-      strcpy(param_name[i],"\0");
-    }
+    values.resize(num_params,0.0);
+    val_min.resize(num_params,0.0);
+    val_max.resize(num_params,0.0);
+    stored_values.resize(num_params,0.0);
+    invar_par.resize(num_params,0.0);
+    param_name.resize(num_params);
 
     return;
   } else {
@@ -176,29 +162,23 @@ void TableAnalytic::read_potential(FILE *infile) {
   // read parameters
   num_free_params = num_params;
   for (i = 0; i < num_params; i++) {
-    param_name[i] = new char[30];
-    if (NULL == param_name[i]) {
-      io->error << "Error in allocating memory for parameter name" << std::endl;
-      io->pexit(EXIT_FAILURE);
-    }
-    strcpy(param_name[i], "\0");
     fgetpos(infile, &filepos);
     ret_val = fscanf(infile, "%s %lf %lf %lf", buffer, &values[i], &val_min[i], &val_max[i]);
-    strncpy(param_name[i], buffer, 30);
+    param_name[i] = buffer;
 
     // if last char of name is "!" we have a global parameter
-    if (strrchr(param_name[i], '!') != NULL) {
+    if (param_name[i][param_name[i].length()] == '!') {
       if (potential->num_globals == 0) {
         io->error  << "You need to define a global parameter before using it!" << std::endl;
         io->pexit(EXIT_FAILURE);
       }
-      param_name[i][strlen(param_name[i]) - 1] = '\0';
+      param_name[i].erase(param_name[i].end() - 1);
       j = potential->global_params->get_index(param_name[i]);
       if (j<0) {
         io->error << "Could not find global parameter " << param_name[i] << "!" << std::endl;
         io->pexit(EXIT_FAILURE);
       }
-      sprintf(param_name[i], "%s!", param_name[i]);
+      param_name[i] += "!";
 
       // register global parameter
       if (potential->invar_pot[pot_number] == 0)
@@ -216,16 +196,16 @@ void TableAnalytic::read_potential(FILE *infile) {
       // this is not a global parameter
       if (4 > ret_val) {
         if (smooth_pot && i == function->num_params()) {
-          if (strcmp(param_name[i], "type") == 0 || feof(infile)) {
+          if (param_name[i].compare("type") == 0 || feof(infile)) {
             io->warning << "No cutoff parameter given for potential #" << pot_number + 1 << ": adding one parameter." << std::endl;
-            strcpy(param_name[i], "h");
+            param_name[i] = "h";
             values[i] = 1;
             val_min[i] = 0.5;
             val_max[i] = 2;
             fsetpos(infile, &filepos);
           }
         } else {
-          if (strcmp(param_name[i], "type") == 0) {
+          if (param_name[i].compare("type") == 0) {
             io->error << "Not enough parameters for potential #" << pot_number + 1 << " (" << name << ") in potential file." << std::endl;
             io->pexit(EXIT_FAILURE);
           }
@@ -260,15 +240,11 @@ void TableAnalytic::read_potential(FILE *infile) {
     }
   }
 
-  idx = new int[num_free_params];
-  for (int i=0; i<num_free_params; i++)
-    idx[i] = -1;
-
+  idx.resize(num_free_params,-1);
 
   init_calc_table();
 
-  // create indirect indexing array
-
+  return;
 }
 
 int TableAnalytic::get_number_params(void) {
@@ -287,12 +263,26 @@ double TableAnalytic::get_rmin(void) {
   return begin;
 }
 
-double TableAnalytic::get_val_min(int n) {
+double TableAnalytic::get_val_min(const int &n) {
   return val_min[n];
 }
 
-double TableAnalytic::get_val_max(int n) {
+double TableAnalytic::get_val_max(const int &n) {
   return val_max[n];
+}
+
+double TableAnalytic::get_plotmin(void) {
+  return output->get_plotmin();
+}
+
+double TableAnalytic::get_value(const double &r) {
+  double temp = 0.0;
+
+  function->calc(r, values, &temp);
+  if (1 == smooth_pot)
+    temp *= cutoff(r, end, values[num_params - 1]);
+
+  return temp;
 }
 
 void TableAnalytic::init_calc_table(void) {
@@ -322,13 +312,13 @@ void TableAnalytic::init_calc_table(void) {
   return;
 }
 
-void TableAnalytic::set_param(int i, double& val) {
+void TableAnalytic::set_param(const int &i, const double& val) {
   values[i] = val;
 
   return;
 }
 
-void TableAnalytic::update_potential(int update) {
+void TableAnalytic::update_potential(const int &update) {
   update_values();
   update_calc_table(update);
 
@@ -343,7 +333,7 @@ void TableAnalytic::update_values(void) {
   return;
 }
 
-void TableAnalytic::update_calc_table(int update) {
+void TableAnalytic::update_calc_table(const int &update) {
   double f, h;
   int change = 0;
 
@@ -410,7 +400,7 @@ void TableAnalytic::write_potential(std::ofstream &outfile) {
   outfile << "cutoff " << end << std::endl;
   outfile << "# r_min " << get_rmin() << std::endl;
   for (int i=0; i<num_params; i++) {
-    if (param_name[i][strlen(param_name[i]) - 1] != '!') {
+    if (param_name[i][param_name[i].length()-1] != '!') {
       outfile << param_name[i] << "\t\t";
       outfile << std::fixed << std::setw(12) << std::setprecision(5) << values[i];
       outfile << "\t" << std::setw(12) << std::setprecision(5) << val_min[i];
@@ -431,7 +421,7 @@ void TableAnalytic::write_plotpoint(FILE *outfile) {
   return;
 }
 
-double TableAnalytic::cutoff(double& x, double& rcut, double& h) {
+double TableAnalytic::cutoff(const double& x, const double& rcut, const double& h) {
   if ((x-rcut)>0)
     return 0.0;
 

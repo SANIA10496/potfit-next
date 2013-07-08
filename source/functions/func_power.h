@@ -47,12 +47,11 @@ namespace POTFIT_NS {
     ~FuncPOWER();
 
     int num_params(void);
-    void calc(const double &, double *, double *);
+    void calc(const double &, const std::vector<double> &, double *);
   private:
     double power;
   };
 }
 
 #endif // PTF_FUNC_POWER_H
-
 #endif // FUNCTION_TYPE

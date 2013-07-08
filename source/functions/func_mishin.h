@@ -47,13 +47,11 @@ namespace POTFIT_NS {
     ~FuncMISHIN();
 
     int num_params(void);
-    void calc(const double &, double *, double *);
+    void calc(const double &, const std::vector<double> &, double *);
   private:
     double power, temp, z;
   };
-
 }
 
 #endif // PTF_FUNC_MISHIN_H
-
 #endif // FUNCTION_TYPE

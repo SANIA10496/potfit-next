@@ -42,7 +42,7 @@ int FuncVAS::num_params(void) {
   return 2;
 }
 
-void FuncVAS::calc(const double &r, double *p, double *f) {
+void FuncVAS::calc(const double &r, const std::vector<double> &p, double *f) {
   *f = exp(p[0] / (r - p[1]));
 
   return;

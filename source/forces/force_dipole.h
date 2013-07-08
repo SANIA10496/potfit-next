@@ -56,8 +56,10 @@ namespace POTFIT_NS {
     double calc_forces(void);
 
     int cols();
-  };
 
+    void write_imd_pot(void);
+    void write_lammps_pot(void);
+  };
 }
 
 #endif // PTF_FORCE_DIPOLE_H

@@ -73,6 +73,7 @@ void OptSimann::init(std::vector<std::string> &p) {
 }
 
 void OptSimann::run(void) {
+
   int ndim = potential->get_num_free_params();
   double *Fvar;			/* backlog of Fn vals */
   double *v;			/* step vector */
@@ -82,13 +83,6 @@ void OptSimann::run(void) {
   double F, Fopt, F2;		/* Fn value */
   int   h = 0, j = 0, k = 0, n = 0, m = 0;	/* counters */
   int   loopagain;		/* loop flag */
-//#ifndef APOT
-//  double width, height;		/* gaussian bump size */
-//#endif /* APOT */
-//#ifdef DIPOLE
-//  FILE *outfile;
-//  char *filename = "Dipole.convergency";
-//#endif /* DIPOLE */
 
   if (T == 0. && auto_T != 1)
     return;			/* don't anneal if starttemp equal zero */
@@ -108,6 +102,7 @@ void OptSimann::run(void) {
   }
   F = interaction->calc_forces();
   Fopt = F;
+
 
   /* determine optimum temperature for annealing */
   if (auto_T) {
@@ -231,8 +226,6 @@ void OptSimann::run(void) {
 //      }
 #endif /* !APOT && ( EAM || ADP ) && !NORESCALE */
     }
-//    io->error << "Test" << std::endl;
-//    io->pexit(EXIT_SUCCESS);
 
     /*Temp adjustment */
     T *= TEMPVAR;

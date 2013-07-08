@@ -46,7 +46,7 @@ namespace POTFIT_NS {
     ~TableAnalytic();
 
     // initialize with name and index
-    void init(const char *, int);
+    void init(const std::string &, const int &);
 
     void read_potential(FILE *);
 
@@ -54,12 +54,14 @@ namespace POTFIT_NS {
     int get_number_free_params(void);
     double get_cutoff(void);
     double get_rmin(void);
-    double get_val_min(int);
-    double get_val_max(int);
+    double get_val_min(const int &);
+    double get_val_max(const int &);
+    double get_plotmin(void);
+    double get_value(const double &);
 
     void init_calc_table(void);
-    void set_param(int, double &);
-    void update_potential(int);
+    void set_param(const int &, const double &);
+    void update_potential(const int &);
     void update_slots(void);
 
     void write_potential(std::ofstream &);
@@ -68,17 +70,17 @@ namespace POTFIT_NS {
 
   private:
     void update_values(void);
-    void update_calc_table(int);
+    void update_calc_table(const int &);
 
     int smooth_pot;
 
-    double cutoff(double &, double &, double &);
+    double cutoff(const double &, const double &, const double &);
 
-    char **param_name; 		// parameter names
-    double *val_min; 		// parameter minimum
-    double *val_max; 		// parameter maximum
-    double *stored_values; 	// values currently used in the calc_pot tables
-    double fval; 		// temp variable
+    std::vector<std::string> param_name; 	// parameter names
+    std::vector<double> val_min; 		// parameter minimum
+    std::vector<double> val_max; 		// parameter maximum
+    std::vector<double> stored_values; 		// values currently used in the calc_pot tables
+    double fval; 				// temp variable
 
     Function *function; 	// function pointer for analytic potentials
   };

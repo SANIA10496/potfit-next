@@ -33,13 +33,12 @@
 
 using namespace POTFIT_NS;
 
-ForceEAM::ForceEAM(POTFIT *ptf): Force(ptf) {
-  return;
+ForceEAM::ForceEAM(POTFIT *ptf) :
+  Force(ptf)
+{
 }
 
-ForceEAM::~ForceEAM() {
-  return;
-}
+ForceEAM::~ForceEAM() {}
 
 int ForceEAM::num_slots(void) {
   return 2;
@@ -66,4 +65,14 @@ void ForceEAM::read_additional_data(FILE *infile) {
 
 double ForceEAM::calc_forces(void) {
   return 0.0;
+}
+
+void ForceEAM::write_imd_pot(void) {
+
+  return;
+}
+
+void ForceEAM::write_lammps_pot(void)  {
+
+  return;
 }

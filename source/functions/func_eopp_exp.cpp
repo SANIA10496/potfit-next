@@ -34,7 +34,7 @@
 
 using namespace POTFIT_NS;
 
-FuncEOPP_EXP::FuncEOPP_EXP() : power(0) {}
+FuncEOPP_EXP::FuncEOPP_EXP() : power(0.0) {}
 
 FuncEOPP_EXP::~FuncEOPP_EXP() {}
 
@@ -42,7 +42,7 @@ int FuncEOPP_EXP::num_params(void) {
   return 6;
 }
 
-void FuncEOPP_EXP::calc(const double &r, double *p, double *f) {
+void FuncEOPP_EXP::calc(const double &r, const std::vector<double> &p, double *f) {
   power_1(power, r, p[3]);
 
   *f = p[0] * exp(-p[1] * r) + (p[2] / power) * cos(p[4] * r + p[5]);

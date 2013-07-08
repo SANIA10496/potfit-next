@@ -47,7 +47,7 @@ namespace POTFIT_NS {
     ~FuncDOUBLE_MORSE();
 
     int num_params(void);
-    void calc(const double &, double *, double *);
+    void calc(const double &, const std::vector<double> &, double *);
   };
 }
 

@@ -61,11 +61,11 @@ void Output::write_output(void) {
   if (1 == enable_imd_pot)
     write_imdpot();
 
-  if (1 == enable_plotfile)
-    write_plotfile();
-
   if (1 == enable_lammps_pot)
     write_lammpspot();
+
+  if (1 == enable_plotfile)
+    write_plotfile();
 
   if (1 == enable_output_files)
     write_output_files();
@@ -74,6 +74,21 @@ void Output::write_output(void) {
 }
 
 void Output::write_tempfile(void) {
+  std::ofstream outfile;
+
+  outfile.exceptions(std::ofstream::failbit);
+
+  try {
+    outfile.open(tempfile.c_str(), std::ofstream::out);
+  } catch (std::ofstream::failure e) {
+    io->error << "Could not open " << endpot << " file for writing." << std::endl;
+    io->pexit(EXIT_FAILURE);
+  }
+
+  potential->write_potentials(outfile);
+
+  outfile.close();
+
   return;
 }
 
@@ -99,7 +114,7 @@ void Output::write_endpot(void) {
 }
 
 void Output::write_imdpot(void) {
-  io->write << "IMD potential written to file\t\t\t" << imdpot << std::endl;
+  interaction->force->write_imd_pot();
   return;
 }
 
@@ -115,7 +130,7 @@ void Output::write_lammpspot(void) {
     lammpspot = endpot + ".lammps";
   }
 
-  io->write << "Potential in LAMMPS format written to\t\t" << lammpspot << std::endl;
+  interaction->force->write_lammps_pot();
   return;
 }
 
@@ -380,4 +395,8 @@ void Output::set_lammps_pot(const int &i) {
   enable_lammps_pot = i;
 
   return;
+}
+
+std::string Output::get_lammps_pot(void) {
+  return lammpspot;
 }

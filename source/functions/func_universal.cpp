@@ -51,7 +51,7 @@ int FuncUNIVERSAL::num_params(void) {
   return 4;
 }
 
-void FuncUNIVERSAL::calc(const double &r, double *p, double *f) {
+void FuncUNIVERSAL::calc(const double &r, const std::vector<double> &p, double *f) {
   x[0] = r;
   x[1] = r;
   y[0] = p[1];

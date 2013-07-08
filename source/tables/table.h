@@ -45,7 +45,7 @@ namespace POTFIT_NS {
     ~Table();
 
     // initialize with potential name
-    virtual void init(const char *, int) = 0;
+    virtual void init(const std::string &, const int &) = 0;
 
     virtual void read_potential(FILE *) = 0;
 
@@ -53,13 +53,15 @@ namespace POTFIT_NS {
     virtual int get_number_free_params(void) = 0;
     virtual double get_cutoff(void) = 0;
     virtual double get_rmin(void) = 0;
-    virtual double get_val_min(int) =0;
-    virtual double get_val_max(int) =0;
+    virtual double get_val_min(const int &) =0;
+    virtual double get_val_max(const int &) =0;
+    virtual double get_plotmin(void) = 0;
+    virtual double get_value(const double &) = 0;
 
-    virtual void set_param(int, double &) = 0;
-    virtual void update_potential(int) = 0;
+    virtual void set_param(const int &, const double &) = 0;
+    virtual void update_potential(const int &) = 0;
     virtual void update_values(void) = 0;
-    virtual void update_calc_table(int) = 0;
+    virtual void update_calc_table(const int &) = 0;
     virtual void update_slots(void) = 0;
 
     virtual void write_potential(std::ofstream &) = 0;
@@ -68,15 +70,16 @@ namespace POTFIT_NS {
 
     int init_done; 		// is the table initialized?
 
-    char *name; 		// name of analytic function / potential type
-    const int  format; 		// potential format
+    std::string name; 		// name of analytic function / potential type
+    const int format; 		// potential format
 
     double begin; 		// starting position of potential = r_min
-    double *values; 		// values
+    std::vector<double> values; 		// values
     double end; 		// end position of potential = cutoff radius
+    double plotmin; 		// minimum plotting distance, also used for IMD/LAMMPS potentials
 
-    int *invar_par; 		// invariant parameters
-    int *idx; 			// indirect index for parameters
+    std::vector<int> invar_par; 		// invariant parameters
+    std::vector<int> idx; 			// indirect index for parameters
 
     int pot_number; 		// index of potential
     int num_params; 		// number of parameters

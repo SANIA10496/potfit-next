@@ -47,12 +47,11 @@ namespace POTFIT_NS {
     ~FuncSTRMM();
 
     int num_params(void);
-    void calc(const double &, double *, double *);
+    void calc(const double &, const std::vector<double> &, double *);
   private:
     double r0;
   };
 }
 
 #endif // PTF_FUNC_STRMM_H
-
 #endif // FUNCTION_TYPE

@@ -82,14 +82,10 @@ void Optimization::run(void) {
       }
     } else {
       interaction->calc_forces();
-      return;
     }
   } else {
     io->write << "Optimization has been disabled in the parameter file." << std::endl << std::endl;
   }
-
-  // Calculate forces at least once for errors
-  interaction->calc_forces();
 
   return;
 }

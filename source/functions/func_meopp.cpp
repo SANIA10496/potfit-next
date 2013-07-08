@@ -51,7 +51,7 @@ int FuncMEOPP::num_params(void) {
   return 7;
 }
 
-void FuncMEOPP::calc(const double &r, double *p, double *f) {
+void FuncMEOPP::calc(const double &r, const std::vector<double> &p, double *f) {
   x[0] = r - p[6];
   x[1] = r;
   y[0] = p[1];

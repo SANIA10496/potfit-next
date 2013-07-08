@@ -47,13 +47,11 @@ namespace POTFIT_NS {
     ~FuncKAWAMURA();
 
     int num_params(void);
-    void calc(const double &, double *, double *);
+    void calc(const double &, const std::vector<double> &, double *);
   private:
     double r6;
   };
-
 }
 
 #endif // PTF_FUNC_KAWAMURA_H
-
 #endif // FUNCTION_TYPE

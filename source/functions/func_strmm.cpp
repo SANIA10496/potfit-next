@@ -42,7 +42,7 @@ int FuncSTRMM::num_params(void) {
   return 5;
 }
 
-void FuncSTRMM::calc(const double &r, double *p, double *f) {
+void FuncSTRMM::calc(const double &r, const std::vector<double> &p, double *f) {
   r0 = r - p[4];
 
   *f = 2.0 * p[0] * exp(-p[1] / 2.0 * r0) - p[2] * (1.0 + p[3] * r0) * exp(-p[3] * r0);

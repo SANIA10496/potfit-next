@@ -47,13 +47,11 @@ namespace POTFIT_NS {
     ~FuncMEOPP();
 
     int num_params(void);
-    void calc(const double &, double *, double *);
+    void calc(const double &, const std::vector<double> &, double *);
   private:
     double x[2],y[2],power[2];
   };
-
 }
 
 #endif // PTF_FUNC_MEOPP_H
-
 #endif // FUNCTION_TYPE

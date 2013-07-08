@@ -60,6 +60,9 @@ namespace POTFIT_NS {
     double calc_forces(void);
 
     int cols(void);
+
+    void write_imd_pot(void);
+    void write_lammps_pot(void);
   private:
     int   h, i, j, k;
     int   self, uf;

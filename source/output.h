@@ -75,6 +75,7 @@ namespace POTFIT_NS {
     std::string get_plotpointfile(void);
 
     void set_lammps_pot(const int &);
+    std::string get_lammps_pot(void);
 
   private:
     void write_distfile(void);

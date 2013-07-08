@@ -64,3 +64,13 @@ void ForceDipole::read_additional_data(FILE *infile) {
 double ForceDipole::calc_forces(void) {
   return 0.0;
 }
+
+void ForceDipole::write_imd_pot(void) {
+
+  return;
+}
+
+void ForceDipole::write_lammps_pot(void)  {
+
+  return;
+}

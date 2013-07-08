@@ -34,11 +34,7 @@
 
 using namespace POTFIT_NS;
 
-FuncBJS::FuncBJS() {
-  power = 0.0;
-
-  return;
-}
+FuncBJS::FuncBJS() : power(0.0) {}
 
 FuncBJS::~FuncBJS() {}
 
@@ -46,7 +42,7 @@ int FuncBJS::num_params(void) {
   return 3;
 }
 
-void FuncBJS::calc(const double &r, double *p, double *f) {
+void FuncBJS::calc(const double &r, const std::vector<double> &p, double *f) {
   if (r == 0)
     *f = 0;
   else {

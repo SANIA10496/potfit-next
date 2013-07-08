@@ -47,7 +47,7 @@ TableTab3::~TableTab3() {
   return;
 }
 
-void TableTab3::init(const char *name, int index) {
+void TableTab3::init(const std::string &name, const int &index) {
   return;
 }
 
@@ -71,19 +71,27 @@ double TableTab3::get_rmin(void) {
   return begin;
 }
 
-double TableTab3::get_val_min(int n) {
+double TableTab3::get_val_min(const int &n) {
   return -std::numeric_limits<double>::infinity();
 }
 
-double TableTab3::get_val_max(int n) {
+double TableTab3::get_val_max(const int &n) {
   return std::numeric_limits<double>::infinity();
 }
 
-void TableTab3::set_param(int i, double& val) {
+double TableTab3::get_plotmin(void) {
+  return 0.0;
+}
+
+double TableTab3::get_value(const double &r) {
+  return 0.0;
+}
+
+void TableTab3::set_param(const int &i, const double& val) {
   return;
 }
 
-void TableTab3::update_potential(int update) {
+void TableTab3::update_potential(const int &update) {
   update_values();
   update_calc_table(update);
 
@@ -95,7 +103,7 @@ void TableTab3::update_values(void) {
   return;
 }
 
-void TableTab3::update_calc_table(int update) {
+void TableTab3::update_calc_table(const int &update) {
 
   return;
 }

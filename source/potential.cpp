@@ -52,6 +52,7 @@ Potential::Potential(POTFIT *ptf) :
   idxparam(NULL),
   rcut(NULL),
   rmin(NULL),
+  rcut_min(0.0),
   rcut_max(0.0),
   pots(NULL),
   opt(NULL),
@@ -201,6 +202,7 @@ void Potential::read_potentials(FILE *infile) {
     num_params += pots[i]->get_number_params();
     if (invar_pot[i] == 0)
       num_free_params += pots[i]->get_number_free_params();
+    rcut_min = std::min(rcut_min, pots[i]->get_rmin());
     rcut_max = std::max(rcut_max, pots[i]->get_cutoff());
   }
   rcut = new double[square(structures->get_ntypes())];

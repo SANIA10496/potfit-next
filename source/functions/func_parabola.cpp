@@ -42,7 +42,7 @@ int FuncPARABOLA::num_params(void) {
   return 3;
 }
 
-void FuncPARABOLA::calc(const double &r, double *p, double *f) {
+void FuncPARABOLA::calc(const double &r, const std::vector<double> &p, double *f) {
   *f = (r * r) * p[0] + r * p[1] + p[2];
 
   return;

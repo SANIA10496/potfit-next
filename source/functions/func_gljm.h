@@ -47,7 +47,7 @@ namespace POTFIT_NS {
     ~FuncGLJM();
 
     int num_params(void);
-    void calc(const double &, double *, double *);
+    void calc(const double &, const std::vector<double> &, double *);
   private:
     double temp;
     double x[3],y[3],power[3];

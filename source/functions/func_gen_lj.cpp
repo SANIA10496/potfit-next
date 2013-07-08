@@ -51,7 +51,7 @@ int FuncGEN_LJ::num_params(void) {
   return 5;
 }
 
-void FuncGEN_LJ::calc(const double &r, double *p, double *f) {
+void FuncGEN_LJ::calc(const double &r, const std::vector<double> &p, double *f) {
   x[0] = r / p[3];
   x[1] = x[0];
   y[0] = p[1];

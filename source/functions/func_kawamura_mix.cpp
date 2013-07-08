@@ -42,7 +42,7 @@ int FuncKAWAMURA_MIX::num_params(void) {
   return 12;
 }
 
-void FuncKAWAMURA_MIX::calc(const double &r, double *p, double *f) {
+void FuncKAWAMURA_MIX::calc(const double &r, const std::vector<double> &p, double *f) {
   r6 = r * r * r;
   r6 *= r6;
 

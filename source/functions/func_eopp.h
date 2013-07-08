@@ -47,7 +47,7 @@ namespace POTFIT_NS {
     ~FuncEOPP();
 
     int num_params(void);
-    void calc(const double &, double *, double *);
+    void calc(const double &, const std::vector<double> &, double *);
   private:
     double x[2],y[2],power[2];
   };

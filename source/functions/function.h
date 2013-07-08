@@ -31,6 +31,8 @@
 #ifndef PTF_FUNCTION_H
 #define PTF_FUNCTION_H
 
+#include <vector>
+
 #include "../potfit.h"
 
 namespace POTFIT_NS {
@@ -41,7 +43,7 @@ namespace POTFIT_NS {
     ~Function() {};
 
     virtual int num_params() = 0;
-    virtual void calc(const double &, double *, double *) = 0;
+    virtual void calc(const double &, const std::vector<double> &, double *) = 0;
   };
 
 }

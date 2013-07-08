@@ -57,7 +57,6 @@ namespace POTFIT_NS {
 
     std::string type;
   };
-
 }
 
 #endif // PTF_INTERACTION_H

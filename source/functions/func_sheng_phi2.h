@@ -47,10 +47,9 @@ namespace POTFIT_NS {
     ~FuncSHENG_PHI2();
 
     int num_params(void);
-    void calc(const double &, double *, double *);
+    void calc(const double &, const std::vector<double> &, double *);
   };
 }
 
 #endif // PTF_FUNC_SHENG_PHI2_H
-
 #endif // FUNCTION_TYPE

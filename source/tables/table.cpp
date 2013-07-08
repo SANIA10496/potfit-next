@@ -38,10 +38,10 @@ Table::Table(POTFIT *ptf) :
   Pointers(ptf),
   splines(ptf),
   init_done(0),
-  name(NULL),
   format(0),
   begin(0.0),
   end(0.0),
+  plotmin(0.0),
   pot_number(0),
   num_params(0),
   num_free_params(0),
@@ -51,10 +51,7 @@ Table::Table(POTFIT *ptf) :
   invstep(0.0),
   xcoord(NULL),
   table(NULL),
-  d2tab(NULL),
-  values(NULL),
-  invar_par(NULL),
-  idx(NULL)
+  d2tab(NULL)
 {}
 
 Table::~Table() {}

@@ -45,7 +45,7 @@ TableTab4::TableTab4(POTFIT *ptf) : Table(ptf) {
 TableTab4::~TableTab4() {
 }
 
-void TableTab4::init(const char *name, int index) {
+void TableTab4::init(const std::string &name, const int &index) {
   return;
 }
 
@@ -66,19 +66,27 @@ double TableTab4::get_rmin(void) {
   return begin;
 }
 
-double TableTab4::get_val_min(int n) {
+double TableTab4::get_val_min(const int &n) {
   return -std::numeric_limits<double>::infinity();
 }
 
-double TableTab4::get_val_max(int n) {
+double TableTab4::get_val_max(const int &n) {
   return std::numeric_limits<double>::infinity();
 }
 
-void TableTab4::set_param(int i, double& val) {
+double TableTab4::get_plotmin(void) {
+  return 0.0;
+}
+
+double TableTab4::get_value(const double &r) {
+  return 0.0;
+}
+
+void TableTab4::set_param(const int &i, const double& val) {
   return;
 }
 
-void TableTab4::update_potential(int update) {
+void TableTab4::update_potential(const int &update) {
   update_values();
   update_calc_table(update);
 
@@ -86,25 +94,25 @@ void TableTab4::update_potential(int update) {
 }
 
 void TableTab4::update_values(void) {
-
   return;
 }
 
-void TableTab4::update_calc_table(int update) {
-
+void TableTab4::update_calc_table(const int &update) {
   return;
 }
 
 void TableTab4::update_slots(void) {
-
   return;
 }
 
 void TableTab4::write_potential(std::ofstream &outfile) {
+  return;
 }
 
 void TableTab4::write_plot(FILE *outfile) {
+  return;
 }
 
 void TableTab4::write_plotpoint(FILE *outfile) {
+  return;
 }

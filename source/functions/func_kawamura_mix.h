@@ -47,12 +47,11 @@ namespace POTFIT_NS {
     ~FuncKAWAMURA_MIX();
 
     int num_params(void);
-    void calc(const double &, double *, double *);
+    void calc(const double &, const std::vector<double> &, double *);
   private:
     double r6;
   };
 }
 
 #endif // PTF_FUNC_KAWAMURA_MIX_H
-
 #endif // FUNCTION_TYPE

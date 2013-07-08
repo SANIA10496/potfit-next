@@ -54,7 +54,7 @@ int FuncGLJM::num_params(void) {
   return 12;
 }
 
-void FuncGLJM::calc(const double &r, double *p, double *f) {
+void FuncGLJM::calc(const double &r, const std::vector<double> &p, double *f) {
   x[0] = r / p[3];
   x[1] = x[0];
   x[2] = r - p[9];

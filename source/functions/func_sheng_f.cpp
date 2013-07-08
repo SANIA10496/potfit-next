@@ -42,7 +42,7 @@ int FuncSHENG_F::num_params(void) {
   return 4;
 }
 
-void FuncSHENG_F::calc(const double &r, double *p, double *f) {
+void FuncSHENG_F::calc(const double &r, const std::vector<double> &p, double *f) {
   power_1(power, r, p[1]);
 
   *f = p[0] * power + p[2] * r + p[3];

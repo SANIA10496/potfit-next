@@ -42,7 +42,7 @@ int FuncVPAIR::num_params(void) {
   return 7;
 }
 
-void FuncVPAIR::calc(const double &r, double *p, double *f) {
+void FuncVPAIR::calc(const double &r, const std::vector<double> &p, double *f) {
   power_1(power, r, p[1]);
 
   *f = 14.4 * (p[0] / power - 0.5 * ((p[4] * p[3] * p[3] + p[5] * p[2] * p[2]) /

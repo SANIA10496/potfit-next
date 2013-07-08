@@ -47,12 +47,11 @@ namespace POTFIT_NS {
     ~FuncPOLY_5();
 
     int num_params(void);
-    void calc(const double &, double *, double *);
+    void calc(const double &, const std::vector<double> &, double *);
   private:
     double dr;
   };
 }
 
 #endif // PTF_FUNC_POLY_5_H
-
 #endif // FUNCTION_TYPE

@@ -42,7 +42,7 @@ int FuncSOFTSHELL::num_params(void) {
   return 2;
 }
 
-void FuncSOFTSHELL::calc(const double &r, double *p, double *f) {
+void FuncSOFTSHELL::calc(const double &r, const std::vector<double> &p, double *f) {
   x = p[0] / r;
 
   power_1(*f, x, p[1]);

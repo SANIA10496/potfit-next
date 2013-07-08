@@ -69,3 +69,13 @@ int ForceADP::cols(void) {
 double ForceADP::calc_forces(void) {
   return 0.0;
 }
+
+void ForceADP::write_imd_pot(void) {
+
+  return;
+}
+
+void ForceADP::write_lammps_pot(void)  {
+
+  return;
+}

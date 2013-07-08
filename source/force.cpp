@@ -35,15 +35,14 @@ using namespace POTFIT_NS;
 
 Force::Force(POTFIT *ptf) :
   Pointers(ptf),
-  force_vect(NULL),
+  force_vect(0),
   energy_p(0),
   stress_p(0),
   dummy_p(0),
   limit_p(0),
   punish_par_p(0),
   punish_pot_p(0),
-  fcalls(0),
-  error_sum(0.0)
+  fcalls(0)
 {}
 
 Force::~Force() {
@@ -79,14 +78,5 @@ const int Force::get_fcalls(void) {
 void Force::inc_fcalls(void) {
   fcalls++;
 
-  return;
-}
-
-const double Force::get_error_sum(void) {
-  return error_sum;
-}
-
-void Force::set_error_sum(const double& x) {
-  error_sum = x;
   return;
 }

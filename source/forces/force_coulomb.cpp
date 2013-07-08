@@ -66,3 +66,13 @@ void ForceCoulomb::read_additional_data(FILE *infile) {
 double ForceCoulomb::calc_forces(void) {
   return 0.0;
 }
+
+void ForceCoulomb::write_imd_pot(void) {
+
+  return;
+}
+
+void ForceCoulomb::write_lammps_pot(void)  {
+
+  return;
+}

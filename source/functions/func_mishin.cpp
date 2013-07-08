@@ -42,7 +42,7 @@ int FuncMISHIN::num_params(void) {
   return 6;
 }
 
-void FuncMISHIN::calc(const double &r, double *p, double *f) {
+void FuncMISHIN::calc(const double &r, const std::vector<double> &p, double *f) {
   z = r - p[3];
   temp = exp(-p[5] * r);
 

@@ -47,10 +47,9 @@ namespace POTFIT_NS {
     ~FuncEXP_PLUS();
 
     int num_params(void);
-    void calc(const double &, double *, double *);
+    void calc(const double &, const std::vector<double> &, double *);
   };
 }
 
 #endif // PTF_FUNC_EXP_PLUS_H
-
 #endif // FUNCTION_TYPE

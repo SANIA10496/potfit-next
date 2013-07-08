@@ -42,7 +42,7 @@ int FuncSHENG_PHI1::num_params(void) {
   return 5;
 }
 
-void FuncSHENG_PHI1::calc(const double &r, double *p, double *f) {
+void FuncSHENG_PHI1::calc(const double &r, const std::vector<double> &p, double *f) {
   *f = p[0] * exp(-p[1] * r * r) + p[2] * exp(-p[3] * (r - p[4]) * (r - p[4]));
 
   return;

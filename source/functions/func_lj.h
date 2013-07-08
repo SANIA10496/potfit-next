@@ -47,13 +47,11 @@ namespace POTFIT_NS {
     ~FuncLJ();
 
     int num_params(void);
-    void calc(const double &, double *, double *);
+    void calc(const double &, const std::vector<double> &, double *);
   private:
     double r6, r12;
   };
-
 }
 
 #endif // PTF_FUNC_LJ_H
-
 #endif // FUNCTION_TYPE

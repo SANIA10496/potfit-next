@@ -42,7 +42,7 @@ int FuncPOWER::num_params(void) {
   return 2;
 }
 
-void FuncPOWER::calc(const double &r, double *p, double *f) {
+void FuncPOWER::calc(const double &r, const std::vector<double> &p, double *f) {
   power_1(power, r, p[1]);
 
   *f = p[0] * power;

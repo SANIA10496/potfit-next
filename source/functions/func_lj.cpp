@@ -42,7 +42,7 @@ int FuncLJ::num_params(void) {
   return 2;
 }
 
-void FuncLJ::calc(const double &r, double *p, double *f) {
+void FuncLJ::calc(const double &r, const std::vector<double> &p, double *f) {
   r6 = (p[1] * p[1]) / (r * r);
   r6 = r6 * r6 * r6;
   r12 = square(r6);

@@ -42,7 +42,7 @@ int FuncPOLY_5::num_params(void) {
   return 5;
 }
 
-void FuncPOLY_5::calc(const double &r, double *p, double *f) {
+void FuncPOLY_5::calc(const double &r, const std::vector<double> &p, double *f) {
   dr = (r - 1.) * (r - 1.);
 
   *f = p[0] + .5 * p[1] * dr + p[2] * (r - 1.) * dr + p[3] * (dr * dr) + p[4] * (dr * dr) * (r - 1.);

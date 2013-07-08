@@ -47,10 +47,9 @@ namespace POTFIT_NS {
     ~FuncMORSE();
 
     int num_params(void);
-    void calc(const double &, double *, double *);
+    void calc(const double &, const std::vector<double> &, double *);
   };
 }
 
 #endif // PTF_FUNC_MORSE_H
-
 #endif // FUNCTION_TYPE

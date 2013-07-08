@@ -53,7 +53,7 @@ namespace POTFIT_NS {
     void set_value(const int &, const double &);
     void set_opt_pot_start(const int &);
 
-    int get_index(const char *);
+    int get_index(const std::string &);
     void add_usage(const int &, const int &, const int &);
     void get_value(const int &, double *);
 

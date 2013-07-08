@@ -85,6 +85,8 @@ Input::Input(POTFIT *ptf, int argc, char **argv) :
     io->print_version();
 
   param_file.assign(argv[1]);
+
+  return;
 }
 
 Input::~Input() {}
@@ -98,7 +100,7 @@ void Input::read_parameter_file() {
 
   io->write << "Reading parameter file \"" << param_file << "\" ... ";
 
-  infile.exceptions ( std::ifstream::failbit );
+  infile.exceptions (std::ifstream::failbit);
 
   try {
     infile.open(param_file.c_str(), std::ios::in);

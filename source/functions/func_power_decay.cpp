@@ -42,7 +42,7 @@ int FuncPOWER_DECAY::num_params(void) {
   return 2;
 }
 
-void FuncPOWER_DECAY::calc(const double &r, double *p, double *f) {
+void FuncPOWER_DECAY::calc(const double &r, const std::vector<double> &p, double *f) {
   x = 1. / r;
 
   power_1(power, x, p[1]);

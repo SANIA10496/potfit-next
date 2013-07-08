@@ -42,7 +42,7 @@ int FuncDOUBLE_MORSE::num_params(void) {
   return 7;
 }
 
-void FuncDOUBLE_MORSE::calc(const double &r, double *p, double *f) {
+void FuncDOUBLE_MORSE::calc(const double &r, const std::vector<double> &p, double *f) {
   *f = (p[0] * (exp(-2. * p[1] * (r - p[2])) - 2. * exp(-p[1] * (r - p[2]))) +
 	p[3] * (exp(-2. * p[4] * (r - p[5])) - 2. * exp(-p[4] * (r - p[5])))) + p[6];
 

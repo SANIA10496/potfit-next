@@ -81,6 +81,7 @@ namespace POTFIT_NS {
 
     double *rcut;
     double *rmin;
+    double rcut_min;
     double rcut_max;
 
     // actual potential data

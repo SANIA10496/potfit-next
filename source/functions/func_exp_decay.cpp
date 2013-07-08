@@ -42,7 +42,7 @@ int FuncEXP_DECAY::num_params(void) {
   return 2;
 }
 
-void FuncEXP_DECAY::calc(const double &r, double *p, double *f) {
+void FuncEXP_DECAY::calc(const double &r, const std::vector<double> &p, double *f) {
   *f = p[0] * exp(-p[1] * r);
 
   return;

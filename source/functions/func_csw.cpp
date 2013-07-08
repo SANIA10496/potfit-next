@@ -34,7 +34,7 @@
 
 using namespace POTFIT_NS;
 
-FuncCSW::FuncCSW() : power(0) {}
+FuncCSW::FuncCSW() : power(0.0) {}
 
 FuncCSW::~FuncCSW() {}
 
@@ -42,7 +42,7 @@ int FuncCSW::num_params(void) {
   return 4;
 }
 
-void FuncCSW::calc(const double &r, double *p, double *f) {
+void FuncCSW::calc(const double &r, const std::vector<double> &p, double *f) {
   power_1(power, r, p[3]);
 
   *f = (1. + p[0] * cos(p[2] * r) + p[1] * sin(p[2] * r)) / power;

@@ -142,7 +142,7 @@ void GlobalsTable::set_opt_pot_start(const int &val) {
   return;
 }
 
-int GlobalsTable::get_index(const char *name) {
+int GlobalsTable::get_index(const std::string &name) {
   for (int i=0;i<num_globals;i++)
     if (param_name[i].compare(name)==0)
       return i;

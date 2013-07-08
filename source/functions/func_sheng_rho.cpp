@@ -42,7 +42,7 @@ int FuncSHENG_RHO::num_params(void) {
   return 5;
 }
 
-void FuncSHENG_RHO::calc(const double &r, double *p, double *f) {
+void FuncSHENG_RHO::calc(const double &r, const std::vector<double> &p, double *f) {
   if (r > 1.45) {
     power_1(power, r, p[1]);
 

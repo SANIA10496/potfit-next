@@ -53,13 +53,13 @@ namespace POTFIT_NS {
 
     virtual int cols(void) = 0;
 
+    virtual void write_imd_pot(void) = 0;
+    virtual void write_lammps_pot(void) = 0;
+
     void calc_pointers(void);
 
     const int get_fcalls(void);
     void inc_fcalls(void);
-
-    const double get_error_sum(void);
-    void set_error_sum(const double &);
 
     double *force_vect; 	// all deviations
     int energy_p; 		// pointer for energies
@@ -71,9 +71,7 @@ namespace POTFIT_NS {
 
   private:
     int fcalls;
-    double error_sum;
   };
-
 }
 
 #endif // PTF_FORCE_H
